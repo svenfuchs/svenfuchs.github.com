@@ -1,0 +1,17 @@
+--- 
+layout: post
+title: Safari-style search tag
+---
+<p>Safari's proprietary search tag is gorgeous. Look at this:</p>
+
+<p><img src="http://www.artweb-design.de/assets/2007/10/15/safari-search-tag.gif" /></p>
+
+<p>Let's adapt it for the rest of the world, too! Check out this tiny, unobstrusive and RESTful solution.</p>
+
+<p>You can read more about this here:</p>
+
+<p><a href="/2007/4/16/safari-beautiful-search-input-tag-fixed">Safari's beautiful search tag is broken - let's fix that</a></p>
+
+<p>And you can find the code here:</p>
+
+<p><a href="http://svn.artweb-design.de/stuff/html/safari_search_tag/">http://svn.artweb-design.de/stuff/html/safari_search_tag/</a></p>

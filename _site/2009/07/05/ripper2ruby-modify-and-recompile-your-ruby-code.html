@@ -1,0 +1,14 @@
+<p>So, the combination Ripper/Ripper2Ruby lets you do similar things as you can do with <a href='http://parsetree.rubyforge.org' title='Seattle.rb - parse_tree and ruby_parser'>ParseTree or RubyParser</a> and <a href='http://blog.zenspider.com/2005/02/rubytoruby.html' title='RubyToRuby - Polishing Ruby'>Ruby2Ruby</a>. The differences are:</p><ul>
+	<li>Ripper requires Ruby 1.9 (I was told it possibly could be compiled to work with Ruby 1.8.x but I don&#8217;t know anything further. Please drop me a note if you know how to do this.)</li>
+	<li>Ripper2Ruby builds a full object-oriented representation of Ruby code. That means you can modify the representation much more easily compared to the rough sexp tree that you get from the parsers. It also provides complete information about the node&#8217;s original source position, whitespace, comments etc.</li>
+	<li>Therefor with Ripper2Ruby you can recompile the exact copy of the original source code, character by character (that&#8217;s not possible with Ruby2Ruby). Ripper2Ruby has been tested with <a href='http://gist.github.com/137398' title='gist: 137398 - GitHub'>225 Ruby libraries</a> including Rails, Merb, Ruby Stdlib etc.</li>
+	<li>Ripper2Ruby does more but it&#8217;s slower, too.</li>
+</ul><p>For example:</p><pre><code>
+src = "I18n.t(:foo)"
+code = Ripper::RubyBuilder.build(src)
+code.to_ruby # =&gt; "I18n.t(:foo)"
+
+foo = code.select(Ruby::Symbol).first
+foo.identifier.token = 'bar'
+code.to_ruby # =&gt; "I18n.t(:bar)"
+</code></pre><p>Ripper2Ruby was build to make it easier to create refactoring tools for Ruby/Rails I18n support (see i18n-tools). Huge thanks go (again) to <a href='http://bestgroup.eu'>Torsten Becker, Bestgroup Software &amp; Consulting</a> for making this possible.</p>

@@ -1,0 +1,107 @@
+--- 
+layout: post
+title: "Upgraded to Mephisto Edge: various plugin fixes and updates"
+---
+<h2>Plugin: Mephisto Paged Article Lists - now with will_paginate</h2>
+
+<p>Rails core <a href="http://dev.rubyonrails.org/ticket/8157" title="#8157 ([PATCH] Remove Pagination from Rails) - Rails Trac">kicked pagination</a> as a build-in feature on their way to Rails 2.0. Pagination is now a regular citizen in plugin territory and accordingly Mephisto needs a pagination plugin, too, for its search results and admin pages. Rick opted for <a href="http://errtheblog.com/post/4791" title="err.the_blog.find_by_title('I'm Paginating Again')">will_paginate</a> - which I think is a reasonable solution (and a pretty cool one, too, by the way).</p>
+
+<p>So, among the first things that totally blew up when I dauntlessly installed my plugins in Mephisto Edge was of course ... my <a href="/projects/mephisto-plugin-paged-article-lists">Mephisto Paged Article List plugin</a>.</p>
+
+<p>(In my website stats I notice quite some visitors from Google who are on the hunt for search terms like "<a href="http://www.google.com/search?q=NameError%20(uninitialized%20constant%20ActionController::Pagination)" title="NameError (uninitialized constant ActionController::Pagination) - Google Search">NameError (uninitialized constant ActionController::Pagination)</a>". Obviously, that's the error message that Rails chokes with when you try to use that old Pagination class in Rails Edge.)</p>
+
+<p>Well ... to me pagination of article lists (section lists etc.) is an essential feature of a blogging engine and so I sat down and did my homework. A new version of the plugin is available in my Subversion repository: <a href="http://svn.artweb-design.de/stuff/mephisto/mephisto_paged_article_list">Mephisto Paged Article List</a>. I'm going to put some notes together in the next few days. This much in advance: for popular demand it supports paged tag pages. :)</p>
+
+<h2>Fixing Mephisto Comment Notification and Mephisto Post Ping</h2>
+
+<p>Two other plugins that crashed on the floor when I installed them on Mephisto Edge. These were: </p>
+
+<ul><li><a href="http://opensource.agileevolved.com/svn/root/rails_plugins/mephisto_comment_notification/trunk/">Mephisto Comment Notification</a> by <a href="http://www.lukeredpath.co.uk/" title="Luke Redpath&mdash;Ruby, Rails and other Musings">Luke Redpath</a></li>
+<li><a href="svn://hasno.info/mephisto/plugins/mephisto_post_ping">Mephisto Post Ping</a> by <a href="http://hasno.info/2006/11/11/mephisto-plugins" title="mephisto plugins">Mark Guzman</a></li></ul>
+
+<p>But both had a <span style="text-decoration:line-through">soft landing</span> were fixed easily. Mephisto Comment Notification runs into Rails Edge's changed handling of ActiveRecord Observers:</p>
+	
+<pre>
+# this doesn't work anymore:
+# ActionController::Base.send(:observer, :comment_notifier_observer)
+# but this will:
+ActiveRecord::Base.observers &lt;&lt; :comment_notifier_observer
+</pre>	
+
+<p>Mephisto Post Ping crashes into a plugin load order issue: Mephisto Post Ping requires the Article model ... which (now) relies on the newly added Permalink_fu plugin ... which is not loaded yet.</p>
+
+<p>Of course one quick solution is to simply rename the plugin folder (e.g. to "post_ping") to "fix" the load order. Another solution seems to be to delay the initialization by changing the <code>init.rb</code> to something like this:</p>
+
+<pre><code>
+# init.rb
+config.to_prepare do
+  require 'post_ping/plugin'
+  ActiveRecord::Base.observers &lt;&lt; :article_ping_observer
+end
+</code></pre>	
+
+<p>For my own reference I filed away two mini-patches here:</p>
+
+<ul><li><a href="http://svn.artweb-design.de/stuff/mephisto/mephisto_comment_notification.diff">Mephisto Comment Notification Patch for Mephisto Edge</a></li>
+<li><a href="http://svn.artweb-design.de/stuff/mephisto/mephisto_post_ping.diff">Mephisto Post Ping Patch for Mephisto Edge</a></li></ul>
+
+<h2>Feedburner count plugin</h2>
+
+<p>While I were at it I thought I'd also fix my Feedburner stats display. I had gotten annoyed of that clumpsy Feedburner count widget a while ago and wanted to display that count in a more lightweight and unintrusive way. So I just pulled the info from <a href="http://www.feedburner.com/fb/a/developers/awapi" title="FeedBurner - Awareness API Reference">Feedburner's "Awareness" api</a>.</p>
+
+<p>I'm suspect that nobody even noticed it, but these stats were cached by Mephistos glorious page cache. Thus the counter was never really up to date and it displayed different numbers on different pages. *ahem*</p>
+
+<p>Ok, that's been a quick job, too. I extracted a plugin from it and added a controller with an action that returns the data as JSON. Now the number is pulled by Javascript/Ajax and thus is always up-to-date.</p>
+
+<p>This stuff definitely is no big deal. Tt <em>is</em> (finally) a quite good example for my favorite <a href="/2006/4/28/thinking-about-restful-dynamic-web-applications">RESTful dynamic web apps approach</a> though that I can incorporate into my own blog. (And hey! There's a bit more about REST than having a CRUDlike interface to ressources. By the way, I'm totally curious what Roy T. Fielding will have to say in his talk <a href="http://www.railsconfeurope.com/cs/railseurope2007/view/e_sess/14847" title="RailsConf Europe 2007 &#8226; September 17, 2007 - September 19, 2007 &#8226; Berlin, Germany">The Rest of REST</a> at RailsConf Europe 2007! That sounds like a subtly ironic session title ;-) )</p>
+
+<h2>Mephisto Inverse Captcha (anti-spam) - now a plugin</h2>
+
+<p>One other thing that had been lingering on my todo list for a while was: enhance that <a href="http://www.artweb-design.de/projects/mephisto-plugin-inverse-captcha-for-comments-anti-spam" title="Mephisto Plugin: Inverse Captcha for Comments (anti-spam)">Mephisto Inverse Captcha anti-spam</a> stuff and re-allow users to leave their email address. It's a pretty tiny, yet highly efficient, neat little trick that spares me all the time that I'd spend on sorting out comment spam otherwise (and tell you what, I hate, hate, hate to sort out spam).</p>
+
+<p>So I thought I'd revamp this thing as a plugin instead of those two awkward patches. </p>
+
+<p>For aesthetical reasons I kind of extracted something that I've called "sneaky" parameters. I.e.: parameters that masquerade themselves behind a different name. When the Controller loads up they "unsneak" and take notice of any suspicious values in strawman parameters with their original names (that only superstupid spam bots would send, i.e. 99,9% of all bots).</p>
+
+<p>As you see that's just what that Inverse Captcha stuff did but in a more generalized way. I'm sure it will be quite hard to find a different usage for it than this specific plugin though ... or can you think of any?</p>
+
+<p>The plugin is in my repository already, too. Have a look: <a href="http://svn.artweb-design.de/stuff/mephisto/mephisto_inverse_captcha/" title="Revision 89: /stuff/mephisto/mephisto_inverse_captcha">Mephisto Inverse Captcha Plugin</a> </p>
+
+<p>I probably should put some more instructive notes together on how to install and use it etc.</p>
+
+<h2>Plugin development</h2>
+
+<p>So all in all that's been quite some stuff. I guess I have learned one thing or another about Rails plugin development and about some of the reloading issues that may occur in development mode.</p> 
+
+<p>Like with many tips-and-tricks-type information most of these techniques are pretty obvious once you've figured it out. But you can spend millions of hours to figure out to do something actually pretty simple.</p>
+
+<p>E.g., do you know how to really unload and reload a plugin class or module that's in your plugins and modifies an app's controller or model? I believe that this will do this dirty job:</p>
+
+<pre><code>
+	name = 'mephisto_comic_collection'
+	Dependencies.load_once_paths.delete lib_path
+	Dependencies.require_or_load name, name.camelize
+</code></pre>
+
+<p>It probably would make a nice ressource to collect some plugin development techniques. Actually there doesn't seem to be that much on the web. Any suggestions on this? </p>
+
+<h2>Module#include_into</h2>
+
+<p>Oh, by the way. Rick's extremely handy and elegant <a href="http://weblog.techno-weenie.net/2006/11/15/extending-your-rails-classes-from-plugins">Module#include_into</a> thingy comes with a quite important limitation: you probably shouldn't use it in modules that get unloaded by Rails' Dependencies and reloaded during the next request. That's because: </p>
+
+<pre><code>
+	(@@class_mixins[klass] ||= []) &lt;&lt; self
+	@@class_mixins[klass].uniq!	
+</code></pre>
+
+<p>... this will hold a reference on the old (i.e. unloaded) module <strong>and</strong> the newly loaded module instances. Thus, the same module will be mixed into your class twice, thrice ... (and even more interesting if you modify it between the reloads: then you have the old and the new versions!). That might or might not work as expected. It also might lead to some very funny results ;)</p>
+
+<p>But we can easily register the module's classname instead of the module itself and then <code>eval</code> it to re-retrieve the module later on. Probably not the most elegant way, but it does the job. Do you see any problems with this? Or probably a more elegant way that doesn't use an <code>eval
+</code>?</p>
+
+<p>I've added a <a href="http://ar-code.lighthouseapp.com/projects/34/tickets/117-module-include_into-reloading-issue">ticket</a> over in their shiny Lighthouse tracker and filed away a patch here: <a href="http://svn.artweb-design.de/stuff/mephisto/mephisto_include_into.diff" title="">patch for Module#include_into</a>.</p>
+
+<h2>So much for this.</h2>
+
+<p>Now, what have <em>you</em> been doing the last couple of days? ;-))</p>
+

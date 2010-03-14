@@ -1,0 +1,42 @@
+--- 
+layout: post
+title: Engines for Rails 2.0 preview released
+---
+<p><em>Grab the plugin here:</em> <a href="http://svn.rails-engines.org/engines/trunk">http://svn.rails-engines.org/engines/trunk</a></p>
+
+<p><em>In order to work with the new plugin loading mechanism in Rails 2.0, you'll also need to add a line to environment.rb, just after the require of Rails' boot file:</em></p>
+
+<p><pre><code>require File.join(File.dirname(__FILE__), '../vendor/plugins/engines/boot')</code></pre></p>
+
+<p><em>After that, you're good to go. Kick the tires, take it for a spin around the block, and please do let me know how it runs. There may be problems, we'll try and resolve them as you guys report them back.</em></p>
+
+<p>(Update: I've just seen that there's also an <a href="http://rails-engines.org/news/2007/12/11/engines-2-0-ish/">announcement on the Rails Engines blog</a> which explains some additional details.)</p>
+
+<p>My initial port amended Engines to use the new plugin architecture that Rails 2.0 now implements and it already covered probably 80% of the features of Engines. I also ported and revisited the test cases which by now run with 91 assertations in 49 tests.</p>
+
+<p>James generously granted me commit access for the Engines repository and took care of some of the more challenging features (like fixing the ActionMailer integration) and factored out the entire ActionView part.</p>
+
+<p>Working with James was a great joy and it's pretty cool to know that Engines is lead by a both rational and nice guy like him.</p>
+
+<p>With now relying on Rails' own architecture for locating and loading plugins Engines' own code has slimmed down by a large part. It's quite telling to look at the <a href="http://rubyforge.org/projects/loc/">SLOC</a> of various Rails Engines releases:</p>
+
+<pre>Rails Engines rel_1.1.0                                     
+---------------------------------------------
+Files      SLOC      CLOC      BLOC      TLOC
+   17      1104       506       273      1883
+                                             
+Rails Engines rel_1.2.1                                     
+---------------------------------------------
+Files      SLOC      CLOC      BLOC      TLOC
+   18       633       950       180      1763
+                                             
+Rails Engines for Rails 2.0 (current trunk)                 
+---------------------------------------------
+Files      SLOC      CLOC      BLOC      TLOC
+   18       481       680       105      1266</pre>                                            
+
+<p>As you can see, Rails Engines is down to 50% of the SLOC of the 1.1.0 release and removed another 25% from the 1.2.1 release ... and that even still includes some general purpose support like sharing assets and testing plugins.</p>
+
+<p>So, I think this is great news!</p> 
+
+<p>Rails Engines supplies the need to share controllers, models, views and stuff like routes and assets in a standarized way. It does this in the most reasonable and unobstrusive way I could think of by using the great new plugin architecture features that Rails 2.0 implements.</p>

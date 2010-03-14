@@ -1,0 +1,75 @@
+--- 
+layout: post
+title: "Howto use: Mephisto article list pagination plugin"
+---
+<p class="update"><strong>Update:</strong> The following information is most probably outdated. Please refer to the <a href="/projects/mephisto-plugin-paged-article-lists" title="Mephisto Plugin: Paged Article Lists">Mephisto Plugin: Paged Article Lists</a> project page.</p>
+
+<p>The plugin adds three new <a href="http://home.leetsoft.com/liquid/wiki/HowTo#Createyourownfilters">liquid filters</a> for you to use. They all take the current section and pages array as a parameter. Also, you can specify different optional parameters ...</p>
+
+<h2>The all-in-one filter</h2>
+
+<p>There's a quick all-in-one filter that simply adds one or two links depending on the context (i.e. if there are older posts or not, newer posts or not):</p>
+
+<pre><code>
+{{ section | prev_next_section_page_links: pages }}	
+</code></pre>
+
+<p>Use this filter to automatically output contextually "correct" links like the following:</p>
+
+<pre><code>
+&lt;a class="prev" href="/page/3">&amp;laquo; older posts&lt;/a>
+&lt;a class="next" href="/">newer posts &amp;raquo;&lt;/a>
+</code></pre>
+
+<p>... you can then use the HTML class attributes to let the links float to the left and right side of the page respectively - like you can see on my blog homepage.</p>
+
+<p>Also, you can define a separator as a third parameter:</p>
+
+<pre><code>
+{{ section | prev_next_section_page_links: pages, '&amp;middot;' }}
+</code></pre>
+
+<p>... which will be inserted between the both links, if both are present.</p>
+
+<pre><code>
+&lt;a class="prev" href="/page/3">&amp;laquo; older posts&lt;/a> &amp;middot;
+&lt;a class="next" href="/">newer posts &amp;raquo;&lt;/a>
+</code></pre>
+
+<h2>More power to the people</h2>
+
+<p>These automatic links might not always be what you want. Maybe you need another link text. Or you want to enclose the links in some other tags ...</p>
+
+<p>You might then want to use the following filters that each just generate one link according to the context:</p>
+
+<pre><code>
+{{ section | link_to_prev_section_page: pages }}	
+{{ section | link_to_next_section_page: pages }}	
+</code></pre>
+
+<p>... which again will get you the same output as above. But this time you can better control the placement of your tags:</p>
+
+<pre><code>
+&lt;a class="prev" href="/page/3">&amp;laquo; older posts&lt;/a>
+&lt;a class="next" href="/">newer posts &amp;raquo;&lt;/a>
+</code></pre>
+
+<p>Also, you can now specify the link text as the third parameter:</p>
+
+<pre><code>
+{{ section | link_to_prev_section_page: pages, "silence is foo!" }}
+{{ section | link_to_next_section_page: pages, "where there's foo, there's fire" }}
+</code></pre>
+
+<h2>How to install</h2>
+
+<p>You can install this by using Rails' script/plugin installer. Standing in your application's root directory do:</p>
+
+<pre><code>
+script/plugin install <a href="http://svn.artweb-design.de/stuff/mephisto/mephisto_paged_article_list">http://svn.artweb-design.de/stuff/mephisto/mephisto_paged_article_list</a>
+</code></pre>
+
+<p>That should suffice :-)</p>
+
+<p>Don't forget to restart your webserver after messing with your plugins!</p>
+

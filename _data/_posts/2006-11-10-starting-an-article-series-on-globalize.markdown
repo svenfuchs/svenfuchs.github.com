@@ -1,0 +1,11 @@
+--- 
+layout: post
+title: Starting an article series on Globalize
+---
+<p>Yes. I finally managed to finish the (first version of the) <a href="/articles/2006/11/10/globalize-five-minutes-instant-overview">first part</a> of my series "<a href="/articles/2006/11/10/get-on-rails-with-globalize-comprehensive-writeup">Get on Rails with Globalize</a>".</p>
+
+<p>My idea with this write-up is to provide a complete summary of everything about and around Globalize - which IMO is the most complete, most elegant and (notably) most Rail'ish I18n solution available.</p> 
+
+<p>I thus started weeding through the archives of <a href="http://rubyforge.org/mailman/listinfo/railsi18n-discussion">the Rails I18n</a> and <a href="http://wiki.globalize-rails.org/globalize/show/MailingList">the Globalize mailing list</a> (well, sort of, I needed to use my local archive to weed the latter because it's badly missing an online archive so far), the <a href="http://wiki.globalize-rails.org/globalize/">Globalize wiki</a> and several other ressources Google came up with.</p> 
+
+<p>I started my work on this series by the end of August, having been timed-out by obligations and stuff again and again. It also actually took me a while to collect and sieve out the relevant bits of information, check their up-to-dateness (e.g. of bug reports), sort and split everything into chunks and topics. But hey, I think this will have been worth that while. So ... finally ... here we go :-)</p>

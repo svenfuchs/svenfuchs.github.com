@@ -1,0 +1,21 @@
+---
+layout: default
+title: Sven Fuchs
+---
+ 
+<h2>Contact</h2>
+<ul id="contact">
+  <li><a href="http://github.com/svenfuchs">http://github.com/svenfuchs</a></li>
+  <li><a href="http://twitter.com/svenfuchs">http://twitter.com/svenfuchs</a></li>
+  <li><a href="mailto:svenfuchs@artweb-design.de">svenfuchs@artweb-design.de</a></li>
+  <li><a href="irc://irc.freenode.net">svenfuchs on irc.freenode.net</a></li>
+</ul>
+
+<h2>Blog Posts</h2>
+<ul class="posts">
+  {% for post in site.posts limit:15 %}
+    <li><a href="{{ post.url }}">{{ post.title }}</a> <span>{{ post.date | date_to_string }}</span></li>
+  {% endfor %}
+</ul>
+
+<p><a href="/archive.html">Older posts &raquo;</a></p>

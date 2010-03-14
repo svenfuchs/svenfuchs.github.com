@@ -1,0 +1,37 @@
+--- 
+layout: post
+title: Folksr.de - distributed votings using Microformats
+---
+<p><a href="http://folksr.de/" title="Folksr - giving people a louder voice">Folksr</a> is an application for distributed votings using Microformats and OpenID. It's not only cool, it's also highly experimental.</p>
+
+<p><strong>With folksr, I am looking for your help. :)</strong></p>
+
+<p>I'd highly appreciate your feedback, suggestions, support ... and of course ... participation!</p>
+
+<p><img style="margin: 10px 0px;" src="http://www.artweb-design.de/assets/2008/1/15/folksr-screenshot-3.jpg" /></p>
+
+<p>Head over to these sites to learn more about folksr. And don't forget to create a voting and/or leave your votes :)</p>
+
+<ul>
+	<li><a href="http://folksr.de/" title="folksr - giving people a louder voice">folksr.de</a></li>
+	<li><a href="http://folksr.de/about" title="What is folksr?">What is folksr?</a></li>
+	<li><a href="http://folksr.de/votelinks" title="How folksr works">How folksr works</a></li>
+	<li><a href="http://folksr.de/faq" title="Some questions about folksr">FAQ: some questions about folksr</a></li>
+	<li>Announcement blog post: <a href="/2008/1/15/folksr-is-here-again-distributed-votings-using-microformats">Folksr is here - again!</a></li>
+</ul>
+
+<p>Other resources:</p>
+
+<ul>
+	<li><a href="http://microformats.org/wiki/vote-links" title="vote-links - Microformats">Microformats wiki page about vote-links</a></li>
+	<li><a href="http://folksr.de/openid" title="What is OpenID?">Some resources about OpenID</a></li>
+	<li><a href="http://htmlmastery.com/links.php" title="HTML Mastery - Semantics, Standards and Styling by Paul Haine">Folksr has been mentioned in "HTML Mastery" by Paul Haine, apperently</a></li>
+</ul>
+
+<p>Further reading:</p>
+
+<ul>
+  <li><a href="http://www.artweb-design.de/2006/6/5/distributed-votings-using-microformats" title="Distributed votings using microformats - artweb design">Initial blog post about the idea</a> (June 2006)</li>
+  <li><a href="http://www.artweb-design.de/2006/6/7/first-lessons-learned-feedback-about-folksr" title="First lessons learned: feedback about folksr - artweb design">First lessons learned: feedback about folksr</a> (June 2006)</li>
+  <li><a href="http://www.artweb-design.de/2006/6/14/folksr-de-more-thoughts-on-distributed-votings" title="folksr.de - more thoughts on distributed votings - artweb design">folksr.de - more thoughts on distributed votings</a> (June 2006)</li>
+</ul>

@@ -1,0 +1,29 @@
+--- 
+layout: post
+title: Taskmate officially ready for review
+---
+<p>Here's the changelog for this version:</p>
+
+<h2>Taskmate 0.1 (review release)</h2>
+
+<ul>
+<li>added an Add Tag command with a popup to choose from available tags</li>
+<li>added Tab to Previous/Next Tag macros</li>
+<li>added Jump to Source feature for projects</li>
+<li>added an Add Task command</li>
+<li>added a mini statistics feature (output after tag files are rebuild)</li>
+<li>added a help file</li>
+<li>rewrote language grammar to rely on common scopes and fix various issues</li>
+<li>allowed environment variables to set the base directory</li>
+<li>allowed environment variable for using unicode checkmark as completed bullet</li>
+<li>resolved various minor conflicts and bugs</li>
+<li>adhered to TextMate coding guidelines	</li>
+</ul>
+
+<p>Even at this early stage I'd like to say thank you to Michael Sheets for doing an amazing job as a TextMate review gatekeeper and <a href="http://www.greenlemur.com" title="Green Lemur Ltd ++ On paper. Online. On time ++">Nigel</a>, who attentively tested every single move I made, provided lots of feedback and additional code as well as even a complete help file.</p>
+
+<p>Now we are eagerly awaiting to get bashed down by the TextMate guys for any glitches and mistakes in order to make this bundle even better :)</p>
+
+<p><strong>Thanks!</strong></p>
+
+<p>Oh! If you want to find out what Taskmate does or download the bundle you can head over to the <a href="http://www.artweb-design.de/projects/taskmate" title="Taskmate ... get more things done with your editor!">Taskmate project page</a>.</p>

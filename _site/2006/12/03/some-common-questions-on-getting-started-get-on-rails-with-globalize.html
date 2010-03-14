@@ -1,0 +1,103 @@
+<h2>Let's talk Unicode</h2><p>As you've enabled your application to virtually support even the strangest languages on earth you now should start using Unicode throughout your application so that non-latin characters will be stored and displayed correctly. If you don't, you'd probably get something like this:</p><p><img src='/images/blog/posts/globalize.unicode.broken.gif' height='50' alt='Globalize.Unicode.Broken' width='309' /></p><p>... instead of this:</p><p><img src='/images/blog/posts/globalize.unicode.ok.gif' height='50' alt='Globalize.Unicode.Ok' width='220' /></p><p>Globalize already includes <a href='http://www.ruby-doc.org/stdlib/libdoc/jcode/rdoc/index.html'>jcode.rb</a> and sets <code>$KCODE</code> to <code>UTF8</code> (see vendor/plugins/globalize/init.rb) which basically means that Ruby will treat all input and output as Unicode encoded. So that's already been taken care of.</p><p>(Beware though that there are several String methods that won't work as expected with Unicode yet like <code>length</code>, <code>reverse</code> or <code>slice</code>. This is being worked on and it is neither Globalize's nor JCode's fault but due to Ruby's own lack of Unicode support which <a href='http://redhanded.hobix.com/cult/yayMatzIsOnTheCuspOfUnveilingRubySUnicodeSupport.html'>reportedly</a> will be fixed in Ruby 1.9/2.0.</p>
+<p>As this will take some time Rails will stand in with ActiveSupport::Multibyte - which will be included in the <a href='http://weblog.rubyonrails.org/2006/11/23/rails-1-2-release-candidate-1'>upcoming Rails 1.2 release</a> (thanks, Josh!) and allow all the standard String methods to work in Unicode. Watch a <a href='http://www.fngtps.com/2006/10/activesupport-multibyte'>screencast about ActiveSupport::Multibyte here</a>.)&lt;/p&gt;</p>
+<p>So, essentially, to get Unicode being used throughout your app you'll primarily need to make sure that it's being used by a) the database and b) the browser.</p><h2>... to your database ...</h2><p>To tell Rails that you want to use Unicode with your database add the line in config/database.yml:</p><pre>
+ encoding: utf8    # for MySQL
+ encoding: unicode # for PostgreSQL
+</pre><p>For MySQL that's the eqivalent to: <code>SET NAMES utf8</code>. For PostgreSQL it does: <code>SET CLIENT_ENCODING TO unicode</code>. For SQLite you just need to compile Unicode support in.</p><p>Also, you additionally need to configure MySQL itself to use <code>utf8</code> as character set. There are some ways to do this. According to the <a href='http://dev.mysql.com/doc/refman/4.1/en/charset-column.html'>MySQL Manual</a> (see sections 10.3.1 through 10.3.4) you can set the character set at server, database, table and even column level. More specific settings overwrite a more general setting. E.g. you could do:</p><pre>
+CREATE TABLE articles (
+  ... 
+) CHARSET=utf8;
+</pre><p>... which would work. As you're going to use migrations though (you do, don't you?) you need to ensure that MySQL uses utf8 as the <em>default</em> character set for new tables - and you can achieve that by setting the character set at the database or even server level. For the database that's as simple as:</p><pre>
+[CREATE|ALTER] DATABASE db_name 
+	CHARACTER SET utf8
+</pre><p>Also, you'll probably want to pay attention to your collation. The database server's collation defines the way your data is sorted - which may cover all kinds of wired conventions. (For example, see <a href='http://en.wikipedia.org/wiki/Umlaut_(diacritic)#Printing_conventions_in_German'>this section in Wikipedia</a> for some wired variations of sorting conventions regarding German Umlauts). You can set the collation you want to use in one go with the character set. E.g.:</p><pre>
+[CREATE|ALTER] DATABASE db_name 
+	CHARACTER SET utf8 
+	COLLATION utf8_spanish_ci
+</pre><h2>... and to your clients</h2><p>Next make sure that your application's clients (i.e. the user's browser) will decode your output (like HTML ...) correctly. The safest (and standard-compliant) way is to send an appropriate header:</p><pre>
+class ApplicationController &lt; ActionController::Base
+  before_filter :set_charset
+  def set_charset
+      content_type = headers["Content-Type"] || "text/html"
+      if /^text\//.match(content_type)
+        headers["Content-Type"] = "#{content_type}; charset=utf-8"
+      end
+  end
+end
+</pre><p>This will add the Content-Type header to our http response and signalize that we'll be sending Unicode to the client. This also ensures (in modern browsers, that is) that the browser will <em>return</em> stuff encoded as Unicode (e.g. data sent as forms).</p><p>Also, to be nice to Safari add a Content-Type meta tag to your layout templates (such as <code>default.rhtml</code>):</p><pre>
+&lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+</pre><h2>How to select and keep the current user's locale</h2><p>Like you've seen in Part 1 you can set the current locale by using <code>Locale#set</code> (e.g. <code>Locale.set("de-DE")</code>). But how do you know which one to set? There's no one-fits-all answer, it depends. But here are some options you'll probably want to think about.</p><p>To determine the users locale you could:</p><ol>
+	<li>use a locale that's been suggested by the browser (using the <code><a href='http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4'>accept-language</a></code> header)</li>
+	<li>use a locale the users ip address seems to belong to</li>
+	<li>offer (or force) the user to choose a locale manually</li>
+	<li>use a default locale otherwise.</li>
+</ol><p>Once the users current locale is set (be it that you've decided to present a default language or that the user already has chosen the preferred language) you need to persist it throughout her requests somehow. Basically your options are:</p><ul>
+	<li>Keep the locale in the URL as a ...
+		<ul>
+			<li>parameter (like in http://site.com/home?lang=pl)</li>
+			<li>part of the path (like in http://site.com/pl/home)</li>
+			<li>subdomain (like in http://pl.site.com/home) or domain (like in http://site.pl/home)</li>
+		</ul>
+	</li>
+	<li>Store it in the session or a cookie.</li>
+</ul><p>Now, to set your users locale you'd most likely do something like this in your ApplicationController:</p><pre>
+before_filter :set_locale 
+def set_locale 
+  # somehow determine and set the locale 
+  true 
+end 
+</pre><p>For example the following <a href='http://www.textsnippets.com/posts/show/546'>has been suggested</a>:</p><p><em>This code sets the Globalize locale based on the http accept-language header field. Other options are also considered, in order or precedence:</em></p><ul>
+<li><em>Explicetely locale set on URL</em></li>
+<li><em>Previous language selection (stored on user session)</em></li>
+<li><em>Accept-Language field contents</em></li>
+<li><em>Default locale</em></li>
+</ul><pre>
+before_filter :set_locale
+
+def set_locale
+  default_locale = 'en-US'
+  request_language = request.env['HTTP_ACCEPT_LANGUAGE']
+  request_language = request_language.nil? ? nil : 
+    request_language[/[^,;]+/]
+
+  @locale = params[:locale] || session[:locale] ||
+            request_language || default_locale
+  session[:locale] = @locale
+  begin
+    Locale.set @locale
+  rescue
+    Locale.set default_locale
+  end
+end
+</pre><p>Also, you might want to consider to improve this solution by checking the locale against an array of locales that are available in your application, like so:</p><pre>
+locale = LOCALES.join(' ').match params[:locale] || default_locale
+</pre><p>Beware though that using the session for something like this might yield unexpected behaviour (even if it might seem invitingly simple). In usability tests we've often seen users getting confused by this type of solution when they are switching back and forth between multiple browser windows. When a user changes the locale in one window it won't change in the other windows of course - until he does the next click (or refresh). This type of behaviour might (probably depending on the nature of your application) lead to confusion and disorientation of some degree.</p><p>So, all in all you might be better off to avoid usability gotchas like these altogether, resort to a more RESTful approach and encode your locale directly in your URLs. When you're going this route you also might find it useful to redirect the user when no locale parameter is provided. E.g., Szymek suggests in his <a href='http://www.globalize-rails.org/globalize/show/Example+Application'>Globalize example application</a>:</p><pre>
+def set_locale
+  if !params[:locale].nil? &amp;&amp; LOCALES.keys.include?(params[:locale])
+    Locale.set LOCALES[params[:locale]]
+  else
+    redirect_to params.merge('locale' => Locale.base_language.code)
+  end
+end
+</pre><h2>How to localize your templates</h2><p>You're able to translate strings in templates using <code>.t</code>. But how can you localize entire templates?</p><p>Why you'd want to do that? A common example for this requirement is the need for right-handed layouts for languages such as Arabic and Hebrew. It might be sufficient to check <code>Locale.active.language.direction()</code> to conditionally load different style sheets using a before_filter in your ApplicationController in some cases. In other cases this just won't cut it though.</p><p>Globalize therefor looks for localized templates for the current language using the following naming scheme:</p><pre>
+[templatename].[lang].rhtml
+</pre><p>If it does not find a template named like this, the default <code>[templatename].rhtml</code> file will be used.</p><p>Of course this approach is most oftenly less DRY than just using one template for the markup and control the layout of the page through CSS - but that's not always possible.</p><h2>How to translate Rails ActiveRecord messages</h2><p>This is probably one of the most frequent asked questions.</p><p>Joshua Harvey <a href='http://www.mail-archive.com/railsi18n-discussion@rubyforge.org/msg00136.html'>writes</a>: <em>"[...] Globalize was designed to handle this. Globalize automatically tries to translate ActiveRecord validation messages, so if you trigger a validation error, that message should show up in the globalize_translations table and be available for translation."</em></p><p>Sounds cool. Let's have a look at this.</p><p>First let's create a model, e.g.:</p><pre>
+class Page &lt; ActiveRecord::Base  
+  translates :title, :text
+  validates_presence_of :title
+end	
+</pre><p>Now switch over to your script/console terminal and force an error message:</p><pre>
+>> Locale.set "de-DE" # without an active Locale nothing interesting would happen
+>> p = Page.new
+>> p.save!
+ActiveRecord::RecordInvalid: Validation failed: Title can't be blank
+</pre><p>Great, let's check the database:</p><pre>
+>> Translation.find :first, :order => "id DESC"
+=> #&lt;Globalize::ViewTranslation:0x2657ba0 @attributes={..., 
+   "tr_key"=>"Title can't be blank", ..., "language_id"=>"1556", ...}>
+</pre><p>Bingo. Globalize has inserted an empty recordset for the key "Title can't be blank" into the globalize_translations table. The language with the id 1556 is German.</p><p>Joshua writes: <em>"Because Globalize's string substitution isn't quite as sophisticated as we want it to be, it can't translate field names separately from the validation message. This means you have to translate all combinations of field name/validation type. In many apps this isn't that big a problem, but if it is in your case, <a href='http://trac.globalize-rails.org/trac/globalize'>let us know</a>."</em></p><h2>Of course there's more ...</h2><p>In Part 3 of this series we'll have a look at <a href='/articles/2007/01/14/globalize-advanced-features'>Globalize's more advanced features</a> like:</p><ul>
+	<li>Abstracting ViewTranslations (sprintf-like usage)</li>
+	<li>Singular and (multiple) plural ViewTranslations</li>
+	<li>Globalize's Currency class</li>
+	<li>Piggyback translated ActiveRecord associations</li>
+</ul>

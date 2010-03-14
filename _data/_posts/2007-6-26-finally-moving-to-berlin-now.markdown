@@ -1,0 +1,18 @@
+--- 
+layout: post
+title: "Finally: moving to Berlin now"
+---
+<p>Year! I'm in the middle of relocating to Berlin: we're going to pitch our camp <a href="http://maps.google.de/?q=Gr%C3%BCnberger+Stra%C3%9Fe+65,+10245+Friedrichshain,+Berlin&amp;sll=51.124213,10.546875&amp;sspn=8.637385,24.060059&amp;ie=UTF8&amp;om=1&amp;z=16&amp;iwloc=addr">right here</a>.</p>
+
+<p>I've been living in the drop-dead gorgeous <a href="http://de.wikipedia.org/wiki/Wendland">Wendland</a> (Lower Saxony, Germany) for the last 15 years now and I've greatly enjoyed it. But now the time has come that I'm goint to move to a large city again. There's a multitude of (mostly personal) reasons why we chose to move to Berlin, but I'm very excited about the plethora of additional opportunities re: development, design, networking etc. that I'll be able to dive into.</p>
+
+<p>One big event that I'm particulary looking forward to is of course the <a href="http://www.railsconfeurope.com/">RailsConf Europe</a> which is hosted in Berlin this year.</p>
+
+<p>So that's all pretty exciting and thrilling! </p>
+
+<p>If you're ever going to Berlin please drop me a note so we can meet and have a few beers or so. Also, I'm going to <a href="http://www.couchsurfing.com/mapsurf.html?SEARCH[skip]=0&amp;view=detail&amp;sid=d7947da16505dfed4046000f59907a33">offer my couch</a> to nice people like you. So if you don't know where to stay in Berlin, just get in touch.</p>
+
+
+<p>PS: Please forgive me if some of your comments on my blog have been waiting inconveniently long!</p>
+
+<p>PPS: I've already changed my hCard/address on this blog to show my new address in Berlin. Actually, we're going to hit our new domicile on Monday next week. </p>

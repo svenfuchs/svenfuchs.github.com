@@ -1,0 +1,13 @@
+--- 
+layout: post
+title: "Ruby on Rails plugin: Migration custom column types"
+---
+<p>Let's stress it again: Rails' migrations rock. Totally.</p>
+
+<p>But when you want to change a database column to some vendor specific type (like <code>varbinary</code> for MySQL) you notice that Rails doesn't hand over control that easily like it does elsewhere in ActiveRecord: you're not allowed to use any custom type by default.</p>
+
+<p>Fortunately this is easy to change from within a plugin. This one does the trick. You can read more about it in the following article: <a href="http://www.artweb-design.de/2007/4/7/allow-custom-column-types-in-your-rails-migrations">Allow custom column types in your migrations</a></p>
+
+<p>And you can find the code right over here:</p>
+
+<p><a href="http://svn.artweb-design.de/stuff/rails/migration_custom_column_types/">http://svn.artweb-design.de/stuff/rails/migration_custom_column_types/</a></p>

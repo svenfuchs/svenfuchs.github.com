@@ -1,0 +1,10 @@
+--- 
+layout: post
+title: folksr.de is here
+---
+<p>Hey, folksr (my experimatal app for <a href="http://www.artweb-design.de/articles/2006/06/05/distributed-votings-using-microformats">distributed votings</a> using microformats) has now its own domain: <a href="http://folksr.de">folksr.de</a>!</p>
+
+<p>It has been donated by the folks over at <a 
+href="http://www.my-lands.de">My-Lands</a>. We've been talking about it for a while and they are interested in this project.</p>
+
+<p>Thanks!</p>

@@ -1,0 +1,24 @@
+--- 
+layout: post
+title: Howto get PHPUnit2 talk to a browser
+---
+<p>Ok, I admit it took me a while to figure out how to run a PHPUnit2 testcase via http rather than cli on a Windows box.</p>
+
+<p>First thing I needed to understand is that PHPUnit2_Util_Printer::__construct() sets 
+fopen('php://stdout', 'r'); as output stream by default. This won't output anything, 
+so one has to advise the printer to use php://output.</p>
+
+<p>Next thing was that I started the TestRunner by run(). Wrong way ... this instantiated
+a new PHPUnit2_TextUI_TestRunner object and my output stream was send to nirvana.</p>
+
+<p>The following works though:</p>
+<pre>
+$suite = new PHPUnit2_Framework_TestSuite();
+$suite->addTestSuite(new ReflectionClass('MyTestCase'));
+$runner = new PHPUnit2_TextUI_TestRunner();
+$printer = new PHPUnit2_TextUI_ResultPrinter('php://output');
+$runner->setPrinter($printer);
+echo '&lt;pre>';
+$result = $runner->doRun($suite);
+</pre>
+<p>And don't tell me to rtfm. I've found no docs on this. Nothing. I don't think there are any. :(</p>

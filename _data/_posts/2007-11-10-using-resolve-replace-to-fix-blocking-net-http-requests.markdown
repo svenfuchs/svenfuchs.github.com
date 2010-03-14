@@ -1,0 +1,32 @@
+--- 
+layout: post
+title: Using resolve-replace to fix blocking Net::HTTP requests
+---
+After some googling I found that requiring the Ruby Standard Library piece 'resolv-replace' would fix this issue. Just put this line somewhere in your app where it get's loaded at startup:
+
+<pre><code>require 'resolv-replace'</code></pre>
+
+I noticed only later on that my Mongrel is outdated, too, and updated it. (There were three consecutive releases around the end of Okt 07.)
+
+This also seems to fix the same issue. With different results, though. With Mongrel 1.1 things are back to a usable speed and requests aren't blocked any more. But it's still ~22 times faster to use resolv-replace, too:
+
+Requests in my locale Mephisto setup without resolv-replace:
+
+<pre><code>0.061855 milliseconds on average</code></pre>
+
+With resolve-replace: 
+
+<pre><code>0.002755 milliseconds on average</code></pre>
+
+To "benchmark" this I used:
+
+<pre><code>start_time = Time.now
+Net::HTTP.get_response(URI.parse('http://localhost/something.html'))
+puts Time.now - start_time</code></pre>
+
+PS: Now that I started writing this blog post I googled for different keywords and it turns out that no other than <a href="http://shnoo.gr/articles/2005/12/13/resolv-replace" title="Shnoo.gr &raquo; resolv-replace">Joshua Harvey blogged about the very same issue</a> in Dec 2005. Funny, I could just have asked him about it. The world is small, sometimes. :)
+
+
+
+
+

@@ -1,0 +1,11 @@
+<p>I can't understand why I'm being forced to keep the access level of a class's method when I extend it.</p><pre>
+class SomeFactory extends PEAR_Delegator {	
+    protected function __construct() {
+    }	
+    public static function instance() {
+    }
+}
+</pre><p>... would make perfectly sense IVHMO. But it throws ...</p><pre>
+"Fatal error: Access level to ActivePdo_Relation::__construct() 
+must be public (as in class PEAR_Delegator)"
+</pre><p>What's the reasoning behind this?</p><p>That's because I'm "doing something terribly wrong", is it? Not the "php way"? Boy, this sucks.</p>

@@ -1,0 +1,57 @@
+--- 
+layout: post
+title: "First lessons learned: feedback about folksr"
+---
+<h2>Visible trackback links/URLs</h2>
+
+<p>Huh! I've totally missed that there are several blogging engines out there 
+that require the user to <em>manually enter</em> trackback URLs. I'm that used 
+to this RDF autodiscovery stuff that this simply hadn't occured to me.</p>
+
+<p>I'll add the trackback URL in a visible form to the voteoption details 
+pages of course.</p>
+
+<h2>Ping webbugs</h2>
+
+<p>Using the webbug to send a "digg this!" signal the application works but it
+seems to be a bit contra-intuitive and probably unreliable approach.  
+Especially there's no way to provide feedback to the user like displaying a 
+success or error message. When something goes wrong, I folksr can not inform 
+the user about the problem or even suppose to change anything.</p>
+
+<p>This makes me think I should definitely add a "digg this URL" form to the
+application.</p>
+
+<p>I first thought that the webbug way is far better in terms of usability
+because I can theoretically provide a working HTML snippet which includes the
+webbug and just needs to be pastet into some statical webpage. When this works
+it's <em>two</em> steps (get the snippet, publish it) to get a vote in. Using
+an additional "digg me" form would require the user to understand and
+undertake <em>three</em> steps.</p>
+
+<p>I think both approaches aren't mutually exclusive. So I'll add that form to
+the existing behaviour next. But I'm not quite sure if the webbug approach can 
+be made reliable at all in the end.</p>
+
+<h2>Identity</h2>
+
+<p>I'm wondering what the best approach could be to restrict unique votes from
+being pulled from different URLs. Blogs often display the same article with
+different URLs (e.g. once on the blog's index page, the article's details
+page, probably in the archives, categories, tags, ...).</p>
+
+<p>Without further any measurements the same voteFor link would thus be found 
+and counted multiple times. Although this is mostly problematic with the 
+webbug approach and not so with the trackback mechanism of course.</p>
+
+<p>Probably it's a good idea to allow the "owner" of a voting to require users 
+to somehow add a <a href="http://microid.org">microID</a> for the URL that 
+contains the vote?</p>
+
+<h2>Usability</h2>
+
+<p>Copying a link is not the easiest thing to do.</p>
+
+<p>I've been watching somebody copying the link and pasting it directly into 
+one of those HTML Wysiwyg textarea replacments. Of course what he really 
+wanted is to paste it into the source-area of this tool.</p>

@@ -1,0 +1,15 @@
+<p>After some googling I found that requiring the Ruby Standard Library piece &#8216;resolv-replace&#8217; would fix this issue. Just put this line somewhere in your app where it get&#8217;s loaded at startup:</p>
+<pre><code>require 'resolv-replace'</code></pre>
+<p>I noticed only later on that my Mongrel is outdated, too, and updated it. (There were three consecutive releases around the end of Okt 07.)</p>
+
+<p>This also seems to fix the same issue. With different results, though. With Mongrel 1.1 things are back to a usable speed and requests aren&#8217;t blocked any more. But it&#8217;s still ~22 times faster to use resolv-replace, too:</p>
+
+<p>Requests in my locale Mephisto setup without resolv-replace:</p>
+<pre><code>0.061855 milliseconds on average</code></pre>
+<p>With resolve-replace:</p>
+<pre><code>0.002755 milliseconds on average</code></pre>
+<p>To &#8220;benchmark&#8221; this I used:</p>
+<pre><code>start_time = Time.now
+Net::HTTP.get_response(URI.parse('http://localhost/something.html'))
+puts Time.now - start_time</code></pre>
+<p>PS: Now that I started writing this blog post I googled for different keywords and it turns out that no other than <a href='http://shnoo.gr/articles/2005/12/13/resolv-replace' title='Shnoo.gr &raquo; resolv-replace'>Joshua Harvey blogged about the very same issue</a> in Dec 2005. Funny, I could just have asked him about it. The world is small, sometimes. :)</p>

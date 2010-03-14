@@ -1,0 +1,38 @@
+--- 
+layout: post
+title: How to use the Bundled assets plugin with Rails' built-in tag helpers
+---
+<p>As Nick explains all you have to do to get this working is: use a slightly different route in your routes.rb than I've told you to do in my original article. Nick changed the route to:</p>
+
+<pre><code>
+map.connect ":asset_dir/:names.:ext",
+            :controller => "assets_bundle",
+            :action => "fetch",
+            :asset_dir => /(stylesheets|javascripts)/,
+            :ext => /(css|js)/,
+            :names => /[^.]*/
+</code></pre>
+
+<p>Obviously this routes a request to an URL like <code>/stylesheets/main,content,forms.css</code> to the <code>AssetsBundleController#fetch</code> action ... while it preserves the stylesheets and javascripts directories - and that's where the built-in Rails helpers point by default.</p>
+
+<p>This way, you now can use these neat, little helpers like so:</p>
+
+<pre><code>
+&lt;%= stylesheet_link_tag 'main,content,forms' %>
+&lt;%= javascript_include_tag 'common,forms' %>
+</code></pre>
+	
+<p>... without bothering about any further details like HTML attributes that might be necessary here (and that I personally have to look up every time).</p>
+
+<p>So, that's pretty cool. Thanks Nick! :-)</p>
+
+<p>PS:</p>
+
+<p>The same thing, but using Liquid template tags, would be:</p>
+
+<pre><code>
+{{ 'main,content,forms' | stylesheet }}
+{{ 'common,forms' | javascript }}	
+</code></pre>
+
+<p>Nice, too. Eh?</p>

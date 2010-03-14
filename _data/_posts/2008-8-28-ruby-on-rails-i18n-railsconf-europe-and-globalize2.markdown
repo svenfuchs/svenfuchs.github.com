@@ -1,0 +1,43 @@
+--- 
+layout: post
+title: Ruby on Rails I18n, RailsConf Europe and Globalize2
+---
+<h2>RailsConf Europe talk: "The future of I18n in Ruby on Rails"</h2>
+
+<a href="http://www.railsconfeurope.com" style="float: right; margin: 0px 0px 10px 20px; border-width: 0px;"><img src="http://assets.en.oreilly.com/1/event/13/railseurope2008_spk_125x125.gif" width="125" height="125" border="0" alt="RailsConf Europe 2008" title="RailsConf Europe 2008" /></a>
+
+<p>I'll be giving a talk about "<a href="http://en.oreilly.com/railseurope2008/public/schedule/detail/3569" title="The Future of I18n/L10n in Ruby on Rails: RailsConf Europe 2008 - O'Reilly Conferences, 02 September - 04, 2008, Berlin, Germany">The future of I18n in Ruby on Rails</a>" on <a href="http://en.oreilly.com/railseurope2008/public/content/home" title="RailsConf Europe 2008 - O'Reilly Conferences, 02 September - 04, 2008, Berlin, Germany">RailsConf Europe</a> next week together with <a href="www.workingwithrails.com/person/10731-marko-sepp">Marko Seppä</a>.</p>
+
+<p>Am I excited about it? You bet! Will that be an interesting talk for everyone involved into Rails I18n? Of course, I'm sure :)</p>
+
+<p>Also, there are some plans to also work on I18n/Rails during the Code Community Drive but I'm not sure what the status of this is right now.</p>
+
+<p>I'm personally planning to take care of another project in the same context already: <a href="http://adva-cms.org/" title="adva cms">adva-cms</a>. So I might not be able to put a great amount of effort into preparing a I18n/Rails workshop here. I'd be absolutely happy to help with it though, of course, if somebody wanted to jump at it.</p>
+
+<p>So, if you're going to go to RailsConf Eu next week and are interested in these things be sure to drop me a note and/or catch me at <a href="http://www.bratwurst-on-rails.com/" title="Bratwurst On Rails - A Pre-RailsConf Europe Socializing Event">Bratwurst on Rails</a> (that's the awesome socializing event the evening before the actual RailsConf.)</p>
+
+<h2>Changes to the I18n gem library</h2>
+
+<p>Since the I18n API and the integration to Rails got merged back to Rails edge we've receive quite a lot of feedback from people trying the I18n API and Simple backend. This resulted in that a few things have been changed. E.g.:</p>
+
+<ul>
+  <li>The Simple backend is now a class. This makes it more easy to reuse its features and only overwrite a certain method (like, e.g., for more flexible pluralization).</li>
+  <li>Pluralization data is now expected to be provided as a Hash using keys such as :one, :few, :many, :zero, :other like defined by <a href="http://www.unicode.org/cldr/data/charts/supplemental/language_plural_rules.html" title="Language Plural Rules">CLDR</a>.</li>
+  <li>A method #load_translations has been added that takes a source for translation data (such as yml and rb files) and loads translations from there.</li>
+  <li>The scopes for translations provided by Rails have been cleaned up to be more consistent.</li>
+  <li>The code should work with Ruby 1.9 now.</li>
+</ul>
+
+<h2>Globalize2 under heavy development</h2>
+
+<p>A couple of weeks ago <a href="http://www.workingwithrails.com/person/759-joshua-harvey" title="Ruby on Rails developer: Joshua Harvey from Israel, Tel Aviv">Joshua Harvey</a>, <a href="http://workingwithrails.com/person/10731-marko-sepp" title="Ruby on Rails developer: Marko Seppä from Germany, Berlin">Marko Seppä</a> and I have started implementing <a href="http://github.com/joshmh/globalize2" title="joshmh's globalize2 at master &mdash; GitHub">Globalize2</a> which turns out to be an extremely interesting project because with the new I18n foundation it now looks completely different, very slick and nice.</p>
+
+<p>As far as we can tell right now Globalize2 will be much more of a toolbox of small tools where you can pick what you need. ActiveRecord translations will be solved unobtrusively. We'll support a good part of <a href="http://www.ietf.org/rfc/rfc4646.txt" title="">RFC4646</a>/<a href="http://www.ietf.org/rfc/rfc4647.txt" title="">47</a> compliance for Locales and use localization data for formats etc. from <a href="http://www.unicode.org/cldr/" title="Unicode CLDR Project">CLDR</a> which is quite a big thing, in my opinion.</p>
+
+<h2>We now have a website at rails-i18n.org</h2>
+
+<p>You probably already found it because I've been throwing the link around everywhere lately but it might still be worth mentioning that we now have a website at <a href="http://rails-i18n.org" title="Rails I18n">http://rails-i18n.org</a> which is, obviously, dedicated to I18n on and for Ruby on Rails. Right now we're basically collecting resources on the Wiki and I hope to post some news to the blog every once in a while.</p>
+
+<p>If you're interested to publish any I18n-related blog posts over there - just let me know.</p>
+
+<p>Btw <a href="http://rails-i18n.org" title="Rails I18n">http://rails-i18n.org</a> is, of course, also driven by <a href="http://adva-cms.org/" title="adva cms">adva-cms</a> which is the CMS project I've been working on for the last couple of months. Check it out!</p>

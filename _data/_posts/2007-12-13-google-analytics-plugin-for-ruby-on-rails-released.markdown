@@ -1,0 +1,13 @@
+--- 
+layout: post
+title: Google Analytics plugin for Ruby on Rails released
+---
+<p>I've just released a first version of the Google Analytics plugin for Ruby on Rails that I've done in the course of the <a href="2007/11/25/mephisto-plugin-full-archives-listing-plus-an-irresistable-offer">offer to build</a>  custom plugins for Mephisto users.</p>
+
+<p>You can grab the plugin and read more about it here: <a href="http://www.artweb-design.de/projects/ruby-on-rails-plugin-google-analytics" title="Ruby on Rails Plugin: Google Analytics - artweb design">Ruby on Rails Plugin: Google Analytics (blue egg edition)</a></p>
+
+<p><a href="http://iudaea.com/" title="iudaea by Eran Ben Sabat">Eran Ben Sabat</a> was the first to contact me about this offer and suggested that I could write a Google Analytics plugin which he was interested in. </p>
+
+<p>By now there's <a href="http://groups.google.com/group/MephistoBlog/browse_thread/thread/44fc301e060e29cb" title="How to implement user generated content - a webdesign gallery">another interesting request</a> by <a href="http://www.thilothamm.de/" title="Screendesign, Webdesign &amp; Wordpress Blogdesign in Leipzig » Thilo Thamm, Mediengestalter">Thilo Thamm</a> who asked for a plugin for allowing users to add blog posts. This sounds like another great idea for a useful plugin and I plan to tackle this one next.</p>
+
+<p>I was totally thrilled how much fun it was to work with both <a href="http://latherrinserepeat.org/articles">Liz</a> and <a href="http://iudaea.com/" title="iudaea by Eran Ben Sabat">Eran Ben Sabat</a> on their plugins. So my <a href="/2007/11/25/mephisto-plugin-full-archives-listing-plus-an-irresistable-offer">offer</a> still stands. If you have an idea for a nice plugin, don't hesitate to <a href="http://www.artweb-design.de/svenfuchs" title="Sven Fuchs">drop me a note</a>.</p>

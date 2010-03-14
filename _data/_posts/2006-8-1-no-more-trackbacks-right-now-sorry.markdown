@@ -1,0 +1,7 @@
+--- 
+layout: post
+title: No more trackbacks, right now. Sorry.
+---
+<p>I've just killed around 750 trackbacks - none of them hasn't been spam.</p>
+<p>Sigh. Ok, so I've deactivated trackbacks for all articles. UPDATE content SET allow_ping = 0.</p>
+<p>Too bad.</p>

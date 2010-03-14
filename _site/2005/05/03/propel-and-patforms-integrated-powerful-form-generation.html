@@ -1,0 +1,46 @@
+<h2>5 steps to heaven</h2><p>Let's have a look at what these both tools can do for you when they join forces.</p><ol style='padding-left:19px;'>
+<li>You simply throw a Propel class(name) into a <b>patForms_Definition_Propel</b>. This will look up information that's necessary to build a form and write it to a form definition xml file on the fly.</li>
+
+<li>Once created you can <b>tweak the form definition xml file</b> according to your needs. For example you might want to rename labels, descriptions or display different values from related tables (linked by foreign keys).</li>
+
+<li>But you don't <i>need</i> to tweak anything. Yet, handing this definition over to a <b>patForms_Creator_Definition</b> will create a complete and working patForms instance - full fledged with validation rules (both client- and server-side) and Html select boxes populated from related tables (via foreign keys).</li>
+
+<li>This patForms instance is able to connect to a <b>patForms_Storage_Propel</b>, that will (at present) look at the $_POST and $_GET vars and automagically retrieve, validate and save objects for you, populating the form from the object or - vice versa - populating the object from the form values.</li>
+
+<li>You can now render the patForms instance by using one of the provided patForms_Renderers and display the form elements and data using a <b>template engine of your choice</b>.</li>
+</ol><p>You're done.</p><p>New data has been validated before it has been saved to the database. If a validation error has occured, the error will be displayed by your form template and nothing has gone to the database. Existing objects have been fetched from the database, have been validated and updated.</p><p>Yes, life can be that easy :)</p><p>To say the least: we are really impressed about how <b>seamlessly</b> everything in Propel and patForms (both being great projects for themselves) fits together with only some minor changes to both of them. The good design pays out on both sides, keeping the libraries flexible and extensible.</p><h2>7 lines of code</h2><p>Wanna see some code? Ok, let's do it together ...</p><p>By now, it takes less than 10 lines of code to create a working <b>"Add a new book"</b> form for the bookstore example application shipped with Propel:</p><pre>
+$definition = patForms_Definition_Propel::create(array(
+   'name' => 'book', 'filename' => $filename));
+$storage = patForms::createStorage('Propel');
+$storage->setStorageLocation('BookPeer');
+$form = &patForms::createCreator('Definition')->create($definition);
+$form->setRenderer(patForms::createRenderer('Array'));
+$form->setStorage($storage);
+</pre><p>The result will look like this:</p><p><img src='/images/blog/posts/propel_patForms_1.gif' alt='screenshot 1' /></p><p>As you can see, there are two <b>related tables</b> (foreign keys) defined for the Propel Book entity: Author and Publisher, both referenced by ID. For each of them a Select box is created and <b>already populated</b> with the IDs available from those tables.</p><p><img src='/images/blog/posts/propel_patForms_2.gif' alt='screenshot 2' /></p><h2>Some very little changes</h2><p>Of cause, we'll want to show something different than these IDs here. So, we'll <b>tweak the form definition</b> xml file, that's already been created on-the-fly.</p><p>For the AuthorId, we'll change the lines</p><pre>
+&lt;members>
+  &lt;tag>Id&lt;/tag>
+&lt;/members>
+&lt;mask>%s&lt;/mask>
+</pre>
+<p>to something like this:</p>
+<pre>
+&lt;members>
+  &lt;tag>FirstName&lt;/tag>
+  &lt;tag>LastName&lt;/tag>
+&lt;/members>
+&lt;mask>%s (%s)&lt;/mask>
+</pre><p>And (after having additionally changed some labels and titles) we'll get:</p><p><img src='/images/blog/posts/propel_patForms_3.gif' alt='screenshot 3' /></p><h2>Save new and edit existing</h2><p>When we fill in some valid form data and click the "Save Form" button, the data gets already <b>saved to the database</b> table. (This will be painlessly done by a patForms_Storage_Propel driver by simply registering it to the form.)</p><p>By the way ... want an "Edit an existing book" form instead?</p><p>Just add <b>one single line</b> before rendering the form to the template:</p><pre>
+$form->setValues(array('Id' => 1)); // the primary key
+</pre><p>This will display the Book with the ID 1 and we will already be able to edit existing data and save it back to the database:</p><p><img src='/images/blog/posts/propel_patForms_4.gif' alt='screenshot 4' /></p><h2>Even shorter?</h2><p>It's no big deal to further imagine a <b>patForms_Factory::create()</b> method, that could be called by something like this:</p><pre>
+$form = patForms_Factory::create(array(
+	'type' => 'Propel',
+	'class' => 'Book',
+	'renderer' => 'Array',
+	'primary' => array('Id', 1)
+));
+</pre><p>One call for a complete and full-fledged, auto-validated form that's defined by <i>the database scheme</i> and some very simple additional changes in an xml file.</p><p><b>Hey, don't say that's not really cool :)</b></p><h2>Go and play with it ...</h2><p>You will need working installations of:</p><ul>
+<li>Propel: <span style='text-decoration:line-through'><a href='http://propel.phpdb.org'>http://propel.phpdb.org</a></span> [edit: Please use the latest <a href='http://svn.phpdb.org/propel/'>SVN version of Propel</a> since we are using Propel enhancements that aren't in the current release yet.]</li>
+<li>patForms <span style='text-decoration:line-through'><a href='http://www.php-tools.net/site.php?file=patForms'>http://www.php-tools.net/site.php?file=patForms</a></span> [edit: Please use the latest <a href='http://www.php-tools.net/svn/patForms/trunk'>SVN version of patForms</a></li>
+<li>patTemplate <a href='http://www.php-tools.net/site.php?file=patTemplate'>http://www.php-tools.net/site.php?file=patTemplate</a></li>
+<li>Xml_Serializer <a href='http://pear.php.net/package/XML_Serializer'>http://pear.php.net/package/XML_Serializer</a></li>
+</ul><p>... as well as a build version of the Propel Bookstore project (tested with mysql). Have a look at the Propel docs to get started with the Bookstore build.</p><h2>But don't use it!</h2><p>Ok. :)</p><p>This is a <b>proof of concept</b>. There are several flaws and missing stuff, things to be discussed and solved. And yes: patForms itself is considered to be in alpha ...</p><p>But with some extra work here and there these both tools will make up a really great team that can help you to get started <b>very fast</b> with a working prototype for your data(base)-driven web application.</p><h2>Feedback?</h2><p>Do you like this? <a href='http://digg.com/programming/Propel_and_patForms_integrated:_powerful_form_generation' style='font-weight: bold;'>Then please digg it</a>!</p>

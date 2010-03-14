@@ -1,0 +1,22 @@
+--- 
+layout: post
+title: Disable Globalize::ViewTranslation SQL logging
+---
+<pre><code>module Globalize # :nodoc:
+ class DbViewTranslator
+   alias_method :orig_fetch_view_translation, :fetch_view_translation
+   def fetch_view_translation(key, language, idx, namespace = nil)
+     ActiveRecord::Base.silence do
+       orig_fetch_view_translation(key, language, idx, namespace = nil)
+     end
+   end
+ end
+end</code></pre>
+
+<p>Obviously, this wraps around the Globalize's <code>fetch_view_translation</code> method and uses <code>ActiveRecord::Base#silence</code> to prevent ActiveRecord from logging the query.</p>
+
+<p>That’s handy. I've added this to the <a href="http://www.artweb-design.de/2007/5/18/globalize-rails-advanced-techniques-tips-tricks" title="Advanced techniques, tips and tricks - Get on Rails with Globalize! Part 5 of 8 - artweb design">Tips &amp; tricks installment</a> of the <a href="http://www.artweb-design.de/2006/11/10/get-on-rails-with-globalize-comprehensive-writeup" title="Get on Rails with Globalize: a comprehensive writeup in 8 parts - artweb design">Globalize series</a>.</p>
+
+<p>Thanks, Joost!</p>
+
+<p>PS: ... wow, let me guess, is there a Globalize installation using subdomains for locales peeking from behind the curtains of <a href="http://www.yelloyello.com/nl" title="YelloYello, speak up!">YellowYellow</a>?</p>

@@ -1,0 +1,109 @@
+--- 
+layout: post
+title: Using a self join to select the rows with the maxium values per group
+---
+<p>Of course there's more in these tables but here are the relevant 
+columns:</p>
+
+<pre>
+CREATE TABLE article (
+  id int(10) auto_increment,
+  location_id int(10),
+  modified timestamp
+)
+CREATE TABLE location (
+  id int(10) auto_increment,
+  type varchar(10)
+)
+</pre>
+
+<p>Now, I'd like to select all article rows with the newest modified timestamp
+per blog and sort the results by the modified value. Also I want to exclude
+just some of the blogs which I already know by their primary key id.</p>
+
+<p>Simple, isn't it? I was *sure* that it's possible to just add a GROUP BY
+clause on the articles location_id, sort them by modified and that's it.  The
+exclusion of the blogs would be done by a simple, implicit JOIN.</p>
+
+<pre>
+SELECT article.*
+FROM articles, location
+WHERE location.id NOT IN (1)
+GROUP BY article.location_id
+ORDER BY article.modified
+</pre>
+
+<p>But I got wrong results. I set up two tables with test data because at
+thought, I'd probably expect the wrong results. I threw 4 articles in the
+articles table and 3 blogs in the locations table. I.e. one blog had two
+articles, two blogs had one article.</p>
+
+<p>Again, I got the wrong results. The query above selected the *older* 
+article from the both belonging to the same blog, instead of the newer one.  
+Both of the other articles where present in the results.</p>
+
+<p>What the heck is going on here?</p>
+
+<p>Obviously the ORDER statement applies to the selection *after* the GROUP
+clause has been applied to the data. Because in the "natural order" of MySQL
+ISAM Tables older rows will oftenly (not always) be selected first, the GROUP
+clause first selects the older article row and *then* sorts all selected
+rows.</p>
+
+<p>That's been kind of new to me. I've always thought it works the other ways
+around. I asked Google about "group by order by mysql" but found nothing
+particular illuminating about this.</p>
+
+<p>After some time of playing around with this, looking for alternatives and
+doing a considerable amount of trial-and-error variations ... I've yet found
+nothing and already prepared to throw that stuff aside, go ahead and do an
+expensive</p>
+
+<pre>
+CREATE TEMPORARY TABLE tmp ... TYPE = HEAP
+SELECT INTO tmp ...
+SELECT FROM tmp ...
+</pre>
+
+<p>thing which I wouldn't like.</p>
+
+<p>More or less by accident I found this page in the (not-really-that-concise)
+<a 
+href="http://dev.mysql.com/doc/refman/4.1/en/example-maximum-column-group-row.html">MySQL 
+3.0/4.0 manual</a></p>
+
+<p>The docs themselve tell you that something like this is only possible with
+subselects which the database doesn't support (MySQL 4.0).</p>
+
+<p>But hidden in the user comments there's this helpful tip from Csaba 
+Gabor:</p>
+
+<p>"To find the most recent entry (the entry with the highest Id) for each 
+Item, where the Item does not currently have a Deleted status, we could 
+use:"</p>
+
+<pre>
+SELECT t1.*
+FROM Tracker AS t1 LEFT JOIN Tracker AS t2
+ON t1.Item=t2.Item AND t1.Id &lt; t2.Id
+WHERE t2.Id IS NULL AND t1.Status!='Deleted'
+</pre>
+
+<p>... which set me on track again.</p>
+
+<p>After some tweaking around, I found this one to be working in my case:</p>
+
+<pre>
+SELECT DISTINCT article.*
+FROM article, location as l
+LEFT JOIN article AS a2
+ON article.locationID = a2.locationID
+  AND article.modified &lt; a2.modified
+  AND article.locationID = l.id
+WHERE a2.modified IS NULL
+  AND article.locationID = l.id
+  AND l.type = 'blog'
+  AND l.parentID NOT IN (1)
+</pre>
+
+<p>Now, I'll have to annihilate some pizzas and revel :)</p>
