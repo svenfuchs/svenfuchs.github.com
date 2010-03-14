@@ -1,19 +1,19 @@
 $: << File.dirname(__FILE__)
 
 require 'jekyll'
-require 'helpers/aop'
-require 'helpers/archive'
+require 'lib/aop'
+require 'lib/archive'
 
 options = {
   "permalink"   => "date", 
   "maruku"      => { "png_dir" => "images/latex", "png_engine" => "blahtex", "png_url" => "/images/latex", "use_divs" => false, "use_tex" => false },
   "lsi"         => false, 
-  "destination" => "./_site", 
+  "destination" => File.expand_path('../..', __FILE__), 
   "markdown"    => "maruku", 
   "pygments"    => true, 
   "server"      => true, 
   "auto"        => false, 
-  "source"      => "./_data", 
+  "source"      => File.expand_path('../../_data', __FILE__), 
   "server_port" => 4000
 }
 
