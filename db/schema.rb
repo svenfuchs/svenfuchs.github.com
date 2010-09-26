@@ -10,9 +10,14 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100415000003) do
+ActiveRecord::Schema.define(:version => 20100904224918) do
 
   create_table "accounts", :force => true do |t|
+  end
+
+  create_table "cache_taggings", :force => true do |t|
+    t.string "url"
+    t.string "tag"
   end
 
   create_table "contents", :force => true do |t|

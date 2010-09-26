@@ -1,28 +1,33 @@
-<h1>Sven Fuchs</h1>
-<ul id="contact"> 
-  <li><a href="http://github.com/svenfuchs">http://github.com/svenfuchs</a></li> 
-  <li><a href="http://twitter.com/svenfuchs">http://twitter.com/svenfuchs</a></li> 
-  <li><a href="http://railsrankings.com/coders/sven-fuchs">http://railsrankings.com/coders/sven-fuchs</a></li> 
-  <li><a href="http://workingwithrails.com/person/9963-sven-fuchs">http://workingwithrails.com/person/9963-sven-fuchs</a></li> 
-  <li><a href="mailto:svenfuchs@artweb-design.de">svenfuchs@artweb-design.de</a></li> 
-  <li><a href="irc://irc.freenode.net">svenfuchs on irc.freenode.net</a></li>
-</ul>
+<div id="page">
+  <div id="content">
+    <h1>Sven Fuchs</h1>
+    <ul id="contact">
+      <li><a href="http://github.com/svenfuchs">http://github.com/svenfuchs</a></li>
+      <li><a href="http://twitter.com/svenfuchs">http://twitter.com/svenfuchs</a></li>
+      <li><a href="http://railsrankings.com/coders/sven-fuchs">http://railsrankings.com/coders/sven-fuchs</a></li>
+      <li><a href="http://workingwithrails.com/person/9963-sven-fuchs">http://workingwithrails.com/person/9963-sven-fuchs</a></li>
+      <li><a href="mailto:svenfuchs@artweb-design.de">svenfuchs@artweb-design.de</a></li>
+      <li><a href="irc://irc.freenode.net">svenfuchs on irc.freenode.net</a></li>
+    </ul>
 
-<h2>Recent Posts</h2>
-<ul class="posts">
-  <% resource.posts.limit(15).each do |post| %>
-    <li class="hentry">
-      <%= link_to(post.title, [resource, post], :class => "entry-title", :rel => "bookmark") %>
-      <abbr title="<%= post.created_at %>" class="updated">
-        <%=l(post.created_at, :format => :post) %>
-      </abbr>
-      <span class="entry-content">
-        <%= truncate(strip_tags(post.body), :length => 500).html_safe %>
-      </span>
-    </li>
-  <% end %>
-</ul>
-<p><%= link_to('Older posts', 'archive.html') %> &rarr;</p>
+    <h2>Recent Posts</h2>
+    <ul class="posts">
+      <% resource.posts[0,15].each do |post| %>
+        <li class="hentry">
+          <%= link_to(post.title, [resource, post], :class => "entry-title", :rel => "bookmark") %>
+          <abbr title="<%= post.created_at %>" class="updated">
+            <%=l(post.created_at, :format => :post) %>
+          </abbr>
+          <span class="entry-content">
+            <%= truncate(strip_tags(post.body), :length => 500).html_safe %>
+          </span>
+        </li>
+      <% end %>
+    </ul>
+    <p><%= link_to('Older posts', 'archive.html') %> &rarr;</p>
+  </div>
+  <div class="push"></div>
+</div>
 
 <div id="footer">
   <address class="vcard">

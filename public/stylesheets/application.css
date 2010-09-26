@@ -1,12 +1,30 @@
-body {
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  margin: 2em;
   line-height: 1.5em;
+}
+#page {
+  min-height: 100%;
+  padding: 0 2em;
+}
+h1 {
+  margin: 0;
+  padding-top: 12px;
+}
+#content {
+  width: 100%;
+  padding: 18px 0 49px 0;
+}
+p {
+  margin-top: 1em;
 }
 h1 {
   line-height: 1.3em;
 }
 pre {
+  margin-top: 1em;
   padding: 1em 1.5em;
   line-height: 1.5em;
   border: 1px solid #aaa;
@@ -19,23 +37,20 @@ p > code, div > code {
   padding: 0px 0.2em;
 }
 ul {
-	list-style: none;
-	margin-left: 0;
-	padding-left: 1.5em;
-	text-indent: -1.4em;
+  list-style: none;
+  padding-left: 0;
+  margin-left: 0;
 }
 hr {
-  margin: 2em 0;
   height: 1px;
   border: 0;
-  color: #aaa;
-  background-color: #aaa;
+  background-color: #ccc;
 }
-
-#page li:before, #post li:before {
-  content: "▪  ";
+#post ul {
+  list-style-type: square;
+  padding-left: 1em;
+  margin-left: 1em;
 }
-
 .hentry .entry-content {
   display: none;
 }
@@ -43,20 +58,22 @@ hr {
   font-size: 0.8em;
   color: #999;
 }
-
 #footer {
-  margin: 2em -2em -2em -2em;
-  padding: 0.8em 2em 0.8em 2em;
+  height: 24px;
+  margin: -49px auto 0;
+  overflow: hidden;
+  padding: 12px 2em;
   background-color: #eee;
   border-top: 1px solid #aaa;
-  height: 1.5em;
   color: #666;
 }
 #footer .right {
   float: right;
+  margin-left: 3em;
 }
 #footer address {
   float: left;
+  margin-right: 3em;
 }
 address, #footer a {
   font-size: 12px;
@@ -68,7 +85,7 @@ address .email, address .url {
 .hcard-download {
   background: transparent url(/images/hcard.mini.png) no-repeat scroll left 1px;
   margin-left: 2px;
-  padding-left: 15px;  
+  padding-left: 15px;
 }
 .feed {
   background: transparent url(/images/feed.mini.png) no-repeat scroll left 5px;

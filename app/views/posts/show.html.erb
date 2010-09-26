@@ -1,6 +1,10 @@
-<p><%= link_to "&larr; Home".html_safe, '/' %></p>
+<div id="page">
+  <div id="content">
+    <p><%= link_to "&larr; Home".html_safe, '/' %></p>
 
-<div id="post">
-  <%= content_tag :h1, resource.title %>
-  <%= resource.body.html_safe %>
+    <div id="post">
+      <%= content_tag :h1, resource.title %>
+      <%= resource.body.html_safe %>
+    </div>
+  </div>
 </div>
