@@ -1,0 +1,76 @@
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  margin: 2em;
+  line-height: 1.5em;
+}
+h1 {
+  line-height: 1.3em;
+}
+pre {
+  padding: 1em 1.5em;
+  line-height: 1.5em;
+  border: 1px solid #aaa;
+  background: #f6f6f6;
+}
+p > code, div > code {
+  background-color: #f8f8ff;
+  border: 1px solid #dedede;
+  color: #333;
+  padding: 0px 0.2em;
+}
+ul {
+	list-style: none;
+	margin-left: 0;
+	padding-left: 1.5em;
+	text-indent: -1.4em;
+}
+hr {
+  margin: 2em 0;
+  height: 1px;
+  border: 0;
+  color: #aaa;
+  background-color: #aaa;
+}
+
+#page li:before, #post li:before {
+  content: "▪  ";
+}
+
+.hentry .entry-content {
+  display: none;
+}
+.updated {
+  font-size: 0.8em;
+  color: #999;
+}
+
+#footer {
+  margin: 2em -2em -2em -2em;
+  padding: 0.8em 2em 0.8em 2em;
+  background-color: #eee;
+  border-top: 1px solid #aaa;
+  height: 1.5em;
+  color: #666;
+}
+#footer .right {
+  float: right;
+}
+#footer address {
+  float: left;
+}
+address, #footer a {
+  font-size: 12px;
+  font-style: normal;
+}
+address .email, address .url {
+  display: none;
+}
+.hcard-download {
+  background: transparent url(/images/hcard.mini.png) no-repeat scroll left 1px;
+  margin-left: 2px;
+  padding-left: 15px;  
+}
+.feed {
+  background: transparent url(/images/feed.mini.png) no-repeat scroll left 5px;
+  padding-left: 20px;
+}

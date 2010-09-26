@@ -1,0 +1,4 @@
+en:
+  time:
+    formats:
+      post: "%B %Y"

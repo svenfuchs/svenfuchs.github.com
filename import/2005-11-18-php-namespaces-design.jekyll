@@ -1,0 +1,17 @@
+--- 
+title: php namespaces design
+---
+<p><img src="http://pics.artweb-design.de/phpnamespaces/screen.gif" width="450"></p>
+
+<p>I've to admit that it's not that much creative. But I think it does it's job and gives the
+site a more php'ish and modern look.</p>
+
+<p>I proposed three variations - colorwise. The blue one was clearly preferred by the folks on the Propel mailinglist so I chose that one.</p>
+
+<p>Here they are:</p>
+
+<p><img src="http://pics.artweb-design.de/phpnamespaces/blue.png"  width="450" style="border: 1px solid #e0e0e0"></p>
+
+<p><img src="http://pics.artweb-design.de/phpnamespaces/orange.png"  width="450" style="border: 1px solid #e0e0e0"></p>
+
+<p><img src="http://pics.artweb-design.de/phpnamespaces/gray.png"  width="450" style="border: 1px solid #e0e0e0"></p>

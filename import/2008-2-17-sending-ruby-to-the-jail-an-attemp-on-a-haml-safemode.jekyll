@@ -1,0 +1,44 @@
+--- 
+title: "Sending Ruby to the jail: an attemp on a Haml Safemode"
+---
+<p>Find the code here: <a href="http://svn.artweb-design.de/stuff/rails/haml_safemode">http://svn.artweb-design.de/stuff/rails/haml_safemode</a>.</p>
+
+<h2>So how does this work?</h2>
+
+<p>Basically I've switched to an approach where the "precompiled" Ruby code from a Haml template gets <a href="http://svn.artweb-design.de/stuff/rails/haml_safemode/lib/haml/safemode/parser.rb" title="">parsed</a> (using <a href="http://www.zenspider.com/ZSS/Products/ParseTree/" title="ParseTree">ParseTree</a> and <a href="https://rubyforge.org/forum/forum.php?forum_id=9485">Ruby2Ruby</a>) and all method calls get "jailed" with only whitelisted methods allowed (think: Rails blankslate plus methods access control).</p>
+
+<p>For example the code:</p>
+
+<pre><code class="ruby">@article.title.upcase</code></pre>
+
+<p>in a Haml template would be converted to this:</p>
+
+<pre><code class="ruby">@article.to_jail.title.to_jail.upcase</code></pre>
+
+<p>The method <code>to_jail</code> wraps the returned objects into <a href="http://svn.artweb-design.de/stuff/rails/haml_safemode/lib/haml/safemode/jail.rb" title="">Jail</a> instances which are proxy objects with almost all <a href="http://svn.artweb-design.de/stuff/rails/haml_safemode/lib/haml/safemode/blankslate.rb" title="">methods removed</a>. These proxies allow access only to whitelisted methods and raise an exception if someone tries to access something else. To instantiate this object it looks for a class Jail within the object's class' namespace (e.g. <code>Article::Jail</code>).</p>
+
+<p>So, to actually allow to do something useful in Haml templates these Jail subclasses have to be implemented for an application's models. (I.e. this is basically Liquid's concept of so called drops.) For most of Ruby's native classes like <code>String</code>, <code>Fixnum</code>, <code>Array</code>, <code>Hash</code> etc. the plugin will do that for us (see <a href="http://svn.artweb-design.de/stuff/rails/haml_safemode/lib/haml/safemode/core_jails.rb">this file</a> for a list of methods that will be allowed for certain native Ruby classes).</p>
+
+<p>Also, the resulting Ruby code will be evaluated with a <code><a href="http://svn.artweb-design.de/stuff/rails/haml_safemode/lib/haml/safemode/scope_object.rb" title="">ScopeObject</a></code>'s binding which shares the same blankslate-like base class with the jails. This object forbids access to almost everything but additionally passes calls to Rails helper methods back to the <code>ActionView</code> instance. So we can use helpers, too.</p>
+
+<p>Compared to Liquid jails play the role of drops (I chose a different name to avoid any name clashes). Liquid's filters actually become obsolete as they essentially play the role of calling methods on objects (e.g. formatting a date) which we can do in native Ruby here.</p>
+
+<p>Because Haml uses Rails' "compiled templates" architecture all the ParseTree parsing and Ruby2Ruby re-assembling only takes place once when the template is "compiled". The result will be cached in memory and reused for subsequent requests.</p>
+
+<p>Thus I wouldn't be surprised when this Haml Safemode actually proves faster compared to Liquid which (unless I'm totally mistaken) does it's RegExp work each and every time when the template gets rendered.</p>
+
+<h2>Now what?</h2>
+
+<p>So, this approach should be rather restrictive than permissive. All attack vectors I could think of pass the tests (i.e. they raise an exception). But of course I'm not sure whether it's already waterproof.</p>
+
+<p>I am by no means a security expert and definitely lack some "black creativity". So I need your help with this!</p>
+
+<p>Like I said, this code is highly experimental. Do <strong>not</strong> rely on it or use it for any serious purpose beyond playing with it, yet! </p>
+
+<p>That said, this code is experimental :) </p>
+
+<p>Please <strong>do</strong> experiment with it! </p>
+
+<p>Check it out, hammer it with all your evil creativity and try to find any working attack vectors. I totally lack this kind of skill, so I'm sure there's <em>something</em> to improve.</p>
+
+<p>Many thanks to <a href="http://www.rubyinside.com/" title="Ruby Inside: Ruby blog with daily tips, news, code and fun">Peter Cooper</a> who was so kind to already (briefly) review the code to catch any obvious bugs and check out the test cases.</p> 

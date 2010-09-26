@@ -1,0 +1,53 @@
+--- 
+title: Allow custom column types in your Rails migrations
+---
+<p>There's a <a href="http://www.railsweenie.com/forums/2/topics/807">workaround</a> that allows you to append column definitions <em>at the end</em> (!) of your table definition:</p>
+
+<pre><code>
+class CreateForms &lt;ActiveRecord::Migration
+  def self.up
+    create_table :cards do |t|
+      # ...
+      t.columns &lt;&lt; 'value varbinary(255)'   
+    end
+  end
+end</code></pre>
+
+<p>Obviously this might not be what everbody really wants. If you're like me you prefer to keep your stuff tidy ... and the column order in my tables therefor definitely matters.</p>
+
+<p>No problem: Rails plugins to the rescue here. After some digging through the ActiveRecord source it turns out that it's pretty easy to convince Rails to accept not only predefined column types (like <code>:string</code>) but also wildly arbitrary strings.</p>
+
+<p>So, how about the following code?</p>
+
+<pre><code>
+ActiveRecord::ConnectionAdapters::SchemaStatements.module_eval do       
+  def type_to_sql_with_custom_type(type, *params)
+    return type unless native_database_types.has_key? type
+    type_to_sql_without_custom_type(type, *params)
+  end
+  alias_method_chain :type_to_sql, :custom_type      
+end	
+</code></pre>
+
+<p><code>SchemaStatements#type_to_sql</code> tries to look up the column type (like <code>:string</code>) and throws an error if it doesn't find it in the <code>native_database_types</code>. What we're doing with that unbelievable hack above is nothing else than silently navigate our custom column definition around this face check so that it gets inserted into the resulting SQL code literally.</p>
+
+<p>So with this <span style="text-decoration:line-through">(not so) ugly hack</span> plugin applied you can now do things like this:</p>
+
+<pre><code>
+class CreateForms &lt;ActiveRecord::Migration
+  def self.up
+    create_table :cards do |t|
+      t.column :value, 'varbinary(255)'   
+    end
+  end
+end</code></pre>	
+
+<p>... and use whatever column order you like :-)</p>
+
+<h2>Go, get it</h2>
+
+<p>Yes, you can download this stuff. Standing in your Rails home directory point your script/plugin installer to:</p>
+
+<pre><code>
+script/plugin install <a href="http://svn.artweb-design.de/stuff/rails/migration_custom_column_types/">http://svn.artweb-design.de/stuff/rails/migration_custom_column_types/</a>
+</code></pre>

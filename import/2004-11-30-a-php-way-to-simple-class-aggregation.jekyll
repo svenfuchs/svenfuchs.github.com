@@ -1,0 +1,249 @@
+--- 
+title: A php way to simple class aggregation
+---
+<p>There are basically two ways to add behaviour to an existing class: Inheritance and Composition.</p>
+
+<p><b>Inheritance</b> has a couple of drawbacks: It leads to bloated class trees, making it difficult to change things later on. It tightly couples the derived class with the base class, so that we can't use the behaviour that is added by the derived class anywhere else. It violates the principle of having one class for one responsibility by packing more and more behaviour into one single class. And so on.</p>
+
+<p><b>Composition</b> on the other hand is a nice thing, when it comes to the need of having cleanly separated classes that are responsible for one task and nothing else. But Composition often means adding large numbers of methods to the interface of the adapting class or otherwise expose the adapted class instance to the world. So the class "composing" our neat, separated "composite" classes together won't be clean at all.</p>
+
+<p>For some examples and code have a look at Javaworld's <a href="http://www.javaworld.com/javaworld/jw-11-1998/jw-11-techniques.html" target="_blank">"Inheritance versus composition: Which one should you choose?"</a>. On page two there are the two classes Fruit and Apple: </p>
+
+<h2>Apple inheritance</h2>
+
+<pre>
+class Fruit {
+   public funciton peel() {
+      echo "Peeling is appealing.";
+   }
+}<br>
+class Apple extends Fruit {
+}<br>
+$apple = new Apple();
+$apple->peel();
+</pre>
+
+<h2>Apple composition</h2>
+
+<pre>
+class Fruit {
+   public function peel() {
+      echo "Peeling is appealing.";
+      }
+   }
+}
+class Apple {
+   private $fruit;
+   public function __construct() {
+      $this->fruit = new Fruit()
+   }
+   public function peel() {
+      return fruit->peel();
+   }
+}
+$apple = new Apple();
+$apple->peel();
+</pre>
+
+<p>As is shown in the article at Javaworld, the composition way is more flexible in plugging additional behaviour into the class Apple later on. That's cool. But the class Apple has to add it's own peel() method. </p>
+
+<p>Of course, our real-world classes aren't that simple. Consider what happens when a class adapts - say - three composites and has to expose 10 methods from each of them: We would not only have to write these 30 methods, but 30 additional methods to use them in the adapting class. Composition leads to less compact code, thus introducing additional sources of error.</p>
+
+<p>So, should we better rely on inheritance by default? Often there's no way of using inheritance in a persuasive manner at all. Let's think of a description like the following:</p>
+
+<h2>The "real" world</h2>
+
+<p><i>"In our framework a 'component' is defined as a piece of software that 1.) holds and manages properties that can be added, removed and changed from outside and 2.) has a lifecycle (with the stages init, execute, exit), that can be run through. A component can 3.) be defined and populated by a 'component definition', that's being provided by an xml file."</i></p>
+
+<p>(Not exactly the same, but in essence something similar, you'll find in the award-winning and indeed <b>very</b> cool <a href="http://www.xisc.com/" target="_blank">php5 Prado</a> Framework's TComponent and TControl classes.)</p>
+
+<p>As you can see, according to this definition there are three completely different responsibilities mixed into one single class: Managing properties has nothing to do with defining and entering lifecycle stages. A Lifecycle has nothing to do with dynamically populating an object from an xml definition. And the latest task has nothing to do with the first. </p>
+
+<p>Now, should we build a ...</p>
+
+<pre>
+class PropertyManager
+class LivingPropertyManager extends PropertyManager
+class Component extends LivingPropertyManager
+</pre>
+
+<p>... class tree (adding the component definition stuff to the class without naming it as class name)?</p>
+
+<p>Or better a ...</p>
+
+<pre>
+class Lifecycle
+class PropertyLifecycle extends Lifecycle
+class Component extends PropertyLifecycle
+</pre>
+
+<p>... class tree?</p>
+
+<p>Obviously that's all crap. So, we'll create one single, huge class throwing all the propertymanaging, lifecycle and component definition stuff into it. ;-)</p>
+
+<h2> class="storytitle">Doing it the php way</h2>
+
+<p>With php's <a href="http://php.net/language.oop5.magic" target="_blank">magical __call()</a> method and <a href="http://php.net/call-user-func-array" target="_blank">call_user_func_array()</a>, there's a different way to achieve Composition of cleanly separated classes that maintain one single task and nothing else - without the drawback of writing new methods over and over again. </p>
+
+<p>First, we'll implement the three tasks as separate classes. The PropertyManager will have two simple methods getProperty() and setProperty():</p>
+
+<pre>
+class PropertyManager {
+   private $properties = array();
+   pubic function getProperty($name) {
+      if (isset($this-&gt;properties[$name])) {
+         $value = $this-&gt;properties[$name]);
+         echo "returning property $name: $value&lt;br&gt;";
+         return $value;
+      }
+   }
+   pubic function setProperty($name, $value) {
+      echo "setting property $name to $value&lt;br&gt;";
+      $this-&gt;properties[$name] = $value;
+   }
+}
+</pre>
+
+<p>For the Lifecycle we'll have a class with a single method for this example: run() starts the lifecycle:</p>
+
+<pre>
+class Lifecycle {
+   private $stages = array('init', 'execute', 'exit');
+   public function run() {
+      foreach ($this-&gt;stages as $stage) {
+         echo "entering lifecycle stage $name&lt;br&gt;";
+      }
+   }
+}
+</pre>
+
+<p>The ComponentDefinition class' getDefinition method() will parse an xml string containing a simple definition. The populate() method will populate a Component from this definition:</p>
+
+<pre>
+class ComponentDefinition {
+   public function getDefinition() {
+      echo "parsing component definition xml string&lt;br&gt;";
+      $xml =
+         '&lt;component&gt;' .
+         '  &lt;property name="foo" value="bar"&gt;' .
+         '&lt;/component&gt;';
+      return simplexml_load_string($xml);
+   }
+   public function populate(Component $component) {
+      echo "populating the component from xml definition&lt;br&gt;";
+      $definition = $this-&gt;getDefinition();
+      $name = (string) $definition-&gt;property-&gt;name;
+      $value = (string) $definition-&gt;property-&gt;value;
+      $component-&gt;setProperty($name, $value);
+   }
+}
+</pre>
+
+<p>Now, we can plug these things together in a Component class that implements all the behaviour required by our class description above.</p>
+
+<pre>
+class Component {
+   private $aggregatees = array();
+   public function __construct() {
+      $this-&gt;aggregate(new PropertyManager());
+      $this-&gt;aggregate(new Lifecycle());
+      $this-&gt;aggregate(new ComponentDefinition());
+      $this-&gt;populate($this);
+   }
+   private function aggregate($aggregatee) {
+      echo "aggregating " . get_class($aggregatee) . "&lt;br&gt;";
+      $this-&gt;aggregatees[] = $aggregatee;
+   }
+   private function __call($method, $args) {
+      foreach ($this-&gt;aggregatees as $aggr) {
+         if (method_exists($aggr, $method) {
+            call_user_func_array(array($aggr, $method), $args);
+         }
+      }
+   }
+}
+</pre>
+
+<p>As you can see there's no need to write any additional methods to access the aggregated class instances (like in javaworld's Apple/Fruit example). But we save the compositions advantage and have all three tasks separated from each other in a reusable manner (thus, we could plug the PropertyManager or Lifecycle into another class without modifying them).</p>
+
+<p>To test the example classes:</p>
+
+<pre>
+$component = new Component();
+$component-&gt;run();
+</pre>
+
+This will return:
+
+<pre>
+aggregating PropertyManager
+aggregating Lifecycle
+aggregating ComponentDefinition
+returning component definition xml string
+populating the component from xml definition
+entering lifecycle stage init
+entering lifecycle stage execute
+entering lifecycle stage exit
+</pre>
+
+<h2> class="storytitle">Where to go from here ...</h2>
+
+<p>Blog articles shouldn't be too long, so we won't work this out much further. In the real world we would want to access the Component class from the aggregated classes.</p>
+
+<p>As a sharp reader you'll have noticed the line <code>$this-&gt;populate($this)</code> (which is inelegant, to say the least) in the Component's constructor and the fact that there's no possibility to access the Component from within the Lifecycles run() method. </p>
+
+<p>So, we would add a reference to the Component instance in the Property Manager's, Lifecycle's, and ComponentDefinition's constructor:</p>
+
+<pre>
+class Lifecycle {
+   <u>private $aggregator = null;</u>
+   public __constructor($aggregator) {
+      <u>$this-&gt;aggregator = $aggregator;</u>
+   }
+   public run() {
+      foreach ($this->stages as $stage) {
+         // do something with the Component's instance
+         $this->enterStage(<u>$this-&gt;aggregator</u>);
+      }
+   }
+}
+</pre>
+
+... and initalize it from the Components constructor by:</p>
+
+<pre>
+   $this-&gt;aggregate(new Lifecycle($this));
+</pre>
+
+<p>Furthermore, for convenience we'll want to access the Component's (and all its aggregated objects) methods from within any aggregated object instance. So we add a __call() method to the Propertymanager, Lifecycle and Component Definition:</p>
+
+<pre>
+class ComponentDefinition {
+   private $aggregator = null;
+   public __constructor($aggregator) {
+     $this-&gt;aggregator = $aggregator;
+   }
+   //the parameter Component $component can be omitted now
+   public function populate() {
+      $definition = $this-&gt;getDefinition();
+      $name = (string) $definition-&gt;property-&gt;name;
+      $value = (string) $definition-&gt;property-&gt;value;
+      <u>$this</u>-&gt;setProperty($name, $value);
+   }
+   <u>public function __call($method, $args) {</u>
+      <u>call_user_func_array(array($this-&gt;aggregator, $method),</u>
+         <u>$args);</u>
+   <u>}</u>
+}
+</pre>
+
+<h2> class="storytitle">What about the naming?</h2>
+
+<p>To be honest I have to say that I'm really not sure about the naming of this pattern as an Aggregator (any advice on that would be very appreciated).</p>
+
+<p>In fact, there's an experimental php extension called <a href="http://php.net/ref.objaggregation" target="_blank"> "Object Aggregation/ Composition Functions"</a>. This extension provides a method aggregate() doing exactly the same - or at least it should do so, according to the docs. Maybe the existence of a php method with the same name can be taken as a hint that the naming can't be completely wrong. :-?</p>
+
+<p>The Javaworld article mentioned above talks about "composition" here. Having <a href="http://www.google.lu/search?q=composition+aggregation" target="_blank">googled</a> for "composition aggregation" and found some definitions and discussions (like <a href="http://ootips.org/uml-hasa.html" target="_blank">here</a> and <a href="http://www.patternscentral.com/modules.php?name=Sections&op=printpage&artid=8" target="_blank">here</a>) I came to the opinion that aggregation is the more appriopriate term. </p>
+
+<p>Sebastian Bergmann on the other hand calls the same thing a "delegate": After having sketched down this article, I found the article: <a href="http://www.zend.com/zend/php5/php5-delegation.php" target="_blank">Introduction to Interceptors I: Implementing Delegation</a> from Sebastian Bergmann on Zend, published on August 12, 2003 ... :-) </p>
+

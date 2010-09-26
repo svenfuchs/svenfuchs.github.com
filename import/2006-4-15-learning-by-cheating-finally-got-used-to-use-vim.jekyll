@@ -1,0 +1,116 @@
+--- 
+title: Learning by cheating - finally got used to use VIM
+---
+<p>In fact that devil actually incarnated in the form of a friend and
+co-worker for a while. ;) At least as long as we shared the same office, I've
+been able to resist and ignore his vicious insinuations. I kept sticking to Textpad.</p>
+
+<p>Since, I've of course had to work on our severs and thus over the time had
+to learn a very minimum of VI - to at least be able to do the basic stuff.
+And of course I downloaded VIM and played around with it ... but I've never
+got it as far as being halfway as productive as I was used to with Textpad
+(which, over the years, of course had grown virtual nerves through my keyboard
+connecting to some synapses at my fingertips or so and thus actually became an
+outsourced device of my brain or something like that - really, no
+kidding).</p>
+
+<p>Yet, after having read <a
+href="http://www.amazon.com/gp/product/020161622X/103-2596672-9707843">"The
+pragmatic programmer"</a> by Hunt/Thomas I simply *had* to do another attemp
+to learn VIM. I've been totally surprised how easy I found it this time. After
+two days I felt considerably productive - probably as or even more [2] productive than I was on Textpad. Huh!</p>
+
+<p>I noticed that there's probably some learning pattern hidden that I could
+check out for similar learning tasks in the future. So I thought I'd write that down.</p>
+
+<p><strong>First</strong>, like mentioned, I've already had some very basic experience with VI. I've been able to open files, navigate around, edit and save my stuff (yup!). But - I really havn't even been able to work with more than one window (aside from sending VI to the background and open another instance from the shell ;).</p>
+
+<p><strong>Second</strong>, I had the <a href="http://www.oreilly.com/catalog/vipr/">O'Reilly "vi Editor pocket reference"</a> at
+hand (which actually had been a birthday gift of the forementioned "devils" incarnation
+*lol*). Also, I searched the internet for vim.rc files, read them and made
+notes from them - at the same time already trying to do it in VIM in some
+halfway efficient way.</p>
+
+<p><strong>Third</strong>, I then found the "IBM VIM cheatsheet" (heck! I can't find the link anymore. But <a href="http://del.icio.us/tag/cheatsheet%2Bvim">here</a>'s a whole lot of similar stuff) which caught my attention because it seemed to really be written by hand. I directly followed the idea to create my own cheatsheet from the notes I had made and
+roughly copied the layout of the IBM sheet. I selected only those commands and shortcuts that I really felt to be definitely necessary - they filled almost a
+DIN A4 paper. I left some place for further notes also.</p>
+
+<p>Back at the keyboard I immediately noticed that I remembered several
+commands. I pinned my cheatsheet onto the wall beneath my desktop and tried to
+keep my attention on how I'm doing things, where I could use one of those
+commands and how I can get used to it.</p>
+
+<p>That worked.</p>
+
+<p>After a few hours of typing, reading VIM tips and "surfing" the
+manual, changing my vim.rc (restarting VIM all the time since I hadn't figured
+out to do it with :so yet ;) I was able to type and edit in a satisfying
+manner.</p>
+
+<p>And there were a few things I have *not* done. I have not - like the first time
+I checked out VIM - immediately tried to change all kinds of mappings do
+commands I *thought* they would be usefully mapped different from what VIM
+comes with by default.</p>
+
+<p>Also, this time I have *not* tried to install several plugins to somehow mimic my GUI
+"workspace" pane in Textpad (something that I'm still missing) but learned how
+to - well, sort of - use buffers and windows instead.</p>
+
+<p>Next day, I found myself to be able to do most of my daily work using VIM.
+Of course, there's been a lot of stuff that I had to look up in between and
+some tasks I simply didn't get managed. But hey, for the first time it simply *worked*. Cool.</p>
+
+<p>I continued to work within VIM and tuned several settings that didn't match
+my habits. I learned to use :mksession and :so and the differences between the
+selection and visual modes. I continued to pay attention to *how* I'm doing
+things and step by step adding habits to do them different.</p>
+
+<p>About three days later I noticed that I do not need most of the notes on my
+cheatsheet any more (like hjkl keys, search, substitute etc.). Instead, I
+looked at notes that I've made on separate pieces of paper on my desktop and I
+consulted the manual when I've forgot some setting or command.</p>
+
+<p>I followed the idea to repeat that process and first - again - collected
+those commands that I thought I really should learn next, grouped them
+together, discarded several commands from my first sheet and kept others that
+I've not really got used to yet.</p>
+
+<p>Again, I pinned that sheet onto the wall behind my screen and immediately
+noticed that I had remembered some of that stuff.</p>
+
+<p>So, the pattern seems to be (for me):</p>
+
+<ol>
+<li>get used to some very basic, selected stuff</li>
+<li>collect the very next simple steps</li>
+<li>arrange them and write them down as a cheatsheet</li>
+<li>while actually doing something pay attention to how it can be done
+better</li>
+<li>train a while</li>
+<li>goto 2.)</li>
+</ol>
+
+<p>Thereby:</p>
+
+<ol style="list-style-type:lower-alpha;">
+<li>generally follow the trails of what comes with the defaults, probably
+tweak some stuff that's been tweaked by others.</li>
+<li>keep you're hands from too nifty stuff like multitudes of plugins or
+esoterik mappings that add their own tons of complexity</li>
+</ol>
+
+<p>Oh. Here's the second version of my VIM cheatsheet.</p> 
+
+<p>Hmmm ... now looking at it I think I could add another iteration ... goto 2.</p>
+<br>
+<p><img src="/images/blog/posts/vim.cheatsheet.jpg"></p>
+
+<hr size="1" noshade="noshade" />
+
+<p><i>[1] Year, I've been tied to stay on a Windows box for developement for
+several reasons. Hope to get rid of this soon though.</i></p>
+
+<p><i>[2] Hmm ... in fact that's difficult to compare. There are some areas I
+simply haven't got by now - like using grep on recursive directories and
+interating through the results. At other tasks I'm definitely already
+faster.</i></p>

@@ -1,0 +1,26 @@
+--- 
+title: Switched to Mephisto
+---
+<h2>blog.switch(Mephisto.new) => #&lt;Fun:0x30dac0></h2>
+
+<p>The migration to Mephisto itself was pretty easy, everything feels straight-forward. Some things just took me a moment to get used to (like using Liquid) but that's just because I'm the Rails noob I am.</p>
+
+<p>I totally take my hat off to Rick and Justin for creating such a super-slick piece of software!</p>
+
+<p>I've already used the admin interface a lot to adjust themes and import glitches (yes, Mephisto has an import script for Typo), switched the app to production mode and so far everything runs as smooth and feels as lightweight as I imagined. If you got sick of Typo screwing up for no apparent reason ... Mephisto's feels like a true relief.</p>
+
+<h2>What? No pagination?</h2>
+
+<p>One thing I'd argue against though is the decision to not enable pagination of the articles on the blog's home page by default. Of course, there are themes that don't need pagination at all (like Hemingway). But even the default theme Simpla lists 15 articles on the blog's home page. After that it just stops. No pagination, not even hint that there might be more.</p>
+
+<p>Rick <a href="http://groups.google.com/group/MephistoBlog/browse_thread/thread/dea07dd16c1d2ef5">points out</a> that he doesn't like the way that search engines behave when they list results with outdated paginated URLs in blogs, e.g. they point to <code>.../page/2</code> even though the desired content is long moved to <code>.../page/4</code> or so.</p>
+
+<p>Ok, I admit that's odd. But just omitting the pagination feels like to throw out the baby with the water IMO. It breaks with a super-well-known usability pattern. Bazillions of people expect that they can just scroll through the article headlines and excerpts and paginate through the blog. Actually, I consider that usability desaster.</p>
+
+<p>Well ... at least that drives me roll my first Mephisto plugin :D</p>
+
+<p>Anyways. Nonetheless I'm super-happy with the new engine ... and feel like I won't ever look back.</p>
+
+<h2>Note to myself</h2>
+
+<p>I added the <a href="http://opensource.agileevolved.com/svn/root/rails_plugins/mephisto_comment_notification/trunk">Comment EMail Notification</a>, <a href="svn://vault.jadedpixel.com/plugins/mephisto_textlinkads">TextLink Ads</a> <a href="svn://hasno.info/mephisto/plugins/mephisto_post_ping">Post Pinger</a> plugins. And I got the latter loading without errors by adding <a href="http://groups.google.com/group/MephistoBlog/browse_thread/thread/aff6bfc8d14336ff/12245a85ec6c8e88?lnk=gst&amp;q=ping&amp;rnum=1&amp;hl=en#12245a85ec6c8e88">these patches</a>.</p>

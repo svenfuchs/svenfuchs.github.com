@@ -1,0 +1,39 @@
+--- 
+title: Expecting arbitrary method calls in a particular order in RSpec
+---
+<p>For a spam protection feature in a <a href="http://github.com/svenfuchs/adva_cms" title="svenfuchs's adva_cms at master &mdash; GitHub">project I'm currently working on</a> I started out specifying the behaviour of a filter chain that I was planning to implement. Specifically, I wanted to specify that the filter chain would call the filters in the expected order.</p>
+
+<p>Looking at the <a href="http://rspec.info/documentation/mocks/message_expectations.html" title="RSpec-1.1.4: Message Expectations">RSpec documentation for expecting method calls on mock objects</a> I didn't found this usecase mentioned at first. It turns out to be pretty easy with RSpec mocks though.</p>
+
+<p><code>#should_receive</code> takes a block that (according to the documentation) is meant to be used to compute return values. This block is called within the specification's scope so it can be used to track the method call order.</p>
+
+<p>My initial spec looks like this (simplified for clarity):</p>
+
+<pre><code class="ruby">
+it "runs the filters in the correct order" do
+  log = []
+  @default.should_receive(:run){ log &lt;&lt; :default }
+  @akismet.should_receive(:run){ log &lt;&lt; :akismet }
+  @defensio.should_receive(:run){ log &lt;&lt; :defensio }
+  @chain.run
+  log.should == [:default, :akismet, :defensio]
+end
+</code></pre>
+
+<h4>Update</h4>
+
+<p>After some discussion on the RSpec users mailinglist <a href="http://www.patchspace.co.uk/">Ashley Moran</a> pointed out a more elegant solution to this which also uses the <code>should_receive</code> block:</p>
+
+<pre><code class="ruby">
+it "runs the filters in the correct order" do
+@default.should_receive(:run) do
+  @akismet.should_receive(:run) do
+    @defensio.should_receive(:run)
+  end
+end
+@chain.run
+end
+</code></pre>
+
+<p>Thanks :)</p>
+

@@ -1,0 +1,8 @@
+--- 
+title: "Mephisto Plugin: Feedburner Stats"
+---
+<p>You want to display your Feedburner count on your Mephisto blog?</p>
+
+<p>Install this tiny plugin and directly access Feedburner's API. This way you can integrate your Feedburner stats nicely into your themes. No, you do not need to use that clumpsy Feedburner badge to display your feed stats. And yes, this works perfectly in spite of Rails' page caching.</p>
+
+<p>(coming soon ...)</p>

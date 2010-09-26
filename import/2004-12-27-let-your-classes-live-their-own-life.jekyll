@@ -1,0 +1,106 @@
+--- 
+title: Let your classes live their own life
+---
+<p>First, we'll set up a simple event generating class. EventGenerator will be able to register listeners and call a method on them when an event gets raised.</p>
+
+<p>(For the sake of simplicity, we won't rely here on a separate Event class that's usually used to pack information about the event's type, where the event got fired, and what exactly happened.)</p>
+
+<pre>
+class EventGenerator {
+   private $listeners = array();
+   public function attachListener($listener) {
+      echo "attaching: " . get_class($listener) . "&lt;br&gt;";
+      $this-&gt;listeners[] = $listener;
+   }
+   protected function raiseEvent($method, $args) {
+      foreach ($this-&gt;listeners as $listener) {
+         if (method_exists($listener, $method)) {
+            call_user_func_array(
+               array($listener, $method), $args);
+         } else {
+            $msg = "method does not exist: $method";
+            throw new Exception($msg);
+         }
+      }
+   }
+}
+</pre>
+
+<p>Now, we'll extend this class to the Lifecycle class that's responsible to cycle through some predefined stages. To keep it simple, we'll choose the stages 'init', 'execute', 'exit'. In dot.net, for example, there are much more stages like '...'.</p>
+
+<pre>
+class Lifecycle extends EventGenerator {
+   private $stages = array('init', 'execute', 'exit');
+   public function run () {
+      $method = 'onStageEnter';
+      foreach ($this-&gt;stages as $stage) {
+         echo "We're ready to enter stage: $stage&lt;br&gt;";
+         $this-&gt;raiseEvent($method, array($stage));
+      }
+   }
+}
+</pre>
+
+<p>So, when the Lifecycle's run() method gets called, the Lifecycle will raise StageEnter events, each with the current stage as a parameter.</p>
+
+<p>Next, we need a class that we can register as a listener to the EventGenerator class. To be able to respond to the StageEnter events of the Lifecycle, we'll implement a single method onStageEnter() that relays to (not yet implemented) methods onInit(), onExecute() and onExit().</p>
+
+<pre>
+class LifecycleListener {
+   public function onStageEnter($stage) {
+      echo "entered $stage in " . get_class($this) . "&lt;br&gt;";
+      $method = 'on' . ucFirst ($stage);
+      if (method_exists($this, $method)) {
+         $this-&gt;$method();
+      }
+   }
+}
+</pre>
+
+<p>We can now extend the LifecycleListener to some custom class that we want to respond to the Lifecycle. Therefore, we'll refer to the Component example from our last article (<a href="http://www.artweb-design.de/blog/index.php?p=6">A php way to simple class aggregation</a>).</p>
+
+<pre>
+class Component extends LifecycleListener {
+   protected function onInit() {
+      echo
+         "We've arrived on stage: &lt;b&gt;init&lt;/b&gt;.&lt;br&gt;" .
+         "So, let's intialize the party.&lt;br&gt;";
+   }
+   protected function onExecute() {
+      echo
+         "We've arrived on stage: &lt;b&gt;execute&lt;/b&gt;.&lt;br&gt;" .
+         "Now, let's perform our play.&lt;br&gt;";
+   }
+   protected function onExit() {
+      echo
+         "We've arrived on stage: &lt;b&gt;exit&lt;/b&gt;.&lt;br&gt;" .
+         "Finally, let's clean up the theater.&lt;br&gt;";
+   }
+}
+</pre>
+
+<p>That's self-explaining, isn't it? In onInit(), onExecute() and onExit() we would implement our real-life business stuff just as needed for a concrete Component.</p>
+
+<p>Now, we can go for a test:</p>
+
+<pre>
+$lifecycle = new Lifecycle();
+$lifecycle-&gt;attachListener(new Component());
+$lifecycle-&gt;run();
+</pre>
+
+<p>This will result in the following output:</p>
+
+<pre>
+attaching: Component
+We're ready to enter the stage: init
+We've arrived on stage: init.
+So, let's intialize the party.
+We're ready to enter the stage: execute
+We've arrived on stage: execute.
+Now, let's perform our play.
+We're ready to enter the stage: exit
+We've arrived on stage: exit.
+Finally, let's clean up the theater.
+</pre>
+

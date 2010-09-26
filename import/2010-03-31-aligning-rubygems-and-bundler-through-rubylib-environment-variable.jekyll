@@ -1,0 +1,33 @@
+---
+title: Aligning rubygems + bundler through rubylib environment variable
+---
+<p>Put this into your ~/.zprofile (or ~/.profile or whatever makes sense for your shell):</p>
+<pre class="shell">
+export RUBYLIB=$RUBYLIB:~/.ruby
+</pre>
+
+<p>Source the file:</p>
+<pre class="shell">
+$ source ~/.zprofile
+</pre>
+
+<p>Put this to ~/.ruby/b.rb</p>
+<pre class="ruby">
+begin
+  # should probably check parent directories, too?
+  require File.expand_path('../.bundle/environment')
+rescue LoadError
+  require 'rubygems'
+  require 'bundler'
+  Bundler.setup
+end
+</pre>
+
+<p>Done.</p>
+
+<p>You can now:</p>
+
+<pre class="shell">
+$ ruby -rb test/all.rb        # run test/all.rb in the context of your bundle
+$ ruby -rubygems test/all.rb  # run test/all.rb in the context of rubygems
+</pre>

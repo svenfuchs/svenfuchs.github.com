@@ -1,0 +1,71 @@
+--- 
+title: "Get on Rails with Globalize: a comprehensive writeup in 8 parts"
+---
+<p>As most of the parts of this series aren't complete yet, I'll edit the following outline as soon as stuff sediments. To stay informed about updates please <a href="">subscribe to my blog</a>.</p>
+
+<h2><a style="text-decoration: underline !important;" href="/2006/11/10/globalize-five-minutes-instant-overview">Part 1 of 8: Five minutes instant overview</a></h2>
+<ul>
+	<li>How to install and configure Globalize</li>
+	<li>How to translate arbitrary text (ViewTranslations)</li>
+	<li>How to translate Rails models (ModelTranslations)</li>
+	<li>How to add translations to the database</li>
+	<li>How to localize Dates, Times and Numbers</li>
+</ul>
+
+<h2><a style="text-decoration: underline !important;" href="/2006/12/03/some-common-questions-on-getting-started-get-on-rails-with-globalize">Part 2 of 8: Some common questions on getting started</a></h2>
+<ul>
+	<li>How to setup your application to use Unicode</li>
+	<li>How to select and persist the current user's locale</li>
+	<li>How to translate Rails ActiveRecord messages</li>
+	<li>How to localize entire templates</li>
+</ul>
+
+<h2><a style="text-decoration: underline !important;" href="/2007/01/14/globalize-advanced-features">Part 3 of 8: Globalize's advanced features</a></h2>
+<ul>
+	<li>Abstracting ViewTranslations (sprintf-like usage)</li>
+	<li>Singular and (multiple) plural ViewTranslations</li>
+	<li>Globalize's Currency class</li>
+	<li>Piggyback translated ActiveRecord associations</li>
+</ul>
+
+<h2><a style="text-decoration: underline !important;" href="/2007/3/16/globalize-rails-routes-setup">Part 4 of 8: How to set up your routes?</a></h2>
+<ul>
+	<li>Pros and cons of different ways to store the locale:</li>
+	<li>Sessions, accept-language header, geo-location</li>
+	<li>RESTful, URL-based approaches</li>
+</ul>
+
+<h2><a style="text-decoration: underline !important;" href="/2007/5/18/globalize-rails-advanced-techniques-tips-tricks">Part 5 of 8: Advanced techniques, tips and tricks</a></h2>
+<ul>
+	<li>Preload View Translations in Production</li>
+	<li>Bridge Globalize and TZInfo</li>
+	<li>Clear Globalize's translations runtime cache</li>
+	<li>Use nice predicated block helpers in your views</li>
+	<li>Organize your translations through Globalize's namespaces</li>
+	<li>Alternative Storage Mechanism for Model Translations</li>
+	<li>Disable Globalize::ViewTranslation's SQL logging</li>
+</ul>
+
+<h2><a style="text-decoration: underline !important;" href="/2007/5/26/extensions-plugins-patches-get-on-rails-with-globalize">Part 6 of 8: Pimp your Globalize! Extensions, plugins and patches</a></h2>
+<ul>
+	<li>Multilingual URLs</li>
+	<li>Patch Globalize to get it working with :include and no base language</li>
+	<li>Translate your application while browsing it</li>
+	<li>Localized, concise Rails URL helpers</li>
+	<li>Get Liquid templates to play nice with Globalize</li>
+	<li>Globalize time_ago_in_words method of Rails</li>
+	<li>Multiple arguments to fetch</li>
+</ul>
+
+<h2><a style="text-decoration: underline !important;" href="http://www.artweb-design.de/2007/6/7/globalize-rails-gotchas-problems-funny-things" title="Funny things and common gotchas to know and avoid - Get on Rails with Globalize! Part 7 of 8">Part 7 of 8: Gotchas and other funny things to know and avoid</a></h2>
+<ul>
+	<li>I'm seeing lot's of strange characters!</li>
+	<li>Weird Currency parsing results</li>
+	<li>Globalize WrongLanguageError on attribute read</li>
+	<li>Globalizes screws my RJS (or: my IE6)!</li>
+</ul>
+
+<h2><a style="text-decoration: underline !important;" href="javascript:alert('coming soon')">Part 8 of 8: ...</a></h2>
+
+
+<p><!-- Globalize compared to other Rails I18n/L10n solutions (?) --></p>

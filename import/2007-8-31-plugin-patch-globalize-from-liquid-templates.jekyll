@@ -1,0 +1,11 @@
+--- 
+title: "Plugin/Patch: Use Globalize from Liquid templates"
+---
+<p>Want to access <a href="http://www.globalize-rails.org">Globalize</a> translations (or any other RoR i18n solution) from within your <a href="http://www.liquidmarkup.org/">Liquid</a> templates?</p>
+
+<p>There are two ways to do this. There’s a canonical way that uses the official Liquid api. That’s the less sexy one. Here's a tiny and unobtrusive plugin: <a href="http://svn.artweb-design.de/stuff/globalize/globalize_liquid_filter/">Plugin Globalize Liquid filter</a></p>
+
+<p>And there’s a reckless monkeypatch that even invents a new Liquid syntax element. That’s less clutterish. The code is right over here: <a href="http://svn.artweb-design.de/stuff/globalize/globalize_liquid.diff">Liquid patch for Localization syntax</a></p>
+
+<p>You can find more explanation about these techniques here: <a href="/2007/5/26/extensions-plugins-patches-get-on-rails-with-globalize#liquid"> Get Liquid templates to play nice with Globalize </a>.</p>
+
