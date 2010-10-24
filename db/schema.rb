@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100904224918) do
+ActiveRecord::Schema.define(:version => 20101007000500) do
 
   create_table "accounts", :force => true do |t|
   end
@@ -29,6 +29,8 @@ ActiveRecord::Schema.define(:version => 20100904224918) do
     t.text     "body",       :default => "", :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "filter"
+    t.text     "body_html"
   end
 
   create_table "sections", :force => true do |t|
@@ -41,6 +43,7 @@ ActiveRecord::Schema.define(:version => 20100904224918) do
     t.string   "slug",       :default => "", :null => false
     t.string   "path",       :default => "", :null => false
     t.integer  "level"
+    t.text     "options"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

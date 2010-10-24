@@ -1,0 +1,27 @@
+---
+title: minimal/template - Pure Ruby views
+filter: textile
+---
+
+As much as I love Ruby on Rails there are a bunch of things that ... well, yeah ...
+
+There are three things that, put together, hurt my eyes without mercy. And they are all part of a standard Rails app:
+
+* Helpers
+* ERB
+* Controller instance variables
+
+Yes.
+
+A huge portion of what - from my point of view - is wrong with "standard" Rails apps seems to originate where Rails breaks MVC by adding something called helpers to the mix.
+
+Helpers both make up a good part of ActionPack *and* they are a standard way of extracting logic from views.
+
+Helpers are all mixed into the same namespace. And consequently we use underscored fake namespaces in our method names (see FormHelper vs FormOptionsHelper).
+
+To make things worse many ActionPack helpers internally use the same kind of coding style where they just add more underscored method names. Or they use some helper classes but don't actually take a lot of advantage of them. (Have you ever tried to get the id from a generated tag?)
+
+But we do need helpers, right?
+
+Helpers are necessary to remove repeative logic from our views. Looking at ERB (and HAML and any other variant of non-oop templates) the problem seems to originate from the fact that we always only have one class that represents all of our views. There's no polymorphism. ActionView will use the very same class for all of our views. (With Rails 3 that's not entirely true any more. It is possible to have ActionView use different classes, but it still feels like a bit weird thing to do.)
+

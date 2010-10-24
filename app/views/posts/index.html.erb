@@ -12,19 +12,19 @@
 
     <h2>Recent Posts</h2>
     <ul class="posts">
-      <% resource.posts[0,15].each do |post| %>
+      <% collection[0,15].each do |post| %>
         <li class="hentry">
-          <%= link_to(post.title, [resource, post], :class => "entry-title", :rel => "bookmark") %>
+          <%= link_to(post.title, [blog, post], :class => "entry-title", :rel => "bookmark") %>
           <abbr title="<%= post.created_at %>" class="updated">
             <%=l(post.created_at, :format => :post) %>
           </abbr>
           <span class="entry-content">
-            <%= truncate(strip_tags(post.body), :length => 500).html_safe %>
+            <%= truncate(strip_tags(post.body_html), :length => 500).html_safe %>
           </span>
         </li>
       <% end %>
     </ul>
-    <p><%= link_to('Older posts', 'archive.html') %> &rarr;</p>
+    <p><%= link_to('Older posts', 'archive') %> &rarr;</p>
   </div>
   <div class="push"></div>
 </div>

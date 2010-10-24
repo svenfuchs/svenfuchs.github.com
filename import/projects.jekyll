@@ -1,4 +1,4 @@
---- 
+---
 title: Projects
 ---
 <p>You can find most of the following mini-projects at <a href="http://svn.artweb-design.de/stuff">http://svn.artweb-design.de/stuff</a>. There's also a Trac ticket system where you can <a href="http://trac.artweb-design.de/browser">browse the source</a> and leave me a <a href="http://trac.artweb-design.de/newticket">ticket</a>.</p>
@@ -30,7 +30,7 @@ title: Projects
 </li>
 <li>
 	<h4><a href="/projects/ruby-on-rails-plugin-migration-custom-column-types" title="Ruby on Rails plugin: Migration custom column types">Plugin: Migration custom column types</a></h4>
-	<p>Regain control over your database scheme and allow for custom column types in your Rails migrations (e.g. <code>varbinary</code> for MySQL)</p> 
+	<p>Regain control over your database scheme and allow for custom column types in your Rails migrations (e.g. <code>varbinary</code> for MySQL)</p>
 </li>
 </ul>
 

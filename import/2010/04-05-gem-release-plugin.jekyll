@@ -31,7 +31,7 @@ $ gem bootstrap --scaffold --github
 $ git add/commit/push
 $ gem release --tag
 
-# come back later ... 
+# come back later ...
 # code away, manually bump version in lib/foo_bar/version.rb
 $ git add/commit/push
 $ gem release --tag

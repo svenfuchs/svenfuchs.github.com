@@ -1,4 +1,4 @@
---- 
+---
 title: Mephisto book
 ---
 This is only a first collection for an outline, put online to gather some feedback.
@@ -11,13 +11,13 @@ This is only a first collection for an outline, put online to gather some feedba
 ## Getting started
   * choose a web host (or setup your own server)
     * rails stack options
-  * install    
+  * install
     * using svn
     * using capistrano
-  * Setup your account 
+  * Setup your account
   * Change your website settings
   * Create sections (categories)
-  
+
 ## Start blogging
   * add posts, draft, pre-publish to future dates
   * sections (categories), tags, archives etc.
@@ -28,18 +28,18 @@ This is only a first collection for an outline, put online to gather some feedba
     * akismet
     * inverse captcha plugin
   * managing assets (audio, movies, images, ...)
-  
+
 ## Mephisto as a CMS
   * define a site structure
   * add your content
   * (what else?)
   * integrate with others (e.g. Shopify, what else?)
-  
+
 ## Feeds
   * What's that? History of feeds, RSS Formats (?)
   * Feed Readers (?)
   * using Mephisto with Feedburner
-  
+
 ## Themes
   * some prominent themes
   * Theme galleries
@@ -51,21 +51,21 @@ This is only a first collection for an outline, put online to gather some feedba
   * what to consider when choosing a theme
     * typical appearance of different themes (1-4 columns, ...)
     * templating engines (liquid, rhtml, erubis, haml)
-  
-## Plugins  
+
+## Plugins
   * some prominent plugins
   * download and install a plugin
-  * create your own plugins (overview)  
+  * create your own plugins (overview)
 
 ## Mephisto as a community engine
   * multiuser setup
   * managing users, user levels, managing profiles
-  
+
 ## Administrators Reference
   * Upgrading
   * Migrating from elsewhere
   * Multiple Sites setup
   * Troubleshooting
   * Backups
-  
+
 ## Common Terms Reference (?)

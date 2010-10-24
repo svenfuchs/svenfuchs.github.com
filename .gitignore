@@ -1,3 +1,4 @@
 *.sqlite3
 export
 log
+*.DS_Store
