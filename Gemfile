@@ -11,8 +11,7 @@ adva_cms.gem  'adva-cache'
 adva_cms.gem  'adva-markup'
 adva_cms.gem  'adva-static'
 
-gem 'rails', '3.0.0'
-
+# gem 'rails', '3.0.0'
 # gem 'reference_tracking', :path => '~/Development/projects/reference_tracking'
 # gem 'rack-cache-purge', :path => '~/Development/projects/rack-cache-purge'
 # gem 'rack-cache-tags',  :path => '~/Development/projects/rack-cache-tags'

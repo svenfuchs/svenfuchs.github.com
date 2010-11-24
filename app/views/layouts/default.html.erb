@@ -11,8 +11,8 @@
     <link rel="openid.delegate" href="http://svenfuchs.myopenid.com/" />
     <link href="http://svenfuchs.com" rel="home" />
     <title><%= site.title %></title>
-    <%= stylesheet_link_tag :all %>
-    <%= javascript_include_tag :all %>
+    <%= stylesheet_link_tag :all, :cache => true %>
+    <%= javascript_include_tag :all, :cache => true %>
   </head>
   <body>
     <%= yield %>
