@@ -8,9 +8,11 @@ So I've completely turned away from my previous position. Our tests became somew
 
 Now while I've been watching Mike Perham's talk about "Scalable Ruby Processing with EventMachine":http://vimeo.com/10849958 something rang a bell for me. At some point Mike mentions that in order to write a non-blocking Postgres adapter he only needed to change a single method: @execute@ on the Postgres adapter. For some reason the question popped into my mind if that couldn't apply to mocks/stubs for unit tests as well.
 
-Actually when we're saying that we "mock out the database" that's not even close to what they're really doing. In fact we are using an arbitrary object that pretends to behave the same way as the "real" one. That's something completely different from really mocking the database if you think about it - and to me it seems this difference is the same difference that I've been experiencing when mocks became out of sync with the actual application: some logic in the model had changed but an according change to the mocks was missing. Because my "mocks" didn't actually mock the database but the whole model.
+Actually when we say that we "mock out the database" that's not even close to what we're really doing. In fact we are using an arbitrary object that pretends to behave the same way as the "real" one. That's something completely different from really mocking the database if you think about it - and to me it seems this difference is the same difference that I've been experiencing when mocks became out of sync with the actual application: some logic in the model had changed but an according change to the mocks was missing. Because my "mocks" didn't actually mock the database but the whole model.
 
 So what if we'd use a record-replay approach instead that wraps around the adapter's @execute@ method and records responses from the database when our tests run for the first time. On subsequent requests it would not hit the database any more but actually mock it by replaying the results from the first run.
+
+[Update:] "VCR":https://github.com/myronmarston/vcr is a test helper library that does something similar for HTTP. The README says: "Record your test suite's HTTP interactions and replay them during future test runs for fast, deterministic, accurate tests."
 
 Let's assume we have this totally made up test. When we run it for the first time the following happens:
 
