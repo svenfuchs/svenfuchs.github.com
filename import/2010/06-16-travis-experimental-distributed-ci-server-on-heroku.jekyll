@@ -2,6 +2,9 @@
 title: Travis - an experimental, distributed CI server on Heroku
 ---
 
+<p><strong><em>Please note that this information is completely outdated.</em></strong></p>
+<p><strong><em>If you've got here via Google searching for a distributed build server tool that runs on Heroku, then please refer to <a href="/2011/2/5/travis-a-distributed-build-server-tool-for-the-ruby-community">this article</a>.</em></strong></p>
+
 <p>We had the I18n gem tested on runcoderun, a great service for open source projects to run continous integration on the web, and this was working very well for us. Unfortunately runcoderun was <a href="http://blog.runcoderun.com/post/463439385/saying-goodbye-to-runcoderun">taken down</a>.</p>
 
 <p>So I figured it should be easy to setup a few apps on Heroku and have them run the I18n test suite on different <a href="http://docs.heroku.com/stack">stacks</a> (i.e. Ruby configurations on Heroku). It turns out it is not, apparently. Or I'm just too stupid to do it. Anyway I though I'd write things down so maybe someone else can pick this experiment up and push it a few steps farther.</p>
