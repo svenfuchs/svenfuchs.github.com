@@ -16,7 +16,7 @@ All of these building blocks might change in the future, but here's an "overview
 
 h2. The vision
 
-Maybe "Jankins CI":https://github.com/jenkinsci/jenkins (formerly Hudson) is the best open-source build server tool for Ruby projects out there today and everybody seems to be using it. Or maybe that's just my impression. In any case my feeling is that it just isn't a particularly good fit to the Ruby community for a couple reasons.
+Maybe "Jenkins CI":https://github.com/jenkinsci/jenkins (formerly Hudson) is the best open-source build server tool for Ruby projects out there today and everybody seems to be using it. Or maybe that's just my impression. In any case my feeling is that it just isn't a particularly good fit to the Ruby community for a couple reasons.
 
 Instead, imagine a simple and slim build server tool that is maintained by the Ruby community itself (just like Gemcutter is, or many other infrastructure/tool-level projects are) in order to support all the open-source Ruby projects/gems we're using every day.
 
