@@ -62,6 +62,10 @@ hr {
   font-size: 0.8em;
   color: #999;
 }
+#disqus_thread {
+  margin-top: 48px;
+  font-size: 90%;
+}
 #footer {
   height: 24px;
   margin: -49px auto 0;
