@@ -38,9 +38,9 @@ That's one reason why the I18n API supports defaults. Using defaults we might ex
 I18n.t(:'flash.post.update.success', :default => [:'flash.update.success'])
 </pre>
 
-This way translators can decide whether to use the default translation or specify a different one for this particular model. But that obviously we don't want to type that all the time.
+This way translators can decide whether to use the default translation or specify a different one for this particular model. But obviously we don't want to type that all the time.
 
-Also, Rails' @translate@ view helper supports a great convention of automatically scoping translation keys to a. the current controller name and b. the current view/template name. E.g. the following lines will both look up the same translation key @:'posts.show.edit'@:
+Also, Rails' @translate@ view helper supports a great convention of automatically scoping translation keys to the current controller name and the current view/template name. E.g. the following lines will both look up the same translation key @:'posts.show.edit'@:
 
 <pre>
 # in posts/show.html.erb
@@ -56,7 +56,7 @@ t('posts.show.edit', :defaults => [:'posts.edit', :edit])
 
 Enter @I18n::Cascade@.
 
-This "helper module":https://github.com/svenfuchs/i18n/blob/master/lib/i18n/backend/cascade.rb one of the lesser known modules which are shipped with the "I18n gem":http://rubygems.org/gems/i18n. It can be included into compliant I18n backends and can be configured by passing a :cascade option per request.
+This "helper module":https://github.com/svenfuchs/i18n/blob/master/lib/i18n/backend/cascade.rb one of the lesser known modules which are shipped with the "I18n gem":http://rubygems.org/gems/i18n. It can be included into compliant I18n backends and can be configured by passing a @:cascade@ option per request.
 
 Starting from version 0.5.0 the behaviour above can be achieved like this:
 
@@ -88,7 +88,7 @@ I generally recommend using Rails' controller/view scoping convention. Together 
 
 h2. I18n::MissingTranslations
 
-The "i18n-missing_translations":http://github.com/svenfuchs/i18n-missing_translations hooks into the @I18n::ExceptionHandler@ class and logs @I18n::MissingTranslationData@ exceptions. It includes:
+The "i18n-missing_translations":http://github.com/svenfuchs/i18n-missing_translations gem hooks into the @I18n::ExceptionHandler@ class and logs @I18n::MissingTranslationData@ exceptions. It includes:
 
 * an in-memory logger that simply holds missing translations during a request or test run and
 * a middleware that can be used to dump the contents of the logger to a file after each request
@@ -103,7 +103,7 @@ at_exit { I18n.missing_translations.dump }
 
 This simply outputs a YAML snippet for all translations that were missing during the test run which can be copied over to the translations file.
 
-In development mode one rather will want to log missing translations to an actual translations file. The provided middleware does that by logging to a file missing_translations.yml in your locales dir (which is config/locales if present or the current directory otherwise). You can also pass the filename as an optional argument:
+In development mode one rather will want to log missing translations to an actual translations file. The provided middleware does that by logging to a file @missing_translations.yml@ in your locales dir (which is config/locales if present or the current directory otherwise). You can also pass the filename as an optional argument:
 
 <pre>
 config.app_middleware.use(I18n::MissingTranslations) if Rails.env.development?
@@ -111,7 +111,7 @@ config.app_middleware.use(I18n::MissingTranslations) if Rails.env.development?
 
 The middleware reads and writes per request. That means that on subsequent requests missing translations are added to the @missing_translations.yml@ file. So if you go ahead and copy translations from the @missing_translations.yml@ to your actual locale files you will also want to clear or delete @missing_translations.yml@.
 
-Also note that Rails does not pick up new locale files between requests. That effectively means that manual changes to a new @missing_translations.yml@ file might be overwritten unless you restart the server. Thus your workflow for finding and moving missing translation keys might look something like this:
+Also note that Rails does not pick up new locale files between requests (I'd consider that a bug, in development mode it should pick them up). That effectively means that manual changes to a new @missing_translations.yml@ file might be overwritten unless you restart the server. Thus your workflow for finding and moving missing translation keys might look something like this:
 
 * start the server
 * click around/work on stuff
