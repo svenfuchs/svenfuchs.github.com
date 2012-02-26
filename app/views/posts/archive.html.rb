@@ -40,7 +40,7 @@ class Posts::Archive < Minimal::Template
   end
 
   def archived_posts
-    Blog.first.posts.group_by { |post| post.created_at.year }.tap do |archive|
+    Blog.first.posts.group_by { |post| post.published_at.year }.tap do |archive|
       archive.each do |year, posts|
         archive[year] = posts.group_by do |post|
           I18n.l(post.created_at, :format => '%B')
