@@ -20,6 +20,26 @@ ActiveRecord::Schema.define(:version => 20101109000000) do
     t.string "tag"
   end
 
+  create_table "categories", :force => true do |t|
+    t.integer "section_id"
+    t.integer "parent_id"
+    t.integer "lft",        :default => 0, :null => false
+    t.integer "rgt",        :default => 0, :null => false
+    t.string  "name"
+    t.string  "slug"
+    t.string  "path"
+    t.integer "level",      :default => 0, :null => false
+  end
+
+  create_table "categorizations", :force => true do |t|
+    t.integer "categorizable_id"
+    t.string  "categorizable_type"
+    t.integer "category_id"
+  end
+
+  add_index "categorizations", ["categorizable_id"], :name => "index_categorizations_on_categorizable_id"
+  add_index "categorizations", ["category_id"], :name => "index_categorizations_on_category_id"
+
   create_table "contents", :force => true do |t|
     t.integer  "site_id"
     t.integer  "section_id"

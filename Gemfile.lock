@@ -1,44 +1,50 @@
 PATH
   remote: /Volumes/Users/sven/Development/projects/adva-cms2/adva-blog
   specs:
-    adva-blog (0.0.10)
+    adva-blog (0.0.13)
       adva-core
       truncate_html
 
 PATH
   remote: /Volumes/Users/sven/Development/projects/adva-cms2/adva-cache
   specs:
-    adva-cache (0.0.10)
+    adva-cache (0.0.13)
       adva-core
       rack-cache-purge (= 0.0.2)
       rack-cache-tags (= 0.0.6)
       reference_tracking (= 0.0.4)
 
 PATH
+  remote: /Volumes/Users/sven/Development/projects/adva-cms2/adva-categories
+  specs:
+    adva-categories (0.0.13)
+      adva-core
+
+PATH
   remote: /Volumes/Users/sven/Development/projects/adva-cms2/adva-core
   specs:
-    adva-core (0.0.10)
+    adva-core (0.0.13)
       activesupport-slices (= 0.0.2)
       gem-patching (= 0.0.3)
       i18n (= 0.5.0)
       i18n-missing_translations (= 0.0.1)
       inherited_resources (= 1.2.2)
-      inherited_resources_helpers (= 0.0.14)
+      inherited_resources_helpers (= 0.0.15)
       kronn-has_many_polymorphs (= 3.0.2)
       minimal (= 0.0.26)
-      rails (= 3.0.7)
-      rake (= 0.8.7)
+      rails (= 3.0.9)
+      rake (= 0.9.2)
       routing-filter (= 0.2.0)
       silence_log_tailer (= 0.0.1)
       simple_form (~> 1.3.0)
-      simple_nested_set (= 0.1.7)
+      simple_nested_set (~> 0.1.8)
       simple_slugs (= 0.0.8)
-      simple_table (= 0.0.17)
+      simple_table (= 0.0.18)
 
 PATH
   remote: /Volumes/Users/sven/Development/projects/adva-cms2/adva-markup
   specs:
-    adva-markup (0.0.10)
+    adva-markup (0.0.13)
       RedCloth
       adva-core
       rdiscount
@@ -46,23 +52,29 @@ PATH
 PATH
   remote: /Volumes/Users/sven/Development/projects/adva-cms2/adva-static
   specs:
-    adva-static (0.0.10)
+    adva-static (0.0.13)
+      adva-blog
+      adva-cache
+      adva-categories
       adva-core
+      adva-markup
+      hashr
       nokogiri
       rack-cache
+      sqlite3
       watchr
 
 GEM
   remote: http://rubygems.org/
   specs:
-    RedCloth (4.2.7)
+    RedCloth (4.2.9)
     abstract (1.0.0)
-    actionmailer (3.0.7)
-      actionpack (= 3.0.7)
-      mail (~> 2.2.15)
-    actionpack (3.0.7)
-      activemodel (= 3.0.7)
-      activesupport (= 3.0.7)
+    actionmailer (3.0.9)
+      actionpack (= 3.0.9)
+      mail (~> 2.2.19)
+    actionpack (3.0.9)
+      activemodel (= 3.0.9)
+      activesupport (= 3.0.9)
       builder (~> 2.1.2)
       erubis (~> 2.6.6)
       i18n (~> 0.5.0)
@@ -70,68 +82,49 @@ GEM
       rack-mount (~> 0.6.14)
       rack-test (~> 0.5.7)
       tzinfo (~> 0.3.23)
-    activemodel (3.0.7)
-      activesupport (= 3.0.7)
+    activemodel (3.0.9)
+      activesupport (= 3.0.9)
       builder (~> 2.1.2)
       i18n (~> 0.5.0)
-    activerecord (3.0.7)
-      activemodel (= 3.0.7)
-      activesupport (= 3.0.7)
-      arel (~> 2.0.2)
+    activerecord (3.0.9)
+      activemodel (= 3.0.9)
+      activesupport (= 3.0.9)
+      arel (~> 2.0.10)
       tzinfo (~> 0.3.23)
-    activeresource (3.0.7)
-      activemodel (= 3.0.7)
-      activesupport (= 3.0.7)
-    activesupport (3.0.7)
+    activeresource (3.0.9)
+      activemodel (= 3.0.9)
+      activesupport (= 3.0.9)
+    activesupport (3.0.9)
     activesupport-slices (0.0.2)
     arel (2.0.10)
     builder (2.1.2)
-    columnize (0.3.4)
-    cucumber (0.9.0)
-      builder (~> 2.1.2)
-      diff-lcs (~> 1.1.2)
-      gherkin (~> 2.2.2)
-      json (~> 1.4.6)
-      term-ansicolor (~> 1.0.5)
-    cucumber-rails (0.3.2)
-      cucumber (>= 0.8.0)
-    database_cleaner (0.6.7)
-    diff-lcs (1.1.2)
     erubis (2.6.6)
       abstract (>= 1.0.0)
-    factory_girl (1.3.2)
-    fakefs (0.3.2)
     gem-patching (0.0.3)
     gem_patching (0.0.2)
-    gherkin (2.2.9)
-      json (~> 1.4.6)
-      term-ansicolor (~> 1.0.5)
-    has_scope (0.5.0)
+    has_scope (0.5.1)
+    hashr (0.0.19)
     i18n (0.5.0)
     i18n-missing_translations (0.0.1)
     inherited_resources (1.2.2)
       has_scope (~> 0.5.0)
       responders (~> 0.6.0)
-    inherited_resources_helpers (0.0.14)
-    json (1.4.6)
+    inherited_resources_helpers (0.0.15)
+    json (1.6.5)
     kronn-has_many_polymorphs (3.0.2)
       activerecord
-    launchy (2.0.3)
-    linecache (0.46)
-      rbx-require-relative (> 0.0.4)
     mail (2.2.19)
       activesupport (>= 2.3.6)
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
-    mime-types (1.16)
+    mime-types (1.17.2)
     minimal (0.0.26)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
-    mocha (0.9.12)
     nokogiri (1.5.0)
-    polyglot (0.3.1)
-    rack (1.2.3)
+    polyglot (0.3.3)
+    rack (1.2.5)
     rack-cache (0.5.3)
       rack (>= 0.4)
     rack-cache-purge (0.0.2)
@@ -141,55 +134,48 @@ GEM
       rack (>= 1.0.0)
     rack-test (0.5.7)
       rack (>= 1.0)
-    rails (3.0.7)
-      actionmailer (= 3.0.7)
-      actionpack (= 3.0.7)
-      activerecord (= 3.0.7)
-      activeresource (= 3.0.7)
-      activesupport (= 3.0.7)
+    rails (3.0.9)
+      actionmailer (= 3.0.9)
+      actionpack (= 3.0.9)
+      activerecord (= 3.0.9)
+      activeresource (= 3.0.9)
+      activesupport (= 3.0.9)
       bundler (~> 1.0)
-      railties (= 3.0.7)
-    railties (3.0.7)
-      actionpack (= 3.0.7)
-      activesupport (= 3.0.7)
+      railties (= 3.0.9)
+    railties (3.0.9)
+      actionpack (= 3.0.9)
+      activesupport (= 3.0.9)
       rake (>= 0.8.7)
+      rdoc (~> 3.4)
       thor (~> 0.14.4)
-    rake (0.8.7)
-    rbx-require-relative (0.0.5)
+    rake (0.9.2)
     rdiscount (1.6.8)
+    rdoc (3.12)
+      json (~> 1.4)
     reference_tracking (0.0.4)
-    responders (0.6.4)
+    responders (0.6.5)
     routing-filter (0.2.0)
       actionpack
-    ruby-debug (0.10.4)
-      columnize (>= 0.1)
-      ruby-debug-base (~> 0.10.4.0)
-    ruby-debug-base (0.10.4)
-      linecache (>= 0.3)
     silence_log_tailer (0.0.1)
     simple_form (1.3.1)
-    simple_nested_set (0.1.7)
+    simple_nested_set (0.1.8)
       activerecord (~> 3.0.3)
       gem_patching
     simple_slugs (0.0.8)
       activerecord (~> 3.0.3)
       i18n
-    simple_table (0.0.17)
+    simple_table (0.0.18)
       actionpack (~> 3.0.0)
+      activerecord (~> 3.0.0)
       activesupport (~> 3.0.0)
-    sqlite3-ruby (1.2.5)
-    term-ansicolor (1.0.5)
-    test_declarative (0.0.5)
+    sqlite3 (1.3.5)
     thor (0.14.6)
-    treetop (1.4.9)
+    treetop (1.4.10)
+      polyglot
       polyglot (>= 0.3.1)
-    truncate_html (0.5.1)
-    tzinfo (0.3.29)
+    truncate_html (0.5.4)
+    tzinfo (0.3.31)
     watchr (0.7)
-    webrat (0.7.0)
-      nokogiri (>= 1.2.0)
-      rack (>= 1.0)
-      rack-test (>= 0.5.3)
 
 PLATFORMS
   ruby
@@ -197,18 +183,7 @@ PLATFORMS
 DEPENDENCIES
   adva-blog!
   adva-cache!
+  adva-categories!
   adva-core!
   adva-markup!
   adva-static!
-  cucumber (= 0.9.0)
-  cucumber-rails (= 0.3.2)
-  database_cleaner
-  factory_girl (= 1.3.2)
-  fakefs
-  launchy
-  mocha
-  ruby-debug
-  sqlite3-ruby (= 1.2.5)
-  test_declarative
-  thor
-  webrat (= 0.7.0)
