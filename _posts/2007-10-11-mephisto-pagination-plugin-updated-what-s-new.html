@@ -1,0 +1,80 @@
+---
+layout: post
+title: "Mephisto Pagination Plugin updated: what's new?"
+---
+<p>Let me first mention that the plugin now pages tag pages, which I have been asked for by some people. This stuff will just work like expected.</p>
+
+<p>Also, it's worth noting that I am running my blog on Mephisto edge on Rails rev 7405 (i.e. that's Rails edge as of some weeks ago, it's not the Rails 2.0 release candidate!). I have neither tested this with Mephisto 0.7.3 on Rails 1.2.3 nor Rails 2.0 yet. The will_paginate plugin works on Rails 1.2.3 and most probably will work on Rails 2.0, so IMO there's no obvious reason why the Mephisto Paged Article Lists plugin shouldn't do so as well. But I can't garantuee anything like that. Please post your results in the comments if you happen to check this out!</p>
+
+<p>Ok, with this out of the way, let's look at interesting stuff.</p>
+
+<h2>Now riding (a liquidized) will_paginate</h2>
+
+<p>You most probably know that Rails edge has kicked pagination as a built-in core feature and now requires us to choose from a variety of plugins to get this functionality. This really is a good thing. But of course it means that we have to re-integrate a plugin in our applications.</p>
+
+<p>Rick chose will_paginate as the pagination solution that is shipped with Mephisto right out of the box now. Therefor the most obvious solution was to refactor my plugin to now rely on <a href="http://errtheblog.com/post/4791" title="err.the_blog.find_by_title('I'm Paginating Again')">will_paginate</a>, too.</p>
+
+<p>To get will_paginate working from within Liquid templates I needed to do some wicked trickery though with the WillPaginate::Collection, which I guess probably deserves an article on its own. But in short the Mephisto PagedArticleList plugin now basically does the following:</p>
+
+<ul>
+<li>It registers a before_filter which extracts the page parameter from the url path. (This is necessary because of Mephisto's dynamic routes mechanism.)</li>
+<li>It replaces the MephistoController actions dispatch_list and dispatch_tags with versions that assign paginated collections to the template.</li>
+<li>It adds a to_liquid method to the WillPaginate::Collection and provides a new WillPaginate::CollectionDrop to be able to access the collection from within the template accordingly.</li>
+<li>It registers a series of filters to Liquid in order to allow you to use the paginated collection from within your templates.</li>
+</ul>
+
+<p>That's it.</p>
+
+<p>All you need to know though is that you can choose from the following Liquid filters:</p>
+
+<h4>Prev/next page links</h4>
+
+<p>Like before, there's a convenient <code>prev_next_page_links</code> filter that provides prev/next links like those you can see on this blog. Here's a screenshot:</p>
+
+<p><img src="/assets/2007/9/26/pagination_prev_next.png" /></p>
+
+<p>The usage of this filter has slightly changed because of the WillPaginate collection that we are now using. You can now do:</p>
+
+<pre><code>
+{{ articles | prev_next_page_links: path_info }}
+</code></pre>
+
+<p>You can also provide two alternative link texts and/or a separator to this filter. I.e. the following usages will work as expected:</p>
+
+<pre><code>
+{{ articles | prev_next_page_links: path_info, 'previous', 'next' }}
+{{ articles | prev_next_page_links: path_info, 'previous', 'next', '&amp;middot;' }}
+{{ articles | prev_next_page_links: path_info, '&amp;middot;' }}
+</code></pre>
+
+<h4>Single link filters</h4>
+
+<p>Probably you might want to control these links individually. You can then (like before) use the following filters:</p>
+
+<pre><code>
+{{ articles | link_to_prev_page: path_info }}
+{{ articles | link_to_next_page: path_info }}
+</code></pre>
+
+<p>Again, you can inject a different link text. Like so:</p>
+
+<pre><code>
+{{ articles | link_to_prev_page: path_info, 'previous' }}
+{{ articles | link_to_next_page: path_info, 'next' }}
+</code></pre>
+
+<h4>Digg-style navigation</h4>
+
+<p>As we are riding on the back of will_paginate, only some minor additions were necessary to enable the usage of the will_paginate view helper from within our Liquid templates. That means that now you can do this:</p>
+
+<pre><code>
+{{  articles | will_paginate: path_info }}
+</code></pre>
+
+<p>... which will result in a nice list of pagination links. You can now easily add some CSS styles (e.g., like the <a href="http://www.strangerstudios.com/sandbox/pagination/diggstyle_css.txt">stylesheet</a> proposed <a href="http://www.strangerstudios.com/sandbox/pagination/diggstyle.php" title="Digg-style Pagination">here</a>) and achieve something that looks very similar to the paginators on Digg, Flickr and others.</p>
+
+<p>Probably something like this:</p>
+
+<p><img src="/assets/2007/9/26/pagination_digg.png" /></p>
+
+<p>What do you think?</p>

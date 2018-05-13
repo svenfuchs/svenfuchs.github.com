@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="geo.region" content="DE-BE" />
+    <meta name="geo.placename" content="Berlin" />
+    <meta name="geo.position" content="52.51168;13.458236" />
+    <meta name="ICBM" content="52.51168, 13.458236" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="http://feeds.feedburner.com/svenfuchs" />
+    <link rel="openid.server" href="http://www.myopenid.com/server" />
+    <link rel="openid.delegate" href="http://svenfuchs.myopenid.com/" />
+    <link href="http://svenfuchs.com" rel="home" />
+    <title>Funny things and common gotchas to know and avoid - Get on Rails with Globalize! Part 7 of 8</title>
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <link rel="stylesheet" href="/stylesheets/highlight.css">
+    <script src="/javascripts/highlight.js"></script>
+  </head>
+  <body>
+    <div id="page">
+  <div id="content">
+    <p><a href="/">&larr; Home</a></p>
+
+    <div id="post">
+      <h1>Funny things and common gotchas to know and avoid - Get on Rails with Globalize! Part 7 of 8</h1>
+      <h2>I'm seeing lot's of strange characters!</h2>
+
+<p>... also known as: what's with all these quotation marks?</p>
+
+<p>While it'd probably be tempting to quote the classics "The sixties weren't good to you, were they?" (<a href="http://www.imdb.com/title/tt0317219/quotes">Sarge, Cars</a>) the real I18n superhero knows that you actually have a problem with your character encoding here. What you need to do is get your entire application stack (Ruby, Rails, your database, webserver ...) talk utf-8.</p>
+
+<p>Here are some resources that you might find useful:</p>
+
+<ul>
+<li><a href="http://www.artweb-design.de/2006/12/03/some-common-questions-on-getting-started-get-on-rails-with-globalize-part-2-of-6">Some common questions on getting started - Get on Rails with Globalize! Part 2 of 6</a></li>
+<li><a href="http://www.artweb-design.de/2007/2/14/common-mistakes-with-character-encodings-part-1">Common mistakes with character encodings - part 1</a></li>
+<li><a href="http://www.artweb-design.de/2007/3/10/server-setup-mistakes-character-encoding">Server config: Mistakes with character encoding - part 2</a></li>
+</ul>
+
+<h2>Weird Currency parsing results</h2>
+
+<p>Beware that the Globalize Currency class is still somewhat biased when it comes to parsing numbers in that it will always use a dot "." as a decimal separator regardless of what's defined as the current Locale.</p>
+
+<p>Also, there's a bug that causes Globalize to parse a String like "1.9" to a
+Cents value of 109 Cents instead of 190 Cents like one would expect. So beware the results.</p>
+
+<p>Both of these problems are fixed by this patch though (to the best of my knowledge this was first posted on the <a href="http://www.ruby-forum.com/topic/70175">Rails I18n mailinglist
+</a>):</p>
+
+<pre><code>
+Locale.set('en-US')
+p Globalize::Currency.parse('1.90') # => #&lt;Globalize::Currency:0x3768078 @cents=190>
+Locale.set('de-DE')
+p Globalize::Currency.parse('1,90') # => #&lt;Globalize::Currency:0x3767f10 @cents=190>
+</code></pre>
+
+
+<h2>Globalize WrongLanguageError on attribute read</h2>
+
+<p>When you encounter this error you're probably doing something like this:</p>
+
+<pre><code>
+p = Page.find(1) # returns an english page
+Globalize::Locale.set 'fr-CH' # p is now the 'wrong' language
+puts p.title # This throws WrongLanguageError.
+</code></pre>
+
+<p>This really should be:</p>
+
+<pre><code>
+Globalize::Locale.set 'fr-CH'
+p = Page.find(1) # or: p.reload (if p is already there)
+puts p.title
+</code></pre>
+
+<p>Alternatively, if you have <a href="http://opensvn.liquid-concept.com/trac/globalize_extension">Globalize extensions</a> installed, you can use the switch_language method:</p>
+
+<pre><code>
+@page.switch_language(base_language.code) { @page.title }
+</code></pre>
+
+
+<h2>Globalizes screws my RJS (or: my IE6)!</h2>
+
+<p>Not really.</p>
+
+<p>But probably you've followed the instructions from Chad Fowlers book "Rails Receipes" (page 268) and adopted the following piece of code:</p>
+
+<pre><code>
+after_filter :set_charset
+  def set_charset
+    unless @headers["Content-Type"] =~ /charset/i
+      @headers["Content-Type"] ||= ""
+      @headers["Content-Type"] += "; charset=utf-8"
+    end
+  end
+end
+</code></pre>
+
+<p>With this you'll most probably end up delivering broken HTTP headers like this:</p>
+
+<pre><code>Content-Type: ;charset=utf-8</code></pre>
+
+<p>It has been reported that this successfully screws RJS and apparently
+leaves <a href="http://www.nabble.com/FIXED-Internet-Explorer-cannot-download-pages-tf2716459s17045.html">IE 6.0 choking</a>, too.</p>
+
+<p>You can easily get around this by changing the fourth line to:</p>
+
+<pre><code>@headers["Content-Type"] ||= "text/html"</code></pre>
+
+<p>Another, probably slightly better variant of the <code>set_charset</code> filter can be
+found here: <a href="http://www.artweb-design.de/2006/12/03/some-common-questions-on-getting-started-get-on-rails-with-globalize-part-2-of-6">Some common questions on getting started - Get on Rails with Globalize! Part 2 of 6</a></p>
+
+<h2>Others?</h2>
+
+<p>Of course this list can't ever be complete. So, again: if you've found any other common gotchas concerning Globalize, please drop me a note!</p>
+
+    </div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'svenfuchs';
+        var disqus_title = '<%= page.title %>';
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  </div>
+</div>
+
+    <a href="http://svenfuchs.com" rel="me" ></a>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-24665870-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>

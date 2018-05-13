@@ -1,0 +1,81 @@
+---
+layout: post
+title: "Mephisto Plugin: Tag Cloud"
+---
+&uot<p>This plugin allows you to display a tag cloud in your Mephisto templates. It is, as of writing, the most complete, sophisticated, standard-conform (uses the <a href="http://microformats.org/wiki/rel-tag" title="rel-tag - Microformats">rel-tag</a> Microformat) and allover-awesome implementation of a tag cloud plugin for Mephisto. You guessed it, I'm biased ;)</p>
+
+<p>The architecture of this plugin (i.e. the implementation as a custom Liquid tag) is based on the <a href="http://svn.boldr.net/mephisto/plugins/trunk/mephisto_tag_cloud/">Boldr tag cloud plugin</a> by Nicolas Mérouze.</p>
+
+<h3>Usage</h3>
+
+<p>To install the plugin you can do:</p>
+
+<pre><code>script/plugin install http://svn.artweb-design.de/stuff/mephisto/mephisto_tag_cloud</code></pre>
+
+<p>Thereafter you can use a dedicated liquid tag, 'tagcloud', in your templates like this:</p>
+
+<pre><code>
+&lt;ul class="tagcloud">
+&#124;% tagcloud as tag %}
+	&lt;li>{{ tag | link_to_tag }}&lt;/li>
+&#124;% endtagcloud %}
+&lt;/ul>
+</code></pre>
+
+<p>We use CSS to define the formatting. Just define classes like these in your stylesheets:</p>
+
+<pre><code>
+.tagcloud .weight-1 { font-size: 10px; }
+.tagcloud .weight-2 { font-size: 11px; }
+.tagcloud .weight-3 { font-size: 12px; }
+.tagcloud .weight-4 { font-size: 13px; }
+</code></pre>
+
+<h3>Options</h3>
+
+<p>You can configure the number of sizes/weights that are generated through the option:</p>
+
+<pre><code>TagCloud.sizes = 6 # default: 10</code></pre>
+
+<p>This get's you a distribution over 6 sizes.</p>
+
+<p>You can configure whether the tags are ordered alphabetically or by the weight of the tag by using:</p>
+
+<pre><code>
+TagCloud.order = :alpha  # default
+TagCloud.order = :weight
+</code></pre>
+
+<p>You can specify the distribution method that is used to distribute the tags over the weights by using:</p>
+
+<pre><code>
+TagCloud.method = :log		# logarithmic distribution
+TagCloud.method = :linear	# linear (weights share same range of counts)
+TagCloud.method = lambda {|number| ... } 	# custom: specify your own
+</code></pre>
+
+<h3>Tag cloud distribution graph</h3>
+
+<p>To visualize the distribution of your tags/weights and play around with the options, you can add this to your routes:</p>
+
+<pre><code>
+# config/routes.rb
+map.connect 'tagcloud/distribution',
+            :controller => 'tag_cloud',
+            :action => 'distribution'
+</code></pre>
+
+<p>Afterwards you can access a simple distribution graph at /tagcloud/distribution. For an example of these graphs see <a href="/a-better-mephisto-tag-cloud-plugin">here</a>.</p>
+
+<h3>Further reading</h3>
+
+<p>You can read more about this plugin:</p>
+
+<ul>
+<li><a href="/2007/9/27/looking-for-the-perfect-mephisto-tagcloud-plugin">Introductory thoughs: Looking for the perfect Mephisto TagCloud plugin</a></li>
+<li><a href="/2007/10/14/a-better-mephisto-tag-cloud-plugin">Announcement of the plugin: A better Mephisto Tag Cloud Plugin</a></li>
+</ul>
+
+<h3>Feedback?</h3>
+
+<p>Very appreciated! Please email me.</p>

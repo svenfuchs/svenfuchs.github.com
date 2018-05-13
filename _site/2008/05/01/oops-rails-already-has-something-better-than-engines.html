@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="geo.region" content="DE-BE" />
+    <meta name="geo.placename" content="Berlin" />
+    <meta name="geo.position" content="52.51168;13.458236" />
+    <meta name="ICBM" content="52.51168, 13.458236" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="http://feeds.feedburner.com/svenfuchs" />
+    <link rel="openid.server" href="http://www.myopenid.com/server" />
+    <link rel="openid.delegate" href="http://svenfuchs.myopenid.com/" />
+    <link href="http://svenfuchs.com" rel="home" />
+    <title>Oops! Rails already has something better than Engines</title>
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <link rel="stylesheet" href="/stylesheets/highlight.css">
+    <script src="/javascripts/highlight.js"></script>
+  </head>
+  <body>
+    <div id="page">
+  <div id="content">
+    <p><a href="/">&larr; Home</a></p>
+
+    <div id="post">
+      <h1>Oops! Rails already has something better than Engines</h1>
+      <p>To check that out I've reassemled an application that I'm currently working on and that uses Engines to modularize things and added this line to config/environment.rb:</p>
+
+<pre><code class="ruby">
+config.plugin_paths &lt;&lt; 'vendor/engines'
+</code></pre>
+
+<p>Now I have a working application with a directory layout like this:</p>
+
+<pre><code>
+vendor/
+  engines/
+    adva_blog/
+      app/
+        controllers/
+        helpers/
+        models/
+        views/
+      db/
+        migrate/
+      init.rb
+      routes.rb
+    adva_cms/
+      ...
+    adva_comments/
+      ...
+    adva_wiki/
+      ...
+  plugins/
+    acts_as_list/
+    acts_as_paranoid/
+    ...
+    will_paginate/
+</code></pre>
+
+<p>At the same time, the <code>app/</code> directory is almost empty, because this application is meant as a base or platform for custom applications. Obviously one could move the <code>vendor/engines/</code> folder somewhere else. Perhaps to <code>apps/</code> below the <code>app/</code> directory?. </p>
+
+<p><strong>I totally love this!</strong></p>
+
+<p>But, yeah. Of course this is not <strong>exactly</strong> the same like what John was talking about. He spoke of first-class sub-apps, i.e. something that's conceptually on the same level as the Rails "app" itself. With Engines those apps are just plugins. </p>
+
+<p>"Just plugins" in Rails 2.0 means that they are actually very powerful. But there are also some traps with unexpected Depenendcies and class reloading issues that plugins in Rails do <strong>not</strong> live on the same level as the app. They seem to be meant as <strong>framework-level</strong> extensions, not <strong>application-level</strong> extensions.</p>
+
+<p>If Rails would at some point compensate for that, probably by inventing the concept of a dedicated "application-level plugin" that behaves exactly the same way as the application itself does (i.e. reloads in dev mode), ... then John's vision finally would have become real.</p>
+
+<p>Until then, though, I'm super happy to be able to store higher-level Engines separate from lower-level plugins :)</p>
+
+<h2>Application-level plugins?</h2>
+
+<p>The point is that when it comes to, e.g., using <code>ActiveRecord Observers</code> Rails Dependencies produces errors that can be pretty hard to track when models from plugins are involved. There are other several scenarios like this.</p>
+
+<p>My solution to these issues so far is to put the following line into my plugin's init.rb file:</p>
+
+<pre><code class="ruby">
+Dependencies.load_once_paths -= Dependencies.load_once_paths.select{|path| \
+  path =~ %r(^#{File.dirname(__FILE__)}) }
+</code></pre>
+
+<p>I haven't understood <code>Dependencies</code> well enough yet though to be sure if that's the best way to do have everything in a plugin be reloaded seemlessly with every request in dev mode. But so far it works quite well.</p>
+
+<p>If you happen to know a better solution please let me know!</p>
+
+<p>Maybe it would be a nice idea to wrap that sucker above into a method on <code>Engines::Plugin</code>. Something like: <code>reloadable!</code> and call that from the init.rb file instead.</p>
+
+    </div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'svenfuchs';
+        var disqus_title = '<%= page.title %>';
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  </div>
+</div>
+
+    <a href="http://svenfuchs.com" rel="me" ></a>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-24665870-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>

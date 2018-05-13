@@ -1,0 +1,132 @@
+---
+layout: post
+title: Organizing translations with I18n::Cascade and I18n::MissingTranslations
+---
+
+<p>When it comes to I18n one of the questions I get asked most often is how to organize translation keys. So I thought I&#8217;d write down how we&#8217;re doing it at work, and thus <a href="http://github.com/svenfuchs/adva-cms2">adva-cms2</a>.</p>
+
+<h2><span class="caps">DRY</span> does not apply to L10n</h2>
+
+<p>Before I get into this let me (once again) explain why <span class="caps">DRY</span> doesn&#8217;t apply to L10n though because that&#8217;s the reason why we allow for those deeply nested keys and namespaces in I18n.</p>
+
+<p>Here&#8217;s a slide from my <a href="http://vimeo.com/12665914">Anatomy of Ruby I18n</a> talk at Euruko 2010:</p>
+
+<pre>
+class Internationalization &lt; Abstraction
+  def perform
+    @developer.work!
+  end
+end
+
+class Localization &lt; Concretion
+  def perform
+    @translator.work!
+  end
+end
+</pre>
+
+<p>Internationalization refers to the work we do as developers. E.g. we extract strings from our code and make them available in translation files. Obviously the principle of <span class="caps">DRY</span> applies to this work in the sense that we don&#8217;t want to reimplement those portions of our code that actually looks up translations and stuff like that.</p>
+
+<p>But <span class="caps">DRY</span> does <strong>not</strong> apply to Localization and therefor also doesn&#8217;t apply to our translation keys which can be seen as our interface to or contract with our translators. Instead, as developers our job is to pass control and enable translators to define different translations for the (seemingly) same key in different contexts.</p>
+
+<p>For example, even if the string &#8220;edit&#8221; works as a translation in almost any context in English, that might not be true for other languages that have richer semantics and might have different translations for &#8220;editing&#8221; different things. As a developer we won&#8217;t ever be able to know these things in advance and so we just can&#8217;t predict which keys can be joined (&#8220;DRYed up&#8221;) and which can&#8217;t. <code>:'post.edit'</code> may or may not have the same translation in every target language as <code>:'user.edit'</code>.</p>
+
+<h2>Using I18n::Cascade</h2>
+
+<p>That&#8217;s one reason why the I18n <span class="caps">API</span> supports defaults. Using defaults we might express &#8220;either use an existing flash message for this particular model or use the common default message&#8221; like this:</p>
+
+<pre>
+I18n.t(:'flash.post.update.success', :default =&gt; [:'flash.update.success'])
+</pre>
+
+<p>This way translators can decide whether to use the default translation or specify a different one for this particular model. But obviously we don&#8217;t want to type that all the time.</p>
+
+<p>Also, Rails&#8217; <code>translate</code> view helper supports a great convention of automatically scoping translation keys to the current controller name and the current view/template name. E.g. the following lines will both look up the same translation key <code>:'posts.show.edit'</code>:</p>
+
+<pre>
+# in posts/show.html.erb
+t(:'.edit')
+t(:'posts.show.edit')
+</pre>
+
+<p>Now, why not extend this convention so that the <code>translate</code> view helper always adds defaults so it effectively behaves like this call:</p>
+
+<pre>
+t('posts.show.edit', :defaults =&gt; [:'posts.edit', :edit])
+</pre>
+
+<p>Enter <code>I18n::Cascade</code>.</p>
+
+<p>This <a href="https://github.com/svenfuchs/i18n/blob/master/lib/i18n/backend/cascade.rb">helper module</a> one of the lesser known modules which are shipped with the <a href="http://rubygems.org/gems/i18n">I18n gem</a>. It can be included into compliant I18n backends and can be configured by passing a <code>:cascade</code> option per request.</p>
+
+<p>Starting from version 0.5.0 the behaviour above can be achieved like this:</p>
+
+<pre>
+I18n::Backend::Simple.send(:include, I18n::Backend::Cascade)
+
+# should really be a module, but i have no idea how/where to include it :/
+ActionView::Base.class_eval do
+  def translate(key, options = {})
+    super(key, options.merge(:cascade =&gt; { :offset =&gt; 2, :skip_root =&gt; false }))
+  end
+  alias t translate
+end
+</pre>
+
+<p>Now either of these keys could be translated and will be found &#8230; obviously starting with the most specific key <code>:'posts.show.edit'</code> and cascading down to the least specific one <code>:edit</code>:</p>
+
+<pre>
+# en.yml
+en:
+  edit: Edit
+  posts:
+    edit: Edit
+    show:
+      edit: Edit
+</pre>
+
+<p>I generally recommend using Rails&#8217; controller/view scoping convention. Together with I18n::Cascade it is quite easy to provide some of the more common translations (like &#8220;new&#8221;, &#8220;edit&#8221;, &#8220;delete&#8221;) on common scopes but still allow translators to provide translations for particular view specific keys.</p>
+
+<h2>I18n::MissingTranslations</h2>
+
+<p>The <a href="http://github.com/svenfuchs/i18n-missing_translations">i18n-missing_translations</a> gem hooks into the <code>I18n::ExceptionHandler</code> class and logs <code>I18n::MissingTranslationData</code> exceptions. It includes:</p>
+
+<ul>
+	<li>an in-memory logger that simply holds missing translations during a request or test run and</li>
+	<li>a middleware that can be used to dump the contents of the logger to a file after each request</li>
+</ul>
+
+<p>Pretty handy.</p>
+
+<p>Using the in-memory logger makes sense, e.g., in the test environment. E.g. we could add this to the test_helper or Cucumber env:</p>
+
+<pre>
+at_exit { I18n.missing_translations.dump }
+</pre>
+
+<p>This simply outputs a <span class="caps">YAML</span> snippet for all translations that were missing during the test run which can be copied over to the translations file.</p>
+
+<p>In development mode one rather will want to log missing translations to an actual translations file. The provided middleware does that by logging to a file <code>missing_translations.yml</code> in your locales dir (which is config/locales if present or the current directory otherwise). You can also pass the filename as an optional argument:</p>
+
+<pre>
+config.app_middleware.use(I18n::MissingTranslations) if Rails.env.development?
+</pre>
+
+<p>The middleware reads and writes per request. That means that on subsequent requests missing translations are added to the <code>missing_translations.yml</code> file. So if you go ahead and copy translations from the <code>missing_translations.yml</code> to your actual locale files you will also want to clear or delete <code>missing_translations.yml</code>.</p>
+
+<p>Also note that Rails does not pick up new locale files between requests (I&#8217;d consider that a bug, in development mode it should pick them up). That effectively means that manual changes to a new <code>missing_translations.yml</code> file might be overwritten unless you restart the server. Thus your workflow for finding and moving missing translation keys might look something like this:</p>
+
+<ul>
+	<li>start the server</li>
+	<li>click around/work on stuff</li>
+	<li>check config/locales/missing_translations.yml</li>
+	<li>copy any missing translation keys to your actual locale files and correct the translations</li>
+	<li>delete or clear config/locales/missing_translations.yml</li>
+	<li>restart the server</li>
+</ul>
+
+<p>By the way, <a href="https://github.com/rails/rails/blob/master/actionpack/lib/action_view/helpers/translation_helper.rb#L46-54">starting from Rails 3.1</a> the `translate` view helper will use the <code>:rescue_format</code> facility from I18n 0.5.0 <a href="https://github.com/svenfuchs/i18n/blob/master/lib/i18n/exceptions.rb#L45-48">exception handling</a>. This means that missing translations will be returned as essentially: <code>keys.last.to_s.gsub('_', ' ').titleize</code> wrapped into a span tag with a <code>translation_missing</code> class set. I.e. a missing translation for <code>:'post.show.edit'</code> will return &#8220;Edit&#8221;.</p>
+
+<p>Hopefully these hints help working with translations a little bit.</p>
+
+<p>Let me know what you think!</p>

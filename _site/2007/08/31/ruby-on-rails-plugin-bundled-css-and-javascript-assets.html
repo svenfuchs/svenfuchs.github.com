@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="geo.region" content="DE-BE" />
+    <meta name="geo.placename" content="Berlin" />
+    <meta name="geo.position" content="52.51168;13.458236" />
+    <meta name="ICBM" content="52.51168, 13.458236" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="http://feeds.feedburner.com/svenfuchs" />
+    <link rel="openid.server" href="http://www.myopenid.com/server" />
+    <link rel="openid.delegate" href="http://svenfuchs.myopenid.com/" />
+    <link href="http://svenfuchs.com" rel="home" />
+    <title>Ruby on Rails plugin: Bundled CSS and Javascript assets</title>
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <link rel="stylesheet" href="/stylesheets/highlight.css">
+    <script src="/javascripts/highlight.js"></script>
+  </head>
+  <body>
+    <div id="page">
+  <div id="content">
+    <p><a href="/">&larr; Home</a></p>
+
+    <div id="post">
+      <h1>Ruby on Rails plugin: Bundled CSS and Javascript assets</h1>
+      <p>By bundling and compacting your CSS and Javascript ressources you can significantly reduce your page load times because there's (potentially) <em>far less</em> HTTP overhead occuring.</p>
+
+<p>This little plugin does all the packaging and compacting for you - on the fly. There's no need to handle any Rake tasks or even copy stuff manually. Simply install the plugin and you're ready to use dynamic asset URLs in your templates.</p>
+
+<p>You can read more about the Bundled Assets plugin here:</p>
+
+<ul>
+<li>Introductory article, concept and some discussion: <a href="/2007/4/13/rails-plugin-blazing-fast-page-loads-through-bundled-css-and-javascript" title="Rails plugin: Blazing fast page loads through bundled CSS and Javascript - artweb design">Rails plugin: Blazing fast page loads through bundled CSS and Javascript</a></li>
+<li>Performance improvement through compiled JSMin and some configuration options added: <a href="/2007/4/27/improved-rails-bundled-css-javascript-assets-plugin" title="Serve CSS and Javascript even faster: improved Rails bundled_assets plugin - artweb design">Serve CSS and Javascript even faster: improved Rails bundled_assets plugin</a></li>
+<li>Usage tip: <a href="/2007/9/7/how-to-use-the-bundled-assets-plugin-with-rails-built-in-tag-helpers" title="How to use the Bundled assets plugin with Rails' built-in tag helpers - artweb design">How to use the Bundled assets plugin with Rails' built-in tag helpers</a></li>
+</ul>
+
+<p>You can grab the source code here:</p>
+
+<p><a href="http://svn.artweb-design.de/stuff/rails/bundled_assets/">http://svn.artweb-design.de/stuff/rails/bundled_assets</a></p>
+
+<div style="padding: 10px; border: 1px solid #555; background-color: #efefef;">
+<p>It is also worth noting that <a href="/2007/9/12/javascript-css-asset-bundling-a-prominent-feature-in-rails-2-0" title="Javascript/CSS asset bundling a prominent feature in Rails 2.0 - artweb design">bundled Javascript and CSS assets will be supported natively in Rails 2.0</a>! This feature has even bee selected as one of those prominent Rails 2.0 features that he presented during his <a href="http://blog.viget.com/whats-coming-in-rails-20/" title="What's Coming in Rails 2.0">keynote at the RailsConf Chicago 2007</a> on May 18th.</p>
+<p>In the meantime you can use this plugin with Rails 1.2.3. :-)</p>
+</div>
+
+    </div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'svenfuchs';
+        var disqus_title = '<%= page.title %>';
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  </div>
+</div>
+
+    <a href="http://svenfuchs.com" rel="me" ></a>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-24665870-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>

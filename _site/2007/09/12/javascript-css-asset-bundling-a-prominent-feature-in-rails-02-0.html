@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="geo.region" content="DE-BE" />
+    <meta name="geo.placename" content="Berlin" />
+    <meta name="geo.position" content="52.51168;13.458236" />
+    <meta name="ICBM" content="52.51168, 13.458236" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="http://feeds.feedburner.com/svenfuchs" />
+    <link rel="openid.server" href="http://www.myopenid.com/server" />
+    <link rel="openid.delegate" href="http://svenfuchs.myopenid.com/" />
+    <link href="http://svenfuchs.com" rel="home" />
+    <title>Javascript/CSS asset bundling a prominent feature in Rails 2.0</title>
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <link rel="stylesheet" href="/stylesheets/highlight.css">
+    <script src="/javascripts/highlight.js"></script>
+  </head>
+  <body>
+    <div id="page">
+  <div id="content">
+    <p><a href="/">&larr; Home</a></p>
+
+    <div id="post">
+      <h1>Javascript/CSS asset bundling a prominent feature in Rails 2.0</h1>
+      <p>Actually this stuff even is in <a href="http://dev.rubyonrails.org/svn/rails/trunk/actionpack/lib/action_view/helpers/asset_tag_helper.rb">Rails Edge</a> ever since <a href="http://dev.rubyonrails.org/changeset/6164/trunk/actionpack/lib/action_view/helpers/asset_tag_helper.rb" title="Changeset 6164 for trunk/actionpack/lib/action_view/helpers/asset_tag_helper.rb - Rails Trac - Trac">February</a>! So in Rails Edge we already can do this:</p>
+
+<pre><code>
+&lt;%= javascript_include_tag :all, :cache => true %>
+&lt;%= stylesheet_link_tag :all, :cache => true %>
+</code></pre>
+
+<p>Or more flexibly:</p>
+
+<pre><code>
+&lt;%= stylesheet_link_tag "shop", "cart", "checkout", :cache => "payment"	%>
+</code></pre>
+
+<p>That's cool :)</p>
+
+<p>And it's pretty much the same what my own <a href="http://www.artweb-design.de/projects/ruby-on-rails-plugin-bundled-css-and-javascript-assets">Bundled Assets</a> plugin does ... besides: my plugin also "compacts" Javascript and CSS by stripping things like comments and whitespace - and it still <strong>works on Rails 1.2</strong> of course.</p>
+
+<p>Huh. Wow! </p>
+
+    </div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'svenfuchs';
+        var disqus_title = '<%= page.title %>';
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  </div>
+</div>
+
+    <a href="http://svenfuchs.com" rel="me" ></a>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-24665870-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>

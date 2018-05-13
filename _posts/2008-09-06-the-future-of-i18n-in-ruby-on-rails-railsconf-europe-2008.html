@@ -1,0 +1,315 @@
+---
+layout: post
+title: The Future of I18n in Ruby on Rails - RailsConf Europe 2008
+---
+<style>
+  #talk img {
+    width: 100%;
+    border: 4px solid #ddd;
+  }
+  #talk p {
+    margin-top: 1em !important;
+    margin-bottom: 1em !important;
+    font-size: 18px !important;
+    line-height: 140% !important;
+  }
+</style>
+
+<div id="talk">
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.001.png">
+<p>Welcome everybody!</p>
+<p>I'm very happy to talk about "The future of Internationalization in Ruby on Rails" today.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.004.png">
+<p>So, who&#x2019;s me?</p>
+<p>This never occurred to me before but in a recent RailsEnvy podcast I&#x2019;ve learned that my name could be pronounced like this ...</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.005.png">
+<p>If you want to google me ...</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.006.png">
+<p>... you probably have better luck using this.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.010.png">
+<p>I'm currently living in Berlin and I love it :)</p>
+<p>I started programming in 1984</p>
+<p>I've been in business as a developer, mostly as a web developer for some years and switched to working with Ruby and then Ruby on Rails a couple of years ago.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.014.png">
+<p>Some of you might know me because I've led the Rails I18n group for the last couple of months and did the final touches on the implementation of the new API in Rails recently.</p>
+<p>Some people know my blog because of some tutorials I've written about Globalize.</p>
+<p>And I&#x2019;m currently working on a CMS application platform called adva_cms.</p>
+<p>Of course, as a German developer I've always been interested in support for Internationalization so I'm really happy that I’ve able to contribute something in this area to Ruby on Rails.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.016.png">
+<p>If there are any questions please try to make a mental note and keep it for the end. I've set some time aside for Q&A at the end of the talk.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.023.png">
+<p>Ok, by the end of this talk I hope you&#x2019;ll have a clear picture of what the Rails Internationalization project is, what&#x2019;s included in the new Rails Internationalization API and what&#x2019;s not and how you can use it.</p>
+<p>I will give a very brief demo. Of course this is a huge topic so I&#x2019;ll point you to where you can find more resources.</p>
+<p>Then we have a short and sweet Interview video prepared with Joshua Harvey the original author of Globalize</p>
+<p>And finally I&#x2019;ll give you some hints about  what we&#x2019;re going to do in the future and how you can contribute to that.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.024.png">
+<p>So, to better understand the future of Internationalization in Rails I want to contrast that a bit with the history that we all suffered through. As you know the history of Internationalization in Rails is really, really dark.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.029.png">
+<p>These were times of chaos. </p>
+<p>They were unclear, unpredictable, unstable and highly adventurous.</p>
+
+<p>You'll see the reason for that in a minute. Let me first let you show how many different solutions we've already seen and how wide their variety is.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.030.png">
+<p>We have seen things like ...</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.038.png">
+<p>Ruby Gettext - the dinosaur and grandfather of Internationalization</p>
+<p>David&#x2019;s original Localization plugin as well as ...</p>
+<p>Thomas Fuchs&#x2019; Localization plugin - both very simple</p>
+<p>GLoc - one of the first bigger implementations</p>
+<p>Globalize - the only solution with solid Model translations</p>
+<p>Globalite - a very slick solution by Matt Aimonetti </p>
+<p>Simple Localization - also a very interesting solution by Stephan Soller</p>
+<p>Both have contributed a lot to the Rails I18n project by the way.</p>
+<p>Gibberish - maybe the most recent full solution, came along as the cool kid on the block.</p>
+<p>... and many more. </p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.039.png">
+<p>There are solutions for special needs like ...</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.042.png">
+<p>Localizing Rails to like Swedish, Brazilian, Korean and so on.</p>
+<p>There are plugins that add functionality to other plugins. For example there is Jibberish that adds a Javascript Layer on top of Gibberish. And things that just adds separate, useful tools.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.043.png">
+<p>Stuff like that ... of course there&#x2019;s much more. I just wanted to give you an impression of these things.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.044.png">
+<p>So when you take into account how complex our languages are and how many funny problems there are to solve and we have lots of lonely programmers working on this and everybody focusses on the features he actually needs himself ...</p>
+
+<p>What do you think will you get? </p>
+<p>What you get is a huge mess.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.048.png">
+<p>We have lots of isolated, incompatible solutions.</p>
+<p>Things like support and documentation just don&#x2019;t get better with a lonely developer solving their own needs and then - of course - often walking away and focussing on something completely different.</p>
+<p>Then, all of our solutions basically were huge Monkeypatches to Rails with the usual problems resulting from that.</p>
+<p>And all of us re-implemented the wheel in one way or the other. So, in a way, we wasted lots of resources.</p>
+<p>But - on the other hand - this situation was actually necessary for us to experiment with solutions and learn how Rails Internationalization could be done.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.054.png">
+<p>Because of this situation last year in September a group of developers from several Rails Internationalization plugins gathered for a chat session. We agreed that we wanted to implemented a Rails core patch which should solve the problems we had with this stuff.</p>
+
+<p>We invited developers from all existing solutions that we knew and started meeting regulary, collected requirements, discussed our ideas ...</p>
+
+<p>Actually there was really a lot of discussion and initially it was hard to agree on anything. </p>
+
+<p>You know that sort of situation. Everybody brings their own favorite little features to the table, everybody has different beliefs of what's good and what's necessary. So this discussion went on endlessly and in the beginning of 2008 our work slowed down. Apparently we really needed a creative break and some time to rethink everything.</p>
+
+<p>Then, in May 2008 we got back to the drawing board with a fresh approach ...</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.059.png">
+<p>... and now we were able to agree on a very slim and lightweight implementation that covered all of our requirements</p>
+<p>It works as a Ruby gem which means it is not only suited for use in Rails but also other frameworks.</p>
+<p>We wanted only minimal changes in Rails, we wanted it to add as less load to Rails as possible and of course we still wanted it to implement a common API where everybody could build on.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.060.png">
+<p>So, at this point Jeremy Kemper didn&#x2019;t really know about our work but in a RailsConf Portland RailsEnvy interview he predicted for Rails 2.2 that ...</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.061.png">
+<p>... Internationalization will be solved.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.062.png">
+<p>When we asked Jeremy about this he said it was a joke</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.063.png">
+<p>So we think Jeremy should definitely crack more jokes about things like this.</p>
+<p>Because in the end this joke actually got us going to finally propose our work to the core team.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.067.png">
+<p>In hindsight there were a few key decisions. Before we managed to agree on these we had not been able to get anything really done. These key decisions were:</p>
+<p>We agreed to make the actual implementation of all the logic exchangeable, so you can always plug in something more powerful or more flexible if you need to.</p>
+<p>We radically sticked to the principle of &#x201C;doing the simplest thing that ever could work&#x201D; for Rails.</p>
+<p>And maybe most importantly we just stopped aiming for a solution that did anything else than the bare minimum that’s needed for Rails.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.070.png">
+<p>So, what we now ship with Rails is a common API for Internationalization which is basically just a bunch of definitions how things are supposed to work. So this is just a Ruby module with some public methods on that.</p>
+<p>These methods delegate to a backend that actually implements the API. The backend that is shipped with Rails is intentionally named the Simple backend because the only requirement for the Implementation in the Simple backend is that it works for American English because that’s what we need for Rails to keep it working like it worked before.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.072.png">
+<p>That means: the most important parts that previously were hardcoded right into Rails are now abstracted out of the code and moved to a simplistic backend, accessible through just a few public methods.</p>
+<p>So this is true</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.074.png">
+<p>While this ... might work. Maybe you can localize Rails to your favorite language if it is very similar to English. There are quite some resources out there that show how to do this. For everything else we still need to add plugins or other libraries.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.075.png">
+<p>For Rails itself we settled with shipping the translations as YAML files and with stock Rails you can also use Ruby files, so you can have lambdas in your translation data.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.076.png">
+<p>I&#x2019;ll run through the main features that this API provides.</p>
+<p>As I said the API is provided as a Ruby module with two main methods on it.</p>
+<p>These are:</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.078.png">
+<p>I18n.translate which you can use to look up translations from the backend and for convenience it has an alias #t and you need to pass it at least one parameter which is the key.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.079.png">
+<p>So this would look up the translation that&#x2019;s stored for the key :rails in the current locale, for example, by default American English.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.080.png">
+<p>The other method that you&#x2019;ll use regularly is localize.</p>
+<p>This one basically allows you to format Date and Time objects for a certain locale.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.081.png">
+<p>Again, for convenience there&#x2019;s an alias ... of course that&#x2019;s #l and you pass it the object that you want to localize</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.084.png">
+<p>So the #translate gives you very powerful means to look up translations.</p>
+<p>You can look up your translations using a Symbol as a key and this is what we&#x2019;d generally encourage you to do. But you can also use a String. </p>
+<p>Also, you have scopes, so you can namespace your translations and structure them in a reasonable way.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.089.png">
+<p>For example in the ActiveRecord translations YAML file there&#x2019;s a scope activerecord and then there&#x2019;s a scope errors, a scope messages and finally there&#x2019;s finally the translation for the key :invalid.</p>
+<p>So scopes are basically groups or namespaces of translations. You can think of them as nested Hashes</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.090.png">
+<p>Consequently there&#x2019;s a way to look up whole namespaces - or groups - of translations. For example this will look up all error messages in ActiveRecord and return a Hash with all those messages.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.091.png">
+<p>Then there&#x2019;s bulk lookup. That just means that you can pass an Array of keys you want translated and it will return you a corresponding array of translations.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.093.png">
+<p>And finally, of course, there&#x2019;s defaults so you can specify what happens when a translation can not be found.</p>
+<p>For example when you give it a String as a default and the translation can not be found it just returns the String. </p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.094.png">
+<p>But when you give it a Symbol it will translate this Symbol and give you that translation as a default. </p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.095.png">
+<p>Finally you can specify an array of Symbols and/or Strings and it will just check everything in that order and return the first value that&#x2019;s not nil.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.099.png">
+<p>Interpolation is another feature.</p>
+<p>That means you want to abstract your translations in certain situations. For example you have a translation for the key :message and there&#x2019;s variable :name in that. Then you can pass the value of that variable to #translate and it will parse the value into the translation.</p>
+<p>This looks trivial but it&#x2019;s actually a very important feature because concatenating translations is kind of an anti-pattern in many situations.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.104.png">
+<p>Also, the API provides means to define Singular and Plural translations of course.</p>
+<p>For example you could have a Singular and a Plural translations like this. Then you can pass a count option to #translate. So in this case it would pick the Singular translation because count is 1. And when you pass it 2 it would pick the Plural translation.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.105.png">
+<p>So that&#x2019;s it already - all very basic stuff of course. No worries, you can look up everything online :-)</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.106.png">
+<p>Like I said, the I18n API ships with a Simple backend ...</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.107.png">
+<p>... which implements all of these features for American English only. So for example you can&#x2019;t use it to do pluralization for Czech because they have different rules for pluralization.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.109.png">
+<p>As I just showed you your English translations include something like this.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.113.png">
+<p>But in Czech you have two plural forms - one of them is called Paucal. They use the singular just like one does in English. Then they use the Paucal, the second form, for everything between 2 and 4. And the actual plural for everything else.</p>
+<p>So the Simple backend can not do that but we can easily swap it and the Internationalization API actually encourages you to do so.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.117.png">
+<p>You would just create a class for your custom backend and maybe extend the Simple Backend, implement your custom logic and tell the I18n module to use it.</p>
+<p>That&#x2019;s it.</p>
+<p>Basically this is what future plugins will do a lot. For example there definitely will be a backend that stores translations to the database and I’m sure there’s one soon to read and store them from and to Gettext files.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.118.png">
+<p>So let&#x2019;s have a really brief look how you can use this in your application.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.119.png">
+<p>So, if you&#x2019;re actually working on an application today, what can use use?</p>
+<p>Of course this really depends on your requirements. So let&#x2019;s have a look at some scenarios ...</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.120.png">
+<p>Let’s say you just need a few static translations and maybe some date and number formats. Then you can easily reuse the Simple backend that Rails ships with. By now there are a couple of demo applications on GitHub that show how to do that.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.121.png">
+<p>Let&#x2019;s say you have a language that requires different pluralization rules. Then there&#x2019;s an experimental Pluralizing backend for that where you can hook in pluralization logic as lambdas.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.122.png">
+<p>Let&#x2019;s say you need to translate your application to Russian, or Czech or another language that has some more complex date formats.</p>
+<p>For that there&#x2019;s an experimental Chain backend where you could hook in a custom backend tailored for just these languages&#x2019; date formats.</p>
+<p>Also there&#x2019;s already a full plugin solution by Yaroslav Markin from Russia that implements things like these and I think it&#x2019;s easy to adapt it for other languages.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.123.png">
+<p>If you need model translations there&#x2019;ll be Globalize2. Globalize2 will look completely different to Globalize. It will be pretty lightweight and unobtrusive. Joshua will tell you more about that in the interview.</p>
+<p>Also there&#x2019;s an alternative approach, that&#x2019;s linked on rails-i18n.org</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.124.png">
+<p>So, if we still have to rely on external code, like plugins, to localize our applications. </p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.125.png">
+<p>What do we win?</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.126.png">
+<p>The short answer to that clearly is: we win a lot!</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.127.png">
+<p>First of all, we don&#x2019;t need no monkeypatching any more </p>
+<p>Well, of course we still will monkeypatch Rails to experiment with new features.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.132.png">
+<p>But we definitely won't need to do probably 99% of what we&#x2019;ve done before like translating ActiveRecord error messages, translating all the helpers that Rails provides or anything like that.</p>
+<p>Also, because we now can build on a common API we expect things to become much better exchangeable.</p>
+<p>We will aggregate common locale data over time. So we will build up a Rails specific pool of Localization knowledge.</p>
+<p>Also we hope that plugins will be much more focussed on implementing certain atomic features.</p>
+<p>This is actually something we encourage everybody to do. You know, so far, you could not possibly combine three, four, five different plugins and expect anything to work. We hope we’re now able to do a better job here in future.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.133.png">
+<p>So, of course, with all of this stuff released our next development cycle has started ... right now.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.138.png">
+<p>Of course we&#x2019;re all going to implement our stuff next. In fact by now there are already quite some useful things out there. During this time we will try to stay in touch with each other and then, again, collect everything, review it, again, discuss it and finally aim for another core patch.</p>
+<p>The reason why we want to first collect everything and look at it as a whole and then move it to Rails as a rather complete package is that many of these things make most sense in context with each other.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.144.png">
+<p>We hope this will then result in a landscape of Rails Internationalization solutions where we have a distributed toolbox of focussed plugins rather than those huge solutions trying to solve everything under the sun at once that we had before.</p>
+<p>We&#x2019;ll have more compatible solutions and maybe the most exciting thing is that we will get to have Rails specific, common locale data.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.145.png">
+<p>So, let&#x2019;s see what Joshua Harvey has to say about Globalize 2.</p>
+
+
+<object width="600" height="475"><param name="movie" value="http://www.youtube.com/v/OXxUF_N-3-M&hl=en&fs=1"></param><param name="allowFullScreen" value="true"></param><embed src="http://www.youtube.com/v/OXxUF_N-3-M&hl=en&fs=1" type="application/x-shockwave-flash" allowfullscreen="true" width="600" height="475"></embed></object>
+
+<p>By the way the guitar shop that you can see in the video is actually the shop rashgash and the website at rashgash.com is the reason why Joshua initially wrote Globalize as he mentions in the interview.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.146.png">
+<p>So this is a brief overview of features that Globalize 2 will provide.</p>
+<p>Of course there&#x2019;s model translations - kind of Globalize&#x2019;s USP in the past. For View translations we&#x2019;ll basically use the Rails I18n API. There will be some useful tools like standards compliance tool for locales which we&#x2019;ll need for locale fallbacks and stuff like that. A locale load_path tool that helps loading translation data more easily.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.148.png">
+<p>Actually the implementation of Globalize 2 is sponsored by the company BESTGroup Consulting &amp; Software from Berlin. So, thank you, BESTGroup for making this possible.</p>
+<p>Also, Metaversum, a company also from Berlin will start sponsoring us right after this conference. So, thank you, Metaversum in advance.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.149.png">
+<p>And actually we are looking for more sponsors not only for the Globalize project but also for the Rails I18n project because we really want to put this project on a really solid foundation. </p>
+<p>For example we want to have somebody working on stuff like documentation on a regular basis and we want to provide better support for newbies on the mailing list and other stuff that is all usually much easier to do when you have a small budget to spend.</p>
+
+<p>So if you&#x2019;re interested in sponsoring a really cutting edge and high-profile Ruby on Rails Open Source project that already gets tons of attention and definitely will get even more attention in the next couple of months ... just catch me afterwards and we can talk about that.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.151.png">
+<p>So, how can everybody in this room get involved?</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.156.png">
+<p>Of course everybody can just start playing with all of this, register to our mailinglist and give feedback. We need tons of that.</p>
+<p>You can share your translations. We already have a repository on GitHub for that, so if you&#x2019;ve done translations for Rails please submit them.</p>
+<p>You can build plugins focussed on certain features that are still missing. And please don&#x2019;t forget to pitch them on the mailinglist and our wiki.</p>
+<p>You can help improving the Rails integration. You know Rails helpers are there and they are working. But that doesn&#x2019;t mean they&#x2019;re already perfect regarding Internationalization. So you can help to improve that.</p>
+<p>And of course, you can sponsor our work so we can invest some money in things that are hard to do otherwise.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.157.png">
+<p>So, basically this was my talk. We&#x2019;ve collected pretty much everything I mentioned in this talk as well as lots of other resources on <a href="http://rails-i18n.org" title="Rails I18n">http://rails-i18n.org</a>. So, look it up.</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.158.png">
+<p>Thanks to everybody who contributed!</p>
+
+<img src="http://sven.artweb-design.de/railsconf-europe-08/i18n/images/rails-i18n.159.png">
+<p>Ok, so what are all those questions you want to ask?</p>
+</div>

@@ -1,0 +1,61 @@
+---
+layout: post
+title: Travis - a distributed build server tool for the Ruby community
+---
+
+<p>So, I&#8217;ve started playing with the idea of a distributed build server tool once again in last year&#8217;s December &#8230; and <a href="https://github.com/svenfuchs/travis">Travis</a> is what I came up with.</p>
+
+<h2>Status quo</h2>
+
+<ul>
+	<li>Travis is currently running on <a href="http://travis.heroku.com">http://travis.heroku.com</a> and already notifies me about builds that pass or fail when someone pushes to those repositories I&#8217;ve registered for testing purposes.</li>
+	<li>The builds run on a virtual server that <a href="http://twitter.com/railshoster">Julian Fischer</a> has very kindly granted for this experiment.</li>
+	<li>The frontend is implemented using <a href="http://documentcloud.github.com/backbone">Backbone.js</a>.</li>
+	<li>Build output and status information is &#8220;tailed&#8221; from the workers to the frontend (i.e. browsers) using websockets via <a href="http://pusherapp.com">Pusher</a>. It is also pushed back to application (running on Heroku) using a standard <span class="caps">REST</span> <span class="caps">API</span>.</li>
+</ul>
+
+<p>All of these building blocks might change in the future, but here&#8217;s an <a href="http://github.com/svenfuchs/travis/raw/master/docs/travis.spike-2.png">overview</a> of how they currently work together. And here&#8217;s a short screencast (the UI has changed a bit in the meanwhile but you&#8217;ll get the idea): <a href="http://www.youtube.com/watch?v=mNOwCJhjWAw" title="spike 2">1:20 quick demo screencast</a></p>
+
+<h2>The vision</h2>
+
+<p>Maybe <a href="https://github.com/jenkinsci/jenkins">Jenkins CI</a> (formerly Hudson) is the best open-source build server tool for Ruby projects out there today and everybody seems to be using it. Or maybe that&#8217;s just my impression. In any case my feeling is that it just isn&#8217;t a particularly good fit to the Ruby community for a couple reasons.</p>
+
+<p>Instead, imagine a simple and slim build server tool that is maintained by the Ruby community itself (just like Gemcutter is, or many other infrastructure/tool-level projects are) in order to support all the open-source Ruby projects/gems we&#8217;re using every day.</p>
+
+<p>Why not have a very slick application that loads off all the heavy work to workers &#8211; and have workers started on boxes contributed by the community itself. A lot of people have underused boxes idling at their offices or somewhere else. Why not make it easy for them to contribute run-time on these boxes for building open-source Ruby projects they use every day. I am sure many people would love this kind of opportunity of giving something back. On top of that one could even post a tiny message alongside with builds that ran on their boxes (a la &#8220;this build was kindly sponsored by [link to their website]&#8221;) to make this even more appealing.</p>
+
+<p>A system that uses a client-side JS frontend, websocket messages and a tiny <span class="caps">JSON</span> <span class="caps">API</span> will make it easy for people to come up with alternate UI implementations. The current implementation of Travis should already allow building a custom dashboard or mobile app pretty easily.</p>
+
+<p>I have no idea whether this will actually happen. But the vision of building an open-source build server infrastructure that is as much community-driven as Gemcutter is, allowing the community to contribute the required computing resources in order to build projects they love and use &#8230; really fascinates me.</p>
+
+<h2>Please join and help</h2>
+
+<p>My first goal with this experiment was to build a simple system that already makes sense as a stand-alone, privately maintained tool for running private builds in a closed environment and as such it seems to work quite fine so far.</p>
+
+<p>Now I think the next step should be to get you involved :)</p>
+
+<p>Please get on board and help pushing this project. E.g.:</p>
+
+<ul>
+	<li>Register to the <a href="http://groups.google.com/group/travis-app">Google group</a> and share your opinion</li>
+	<li>Pop in to the <span class="caps">IRC</span> channel <a href="irc://irc.freenode.net#travis">irc://irc.freenode.net#travis</a> and say hi</li>
+	<li>Try out the application on <a href="http://travis.heroku.com">http://travis.heroku.com</a>, sign in and set up a service hook for some of your open Github repositories.</li>
+	<li>Review <a href="https://github.com/svenfuchs/travis">the code</a> and tell how to improve, e.g., the client-side JS application, the EM-based worker code, the architecture in general etc.</li>
+	<li>Have a look at <a href="https://github.com/svenfuchs/travis/issues">tickets filed on Github</a>, discuss and help resolving them.</li>
+	<li>Share ideas about how to improve the UI design (I think the current minimalistic design works for now, but certainly isn&#8217;t good. I don&#8217;t consider myself a design person, so any input is highly appreciated)</li>
+	<li>Come up with ideas about how to implement a dynamic spin-up of workers on <span class="caps">EC2</span> instances, VMs running workers securely on contributed boxes.</li>
+	<li>Build an alternate websocket service in case we can&#8217;t use Pusher.app in future (Travis currently uses a free dev account on Pusher.app and paid plans seem quite expensive).</li>
+	<li>Whatever else you&#8217;re interested in &#8230; :)</li>
+</ul>
+
+<p>If you have any questions just <a href="http://groups.google.com/group/travis-app">post to the mailing list</a> or drop me a note via <a href="http://twitter.com/svenfuchs">Twitter</a>, <a href="http://github.com/svenfuchs">Github</a> or <a href="mailto://svenfuchs@artweb-design.de">email</a>.</p>
+
+<p>Some of the questions that I definitely need some input for are:</p>
+
+<ul>
+	<li>This is the first single-page Backbone.js app I&#8217;ve done. Does my interpretation of JS <span class="caps">MVC</span> make sense? Should I change the way views are instantiated and/or bound to events?</li>
+	<li>How to dynamically spin up workers in VMs on <span class="caps">EC2</span> instances or other boxes?</li>
+	<li>How to improve the websocket message flow from workers via Pusher to the browser? E.g. sometimes messages arrive at the browser in the wrong order because they&#8217;re not synchronized or ordered in any way.</li>
+</ul>
+
+<p>In any case your input is highly appreciated!</p>

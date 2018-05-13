@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="geo.region" content="DE-BE" />
+    <meta name="geo.placename" content="Berlin" />
+    <meta name="geo.position" content="52.51168;13.458236" />
+    <meta name="ICBM" content="52.51168, 13.458236" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="http://feeds.feedburner.com/svenfuchs" />
+    <link rel="openid.server" href="http://www.myopenid.com/server" />
+    <link rel="openid.delegate" href="http://svenfuchs.myopenid.com/" />
+    <link href="http://svenfuchs.com" rel="home" />
+    <title>Status of patForms/Propel integration</title>
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <link rel="stylesheet" href="/stylesheets/highlight.css">
+    <script src="/javascripts/highlight.js"></script>
+  </head>
+  <body>
+    <div id="page">
+  <div id="content">
+    <p><a href="/">&larr; Home</a></p>
+
+    <div id="post">
+      <h1>Status of patForms/Propel integration</h1>
+      <p>Propel's extended api has been cleaned up. These changes are currently in Propel's SVN directory which is available at:</p>
+
+<p><a href="http://svn.phpdb.org/propel/">http://svn.phpdb.org/propel/</a></p>
+
+<p>Propels Trac (which is used as Propel's homepage also, including docs, howtos etc) is here:</p>
+
+<p><a href="http://propel.phpdb.org/trac/">http://propel.phpdb.org/trac/</a></p>
+
+<p>These changes will also be in the next release of Propel which is supposed to come soon. By "extended api" I mean the methods that are being added when you enable addGenericAccessors and addGenericMutators at build time:</p>
+
+<pre># in the projects build.properties file
+propel.addGenericAccessors = true
+propel.addGenericMutators = true</pre>
+
+<p>This will add methods like fromArray(), toArray() etc. to your Object classes and these methods will be used by patForms.</p>
+
+<p>patForms on the other side has included several new classes that allow to integrate with Propel. For example there are the new classes patForms_Definition_Propel, patForms_Storage_Propel etc. as well as some new patForms_Rule_* classes.</p>
+
+<p>You can find the latest version of patForms also in SVN which is here:</p>
+
+<p><a href="http://www.php-tools.net/svn/patForms/trunk">http://www.php-tools.net/svn/patForms/trunk</a></p>
+
+<p>And the patForms bug tracker can be found here:</p>
+
+<p><a href="http://trac.php-tools.net/patForms">http://trac.php-tools.net/patForms</a></p>
+
+<p>This stuff is currently undergoing some "real-life" implementations so we hope to recieve some more feedback from serious users than we've had by now in future. </p>
+
+<p>If you've checked this code out and gathered experience with it, probably discovered any flaws or bugs or have any suggestions or enhancements, please feel free to post to the bug trackers linked above or email me privately.</p>
+
+    </div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'svenfuchs';
+        var disqus_title = '<%= page.title %>';
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  </div>
+</div>
+
+    <a href="http://svenfuchs.com" rel="me" ></a>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-24665870-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>

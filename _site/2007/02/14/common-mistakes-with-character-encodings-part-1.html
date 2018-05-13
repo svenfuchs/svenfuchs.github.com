@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="geo.region" content="DE-BE" />
+    <meta name="geo.placename" content="Berlin" />
+    <meta name="geo.position" content="52.51168;13.458236" />
+    <meta name="ICBM" content="52.51168, 13.458236" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="http://feeds.feedburner.com/svenfuchs" />
+    <link rel="openid.server" href="http://www.myopenid.com/server" />
+    <link rel="openid.delegate" href="http://svenfuchs.myopenid.com/" />
+    <link href="http://svenfuchs.com" rel="home" />
+    <title>Common mistakes with character encodings - part 1</title>
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <link rel="stylesheet" href="/stylesheets/highlight.css">
+    <script src="/javascripts/highlight.js"></script>
+  </head>
+  <body>
+    <div id="page">
+  <div id="content">
+    <p><a href="/">&larr; Home</a></p>
+
+    <div id="post">
+      <h1>Common mistakes with character encodings - part 1</h1>
+      <h2>Know your encodings!</h2>
+
+<p>This might be pretty obviously to you once you've encountered it. But once in a while I'm meeting somebody who's stuck with weird hassles because he's simply using another encoding than he's declaring.</p>
+
+<p>As long as your just using relatively <a href="http://siber-sonic.com/mac/charsetstuff/lowASCII.html">safe 7-bit ASCII characters</a> everything might seem to work pretty fine but as soon as you dare to move outside that range and try to (e.g.) use a German umlaut or other <a href="http://en.wikipedia.org/wiki/Extended_ASCII">"extended" 8-bit ASCII</a> character somehow the hell's going to rise and heaven's falling ... if you're environments character encodings don't match for some reason.</p>
+
+<p><strong>For example:</strong></p>
+
+<p>With <a href="http://www.globalize-rails.org/globalize/">Globalize for Ruby on Rails</a> and other t10n/i18n tools you're hardcoding strings in your templates that - when run - are handed to the database (in case of Globalize) or some other persistence mechanism. E.g. a typical, Globalized template might contain: <code>"I wonder how I'm going to be encoded".t</code>. Other tools such <a href="http://rubyforge.org/projects/gloc/">GLoc</a> might use: <code>_("I wonder how I'm going to be encoded")</code> instead.</p>
+
+<p>Either way the string is used as hardcoded data and being worked on/with by the software. In case of Globalize it's going to be inserted into the database as a key for subsequent lookups.</p>
+
+<p>Now when your sourcecode editor for some reason encodes your template as <code>Latin-1</code> while your database is expecting you to provide <code>UTF-8</code> you're in trouble.</p>
+
+<p>Recently somebody asked me about an error he got from MySQL 5.0 when following the instructions in my <a href="http://www.artweb-design.de/articles/2006/11/10/get-on-rails-with-globalize-comprehensive-writeup">Globalize tutorial</a>. His database told him: <em>"Mysql::Error: #22001 Data too long or column 'tr_key' at row 1: INSERT INTO globalize_translations (`item_id`, `pl..."</em>.</p>
+
+<p>It turned out that he'd been bitten by exactly this problem: he's had encoded his files in <code>Latin-1</code> while his database table was configured to use <code>UTF-8</code>. So these encodings clashed quite understandably: Rails handed a <code>Latin-1</code> encoded string to a database that expected <code>UTF-8</code>.</p>
+
+<p>The backstory was: while normally being used to VI on a Linux box he's now been working with RadRails for Eclipse on Windows XP. Windows XP file dialogs seem to offer "ANSI" as the default encoding of newly created files.</p>
+
+<p>The MySQL error message was pretty misleading (there's nothing been "too long or column" whatever that was ment to tell in the first place) and this has been <a href="http://bugs.mysql.com/bug.php?id=9337">recognized</a> and <a href="http://lists.mysql.com/commits/14785">fixed</a> in the meantime.</p>
+
+<p>The lesson from this seems to be: Your files are encoded somehow. So, know about their encoding!</p>
+
+<h2>Your files are encoded!</h2>
+
+<p>That's what all this character encoding and charset stuff is all about. :) </p>
+
+<p>You might want to start <a href="http://en.wikipedia.org/wiki/Character_encoding">reading some things up</a>. But for starters this has to do with the fact that every character needs to be saved as bits and bytes. Basically charsets are conventions that determine <em>how</em> characters are encoded.</p>
+
+<p>An application that consumes some chunk of data, e.g. a file, will need to know about the character encoding that's been used to saved the data. Likewise, a browser that receives an HTML page from a webserver needs to know (or guess) the character encoding. It needs to decode the bits and bytes this way or another.</p>
+
+<p>For example: The commonly used <a href="http://en.wikipedia.org/wiki/ISO/IEC_8859-1">standard character encoding ISO 8859-1</a> or less formally Latin-1 will cause a character like the German umlaut &Auml; to be safed (encoded) as the hexadecimal byte or number A4 (which equals decimal 164).</p>
+
+<p>But the same character will be encoded to an entirely different byte or number, that's to say hexadecimal <code>80</code> or decimal <code>128</code> when you tell your application to save (encode) this character using the <a href="http://en.wikipedia.org/wiki/Mac_OS_Roman">Mac OS Roman</a> character encoding. And the byte <code>A4</code> does represent a completely unrelated character instead, namely the <a href="http://en.wikipedia.org/wiki/Dagger_%28typography%29">dagger glyph</a>.</p>
+
+<p>Now, when you try to open any such file with another application on another computer and probably even another operating system (browsing the web you're doing this all the time) ... how would that software know what that number <code>A4</code> that's contained in the file is meant to be? Is it the German umlaut or is it that cross-shaped dagger glyph?</p>
+
+    </div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'svenfuchs';
+        var disqus_title = '<%= page.title %>';
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  </div>
+</div>
+
+    <a href="http://svenfuchs.com" rel="me" ></a>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-24665870-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>

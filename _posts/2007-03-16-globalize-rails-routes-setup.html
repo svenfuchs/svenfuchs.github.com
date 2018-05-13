@@ -1,0 +1,131 @@
+---
+layout: post
+title: How to set up your routes? - Get on Rails with Globalize! Part 4 of 8
+---
+<p>When you're starting to Globalize your application one essential design question is: how to incorporate the different locales that you're going to support into your application.</p>
+
+<p>You might store your users locale in a session to persist it between subsequent requests. You might determine it from the <code><a href="http://www.w3.org/International/questions/qa-accept-lang-locales">accept-language header</a></code> or even <a href="http://en.wikipedia.org/wiki/Geolocate">geolocate</a> the users IP address.</p>
+
+<p>In these cases you probably don't need to touch your routes setup at all. You just stuff the users locale into the session, retrieve it from there (or somewhere else) on every request and ... are done: your URLs and therefor your routes remain the same.</p>
+
+<p>If you're going to go with a more <a href="http://rest.blueoxen.net/cgi-bin/wiki.pl?FrontPage">RESTful</a> approach though where the locale is designed to be an essential part of the URL some simple extra work might be necessary.</p>
+
+<h2>Storing the locale in the URL ...</h2>
+
+<p>There are basically two options. You can keep the locale as:</p>
+
+<ol>
+<li>a parameter (like in http://site.com/articles?locale=fr)</li>
+<li>a part of the path (like in http://site.com/fr/articles)</li>
+</ol>
+
+<p>(Of course you can also encode the locale as a part of the domain name, too. That's basically the same option like putting it in the path. Rails' support is somewhat limited here, though.)</p>
+
+<p>Now, in case 1. you don't necessarily need to change your routes setup, too.</p>
+
+<h2>... as a parameter</h2>
+
+<p>Putting the locale as a <a href="http://www.gbiv.com/protocols/uri/rfc/rfc3986.html#query"><strong>query-string parameter</strong></a> into the URL could look like this:</p>
+
+<pre><code>http://site.com/articles/index?locale=fr</code></pre>
+
+<p>E.g. let's say you have scaffolded an ArticlesController, Article model and the usual suspects of views. Now you can easily use the (anonymous) <strong>Rails default route</strong>:</p>
+
+<pre><code>
+map.connect ':controller/:action/:id'
+</code></pre>
+
+<p>... you just need to make sure that in your views the locale parameter is added to your URLs everywhere, like in:</p>
+
+<pre><code>
+&lt;%= link_to 'Index', url_for(:action => :index, :locale => params[:locale]) %>
+</code></pre>
+
+<p>That looks a little cluttered, doesn't it? The explicit keys and the specification of the locale both seem to be necessary to append the locale parameter to the URL though.</p>
+
+<p>You can also use <strong>named routes</strong> like they are automatically set up for those shiny new resources in Rails 1.2 (of course you could to set them up manually instead): </p>
+
+<pre><code>
+map.resources :articles
+</code></pre>
+
+<p>... and then use the more concise</p>
+
+<pre><code>
+&lt;%= link_to 'Index', articles_path(:locale => params[:locale]) %>
+</code></pre>
+
+<h2>Why not?</h2>
+
+<p>Some people don't like to append information like this to the actual URL as a parameter in this manner though because they think it just looks ugly.</p>
+
+<p>From a more RESTful perspective the basic difference is whether or not you see the locale to designate different resources. I.e. you might see your - say - three available translations of a certain article as different <em>representations</em> of the same resource. In this case, using a request parameter would adequately express this perception. Or you might see the available translations more as <em>discrete resources</em> that have multiple views on their own. In this case, using the locale as part of the path or domainname would be more appropriate.</p>
+
+<p>One very practical disadvantage of this approach is that it won't work well with Rails' build-in <a href="http://api.rubyonrails.com/classes/ActionController/Caching/Pages.html">page</a> and <a href="http://api.rubyonrails.org/classes/ActionController/Caching/Actions.html">action caching</a> as these don't respect URL parameters (i.e. without further efforts Rails wouldn't cache different versions of pages for different locales).</p>
+
+<h2>... as a part of the path</h2>
+
+<p>So depending on your application and preferences you probably want to move the locale to the beginning of the <a href="http://www.gbiv.com/protocols/uri/rfc/rfc3986.html#path"><strong>URL path</strong></a> like in <code>http://site.com/fr/articles</code>. As you already guessed, this time you'll definitely have to adjust your routes setup accordingly.</p>
+
+<p>This one would cut it with a classic, unnamed route:</p>
+
+<pre><code>
+map.connect ':locale/:controller/:action/:id'
+</code></pre>
+
+<p>Yet, this time you don't need to specify the locale for <code>url_for</code>: the Rails routing mechanism already knows that a parameter named <code>:locale</code> is needed and will find it in the controller's parameters (where you've set it within your <code>ApplicationController#before_filter</code>).</p>
+
+<p>So, the following will work:</p>
+
+<pre><code>
+&lt;%= link_to 'Index', url_for(:action => :index) %>
+</code></pre>
+
+<p>Again, you can use Rails 1.2 resources with this approach, too, of course. This time, you'd need to append the special <code>:path_prefix</code> option to the resouce definition:</p>
+
+<pre><code>
+map.resources :articles, :path_prefix => ':locale'
+</code></pre>
+
+<p><a href="http://youtube.com/watch?v=r8L39UwOS-Y">And boom!</a> ... that's it. You're ready to go with fully globalized RESTful resources mappings.</p>
+
+<p>Depending on your usage of <code>url_for</code> or the autogenerated <code>[model]_path</code> methods you <em>might</em> need to adjust these a little bit though. For example, the following quite concise usage works perfectly without a locale on the path:</p>
+
+<pre><code>
+&#35; in routes.rb:
+map.ressources articles<br>
+&#35; in your views:
+&lt;%= link_to "Show", article_path(@article) %>
+</code></pre>
+
+<p>But with a resource routes setup using <code>:path_prefix</code> like above, this will throw the error:</p>
+
+<pre><code>article_url failed to generate from {:action=>"show", :locale=>"1",
+:controller=>"articles"}, expected: {:action=>"show", :controller=>"articles"},
+diff: {:locale=>"1"}</code></pre>
+
+<p>This seems to indicate that the article instance has been used to fill in the <code>:locale</code> parameter instead of <code>:id</code>. So we'd need to complete this as follows:</p>
+
+<pre><code>
+&#35; in routes.rb:
+map.ressources articles, :path_prefix => ":locale"<br>
+&#35; in your views:
+&lt;%= link_to "Show", article_path(:id => @article) %>
+</code></pre>
+
+<p>So there's quite a handful of options.</p>
+
+<p>If you ask me the latter one is the one with the most advantages in most cases (as always, mileages vary):</p>
+
+<ul>
+<li>better compling with REST (almost always a big plus)</li>
+<li>using named routes (less extra work and better decoupled code)</li>
+<li>being friendly to Rails caching mechanisms (in case you're going to use them)</li>
+</ul>
+
+<h2>Boom. That's it :-)</h2>
+
+<p>What do you think? Does your routes setup follow a different approach? If there are additional options to add, please let me know.</p>
+
+<p>Next time I'll (hopefully) better respect the original outline of this series again and come up with the scheduled "Hints, tips and tricks" collection installment. If there's something useful ... a tip, trick, technique, ... that you think would make a useful addition to that installment: please use the comments or send me an email!</p>
+

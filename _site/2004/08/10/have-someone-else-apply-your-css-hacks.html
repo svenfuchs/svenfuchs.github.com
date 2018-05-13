@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="geo.region" content="DE-BE" />
+    <meta name="geo.placename" content="Berlin" />
+    <meta name="geo.position" content="52.51168;13.458236" />
+    <meta name="ICBM" content="52.51168, 13.458236" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="http://feeds.feedburner.com/svenfuchs" />
+    <link rel="openid.server" href="http://www.myopenid.com/server" />
+    <link rel="openid.delegate" href="http://svenfuchs.myopenid.com/" />
+    <link href="http://svenfuchs.com" rel="home" />
+    <title>Have someone else apply your (CSS) hacks</title>
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <link rel="stylesheet" href="/stylesheets/highlight.css">
+    <script src="/javascripts/highlight.js"></script>
+  </head>
+  <body>
+    <div id="page">
+  <div id="content">
+    <p><a href="/">&larr; Home</a></p>
+
+    <div id="post">
+      <h1>Have someone else apply your (CSS) hacks</h1>
+      <p>This way, I could write standard-compliant CSS (one thing, I'm still learning to do) in Firefox, configure my script, run it ... and than see, what the site looks like in IE, Opera, Safari etc. I could choose between several CSS hacking strategies and variants and than check out, which one performs best. </p>
+
+<p>Such a tool at hand, this could be done by selecting some options on a website and clicking "Run!", instead of modifying dozens of cryptic hacked CSS lines by hand, re-calculating widths, borders, paddings etc. all the time. I'd keep working on a "clean", standard compliant CSS as a source file for the script. The pages would show up in the browser with the hacked, script-output version. </p>
+
+<p>Thinking about this idea, some things popped into my mind ...</p>
+
+<ul>
+<li>Going further, I could build up a web interface, giving other people (with less experience in using php scripts) the possibility to have their CSS sheets hacked also. </li>
+<li>Having the script under an OS licence and having build it up with some plug-interface (or even mini-language) other people (who have some more experience using CSS than me) could even contribute extensions, thus making the script more useful and flexible. </li>
+<li>And once, when the whole stuff rounds up to a stable, useful tool, it could be transformed into plugins for several blogging engines, wikis, cms' and other frameworks supporting plugins. Wheew. ;)</li>
+</ul>
+
+<p>Cool idea, I thought. Someone must have written that already! I asked Google, the most heavily frequented CSS Guru blogs and CSS ressource pages I know ... but I found nothing comparable. </p>
+
+<p><strong>Am I blind? </strong></p>
+
+<p>Any hints are <em>very</em> appreciated. Sometimes I use the wrong keywords and don't have clue ...</p>
+
+<p>In the meanwhile, I'll start thinking about a bunch of classes, that could set up a useful framework for this script. :)</p>
+
+    </div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'svenfuchs';
+        var disqus_title = '<%= page.title %>';
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  </div>
+</div>
+
+    <a href="http://svenfuchs.com" rel="me" ></a>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-24665870-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,187 @@
+---
+layout: post
+title: Template playing with php5's Dom
+---
+<p>(This article is also an example of using the Lifecycle classes described in <a href="http://www.artweb-design.de/blog/index.php?p=6">Let your classes live their own life</a>. So, you might want to read that story first.)</p>
+
+<h2>Building a DomControl tree</h2>
+
+<p>In a nutshell, with php5 DomDocuments we can read Html/Xml documents, so that they get represented by an internal object tree of DomElements. Once having parsed a document, we can manipulate the DomElements, move them around, add new DomElements and remove them again. Thereafter we can conveniently export the result as Html/Xml again and save it to a file or send it to the browser.</p>
+
+<p>Unfortunately, we can't tell the DomDocument to use our own homegrown class to create the DomElement objects. That means: we can't add our own behaviour to the DomElements directly (would be really fine to have a simple callback hook here ...).</p>
+
+<p>Thus, the first thing we'll need is a composite tree of objects that represents some (not necessarily all) DomElements of the DomDocument. Therefore, we'll set up a simple DomControl class, that can hold DomControl children and can itself be added to a DomControl parent.</p>
+
+<pre>
+class DomControl {
+   protected $parent = null;
+   protected $children = array();
+   protected $domElement = null;
+   public function __construct(DomControl $parent,
+      DomElement $domElement) {
+      $this->domElement = $domElement;
+      $this->parent = $parent;
+      $parent->addChild($this);
+   }
+   protected function addChild($control) {
+      $this->children[] = $control;
+   }
+}
+</pre>
+
+<p>As you can see we've already added a reference to a DomElement, that's part of our DomDocument. So, we'll be able to manipulate the DomElement.</p>
+
+<p>We can now use this class to extend it to concrete Controls. Let's say, we'd like to have a ButtonControl that represents an Html input submit tag and can be enabled/disabled. Furthermore, we want to be able to change the button's text.</p>
+
+<p>To enable/disable an Html input submit we have to set it's attribute "disabled" to true. This can simply be done by calling the setAttribute() method on the corresponding DomElement. The same applies to the submit tag value attribute that represents the text displayed on the button:</p>
+
+<pre>
+class ButtonControl extends DomControl {
+   public function setDisabled($disabled) {
+      $this->domElement->setAttribute('disabled', $disabled);
+   }
+   public function setText($text) {
+      $this->domElement->setAttribute('value', $text);
+   }
+}
+</pre>
+
+<p>Next, we'll extend the DomControl base class to a PageControl. The responsibility of PageControl is to parse an Html template by a DomDocument instance and instantiate the necessary DomControls as a tree representing some of the DomElements (in this example: just the input/submit tags) in the DomDocument. And we'll have a method render() that simply outputs the DomDocuments rendering result.</p>
+
+<pre>
+class PageControl extends DomControl {
+   private $template = null;
+   public function __construct($html) {
+      $this->template = new DomDocument();
+      $this->template->loadXml($html);
+      $this->instantiate($this->template->documentElement);
+   }
+   public function instantiate($node) {
+      foreach ($node->childNodes as $childNode) {
+         if ($childNode->tagName == 'input' AND
+             $childNode->getAttribute('type') == 'submit') {
+            $button = new ButtonControl($this, $childNode);
+            $this->instantiate($childNode);
+         }
+      }
+   }
+   public function render() {
+      return $this->template->saveHtml();
+   }
+}
+</pre>
+
+<p>Ok, let's try that out. We'll select a (very simple) html template and hand it over to the PageControl class:</p>
+
+<pre>
+$html =
+   '&lt;form&gt;' .
+   '  &lt;h1&gt;Let's click the button!&lt;/h1&gt;' .
+   '  &lt;input type="submit" name="myButton" value="Year, click me!"/&gt;' .
+   '&lt;/form&gt;';
+$page = new PageControl($html);
+echo $page->render();
+</pre>
+
+<p>The result looks like this:</p>
+
+<p><img src="/images/blog/posts/domcontrol_1.gif" alt="screenshot 1" /></p>
+
+<p>Not too exciting, hm? But hey! Every super-dooper engine comes along with a mega-simple "Hello world" thing. :) And we've already used the php5 Dom extension here to do some stuff that's usually done by a php templating engine written in php itself.</p>
+
+<p>What's not too surprising ... when you click the button, nothing happens - apart from that the url has changed and now includes the "myButton" parameter. We've given the input/submit button an attribute "name", so that it gets submitted with the form.</p>
+
+<p>As the next step we'll use that single change and have the ButtonControl respond to it.</p>
+
+<h2>Breathing life into the controls</h2>
+
+<p>To get our DomControl tree living, we have to add some lines to all three classes that we've set up and tested now. We'll use the Lifecycle classes from <a href="http://www.artweb-design.de/blog/index.php?p=6">Let your classes live their own life</a> to let the DomControl tree respond to the Lifecycle's stage events.</p>
+
+<p>Therefore, we'll first extend the DomControl class from LifecycleListener and hold a reference to the lifecycle instance in each of the DomControls in the tree. This way we can hand it over to newly created Controls. We'll also let a DomControl attach itself as a listener to the Lifecycle instance:</p>
+
+<pre>
+class DomControl <u>extends LifecycleListener</u> {
+   // [...]
+   <u>protected $lifecycle = null;</u>
+   public function __construct(DomControl $parent,
+      DomElement $domElement) {
+      // [...]
+      <u>$this->lifecycle = $parent->lifecycle;</u>
+      <u>$this->lifecycle->attachListener($this);</u>
+   }
+   // [...]
+}
+</pre>
+
+<p>To get a single Lifecycle instance initally created, we'll add a line to the PageControl's constructor. Furthermore, we'll have to get the Lifecycle instance run() before rendering the DomDocument.</p>
+
+<pre>
+class PageControl extends DomControl {
+   // [...]
+   public function __construct($html) {
+      <u>$this->lifecycle = new Lifecycle();</u>
+      // [...]
+   }
+   // [...]
+   public function render() {
+      <u>$this->lifecycle->run();</u>
+      return $this->template->saveHtml();
+   }
+}
+</pre>
+
+<p>Next, we'll have the ButtonControl respond to the Lifecycles 'execute' stage. Here we check if the name of the button is present as a request parameter. I.e. we check if the button has been clicked by the user. If so, we'll call the parents onClick() method, which we will implement later on.</p>
+
+<pre>
+class ButtonControl extends DomControl {
+   // [...]
+   public function onExecute() {
+      $name = $this->domElement->getAttribute('name');
+      if (in_array($name, array_keys($_REQUEST))) {
+         $this->parent->onClick($this);
+      }
+   }
+   // [...]
+}
+</pre>
+
+<p>(The latest calling onclick() on the control's parent is in fact a completely oversimplified shortcut. Why should solely the <i>parent's</i> method get called here? In real life, we'd probably implement an additional event/listener pattern here and have the event bubble up to all of the control's parents giving each of them the chance to handle it.)</p>
+
+<p>And finally, we implement a "custom" MyPage class extending PageControl to add some behaviour here that's not going be shared among our common control classes. Here, we implement the onClick() method mentioned above, thus responding to the user's button click.</p>
+
+<p>Let's try out both of our ButtonControl methods. We'll disable the button and change its text.</p>
+
+<pre>
+class MyPage extends PageControl {
+   public function onClick($source) {
+      $source->setDisabled(true);
+      $source->setText('You already clicked me.');
+   }
+}
+</pre>
+
+<p>When you now click on the button, you'll get a page like this:</p>
+
+<p><img src="/images/blog/posts/domcontrol_2.gif" alt="screenshot 2" /></p>
+
+<h2>What's so great about that?</h2>
+
+<p>Well, let's dream ...</p>
+
+<p>Imagine to throw a pure Html template into an engine like this. The tags you need to operate on get recognized correctly by a DomControlBuilder. They're already attached to a Lifecycle class. So all you have to do is simply respond to some defined stages/events by implementing onInit(), onExecute(), ... methods in your custom DomControl classes.</p>
+
+<p>No <code>&lt;!-- BEGIN_XREPEATER runat:server {attrib:what-the-*~#ï¿½} --&gt;</code> stuff anymore ;)</p>
+
+<h2>And that's about standards?</h2>
+
+<p>A little bit.</p>
+
+<p>We've replaced some of the stuff that's normally done by TemplateEngines like Smarty, Flexy, ... Frameworks like WACT, ... by a build-in php5 technology that closely models the XML DOM standard by the W3C. That's about standards, yes.</p>
+
+<p>We're ready to parse a standard-compliant Html template, transform it into a standard-compliant DOM object representation and parse it back to a standard-compliant Html output that gets send to the browser.</p>
+
+<p>But of course, you're right to say it is <i>not</i> about standards. And of course, it's not complete:</p>
+
+<p>What we've missed so far, is to say anything about how to implement template/view logic. We can identify, modify and use an already in-place Html tag. But we have no way to tell: "This is a Repeater. Use this table row for each of your database result rows!".</p>
+
+<p>Thoughts on that would be appreciated! :)</p>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="geo.region" content="DE-BE" />
+    <meta name="geo.placename" content="Berlin" />
+    <meta name="geo.position" content="52.51168;13.458236" />
+    <meta name="ICBM" content="52.51168, 13.458236" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="http://feeds.feedburner.com/svenfuchs" />
+    <link rel="openid.server" href="http://www.myopenid.com/server" />
+    <link rel="openid.delegate" href="http://svenfuchs.myopenid.com/" />
+    <link href="http://svenfuchs.com" rel="home" />
+    <title>Patch Mephisto to add a comments list filter</title>
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <link rel="stylesheet" href="/stylesheets/highlight.css">
+    <script src="/javascripts/highlight.js"></script>
+  </head>
+  <body>
+    <div id="page">
+  <div id="content">
+    <p><a href="/">&larr; Home</a></p>
+
+    <div id="post">
+      <h1>Patch Mephisto to add a comments list filter</h1>
+      <h2>The controller part</h2>
+
+<p>The filter keyword can be put into the URL parameters like in <code>admin/comments?filter=toyota</code> so nothing needs to be changed in the routes. We can access the parameter right away in the controller action with <code>params[:filter]</code>.</p>
+
+<p>Thus all that's needed here is to change the <code>index</code> action of <code>Admin::CommentsController</code> to constrain the selected comments by the keyword if one is present.</p>
+
+<p>That's easy. We'll just replace this line:</p>
+
+<pre><code>
+@comments = site.unapproved_comments.find(:all, :include => :article)
+</code></pre>
+
+<p>... by this slightly longer piece of code:</p>
+
+<pre><code>
+condition = [:body, :author, :author_url].collect do |column|
+  "contents.#{column} LIKE '%#{params[:filter]}%'"
+end.join(' OR ') unless params[:filter].blank?
+@comments = site.unapproved_comments.find(:all, :include => :article,
+  :conditions => condition)
+</code></pre>
+
+<p>That's all. You now can try and add a filter=something parameter to your URL and the comments list should be filtered accordingly.</p>
+
+<p>Later on we might want to refactor this and move the condition building and querying stuff into the Site or Comment model.</p>
+
+<h2>The view part</h2>
+
+<p>Everything that remains to do now is to add some kind of HTML form to the admin interface that allows to enter a keyword and sends it to the appropriate action.</p>
+
+<p>I've added the following to the admin/comments/index.rhtml template:</p>
+
+<pre><code>
+&lt;!-- begin action nav -->
+&lt;div id="page-nav">
+  ...
+&lt;/div>
+&lt;div id="filter" class="manual">
+  &lt;form action="">
+    &lt;label>Filter&lt;/label>
+    &lt;input type="text" name="filter" value="&lt;%= params[:filter] %>">
+  &lt;/form>
+&lt;/div>
+&lt;!-- /end action nav -->
+</code></pre>
+
+<p>And adjusted the design with the following addition to the mephisto.css stylesheet (located in the public/stylesheets/mephisto directory):</p>
+
+<pre><code>
+#filter {
+	...
+  height: 35px;
+}
+#filter form {
+  float: right;
+  margin: 6px;
+  font-weight: bold;
+  text-shadow: #FFFFFF 2px 2px;
+}
+</code></pre>
+
+<h2>Here's a patch</h2>
+
+<p>I've filed away a patch for my personal backup purposes: <a href="http://svn.artweb-design.de/stuff/mephisto/admin_filter_comments_list.diff"> admin_filter_comments_list.diff</a>. I believe it should work with any default Mephisto installation as well.</p>
+
+    </div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'svenfuchs';
+        var disqus_title = '<%= page.title %>';
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  </div>
+</div>
+
+    <a href="http://svenfuchs.com" rel="me" ></a>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-24665870-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>

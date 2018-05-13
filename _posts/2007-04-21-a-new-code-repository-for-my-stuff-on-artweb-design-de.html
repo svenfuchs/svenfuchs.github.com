@@ -1,0 +1,68 @@
+---
+layout: post
+title: A new code repository for useful stuff at artweb-design.de
+---
+
+<h2>Plugin: Bundled CSS and Javascript assets</h2>
+
+<p>Bundle your CSS and Javascript ressources and compact them on the fly for faster page load times through potentially <em>far</em> less HTTP overhead by simply installing a small plugin.</p>
+
+<p>You can read more about this plugin in this article: <a href="http://www.artweb-design.de/2007/4/13/rails-plugin-blazing-fast-page-loads-through-bundled-css-and-javascript">Rails plugin: Blazing fast page loads through bundled CSS and Javascript</a>.</p>
+
+<p>And you can find the source code here:</p>
+
+<p><a href="http://svn.artweb-design.de/stuff/plugins/rails/bundled_assets/">http://svn.artweb-design.de/stuff/plugins/rails/bundled_assets</a></p>
+
+
+<h2>Plugin: Allow custom column types in your migrations</h2>
+
+<p>Rails' migrations rock. Totally. But when you want to change a database column to some vendor specific type (like <code>varbinary</code> for MySQL) you notice that Rails doesn't hand over control that easily here like it does elsewhere in ActiveRecord: you're not allowed to use any custom type by default.</p>
+
+<p>Fortunately this is easy to change from within a plugin and this one does the trick for you:</p>
+
+<a href="http://svn.artweb-design.de/stuff/plugins/rails/migration_custom_column_types">http://svn.artweb-design.de/stuff/plugins/rails/migration_custom_column_types</a>
+
+<p>You can read more about this in the following article: <a href="http://www.artweb-design.de/2007/4/7/allow-custom-column-types-in-your-rails-migrations">Allow custom column types in your migrations</a></p>
+
+
+<h2>Plugin: Pagination for Mephisto's article lists</h2>
+
+<p>This plugin is for those of you who find pagination of articles on their blog sections (categories) still useful and want to add it to their Mephisto installation.</p>
+
+<p>It only comes with very basic pagination functionality like you can see on this blog's homepage, but I believe that's enough for most cases. You can read more about how to install and use it in this blog article: <a href="http://www.artweb-design.de/2007/4/2/howto-use-mephisto-article-list-pagination-plugin">Howto use: Mephisto article list pagination plugin</a>.</p>
+
+<p>And here's the source:</p>
+
+<p><a href="http://svn.artweb-design.de/stuff/plugins/mephisto/mephisto_paged_article_list/">http://svn.artweb-design.de/stuff/plugins/mephisto/mephisto_paged_article_list</a></p>
+
+
+<h2>Patch: Inverse captcha for Mephisto blog comments</h2>
+
+<p>Add an outer flood gate to Mephistos already very good spam-protection through an "inverse captcha" mechanism (no JS, just CSS, even falls back/plays nice with no-CSS clients).</p>
+
+<p>Here's the code:</p>
+
+<p style="text-decoration:line-through"><a href="http://svn.artweb-design.de/stuff/patches/mephisto/inverse_captcha.diff">http://svn.artweb-design.de/stuff/patches/mephisto/inverse_captcha.diff</a> and<br>
+<a href="http://svn.artweb-design.de/stuff/patches/mephisto/inverse_captcha_theme.diff">http://svn.artweb-design.de/stuff/patches/mephisto/inverse_captcha_theme.diff</a></p>
+
+<p>Update: I've revamped this as a plugin in the meantime. You can find the code here now: <a href="http://svn.artweb-design.de/stuff/mephisto/mephisto_inverse_captcha/">Inverse Captcha for Comments</a>.</p>
+
+<p>You can more about this in this article: <a href="/2007/4/4/howto-floodgate-mephisto-spam-protection">How to add a floodgate to Mephisto's nearly perfect spam protection</a></p>
+
+<p>Please note that you'll only be able to actually apply the first of these patches. The second patch is filed for my personal backup and applies only to my own theme (that you can see here on my blog) so you'll need to tweak this one according to your own theme. Feel free to check-in or send me patches that apply to available Mephisto themes.</p>
+
+
+<h2>Patch: Mephisto comments list filter</h2>
+
+<p>When you recieve lots of spam the comments list in your Mephisto admin interface will get very, very long after a short while. If you want to check the list for false positives (which is the whole purpose of retain the comments at all) this get's unnerving very quickly and you might find you wanting to bulk delete all comments containing certain typical keywords.</p>
+
+<p>You know what I'm talking about here? Then this patch might be for you. It adds a simple form text field to your comments list where you can specify a keyword. If you "submit" the form (by pressing enter) the comments list will get filters by this keyword.</p>
+
+<p>Here's the code:</p>
+
+<p><a href="http://svn.artweb-design.de/stuff/patches/mephisto/comments_filter.diff">http://svn.artweb-design.de/stuff/patches/mephisto/comments_filter.diff</a></p>
+
+<p>You can read more about this patch in this article: <a href="http://www.artweb-design.de/2007/4/4/patch-mephisto-to-add-a-comments-list-filter">Patch Mephisto to add a comments list filter</a></p>
+
+
+

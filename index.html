@@ -1,0 +1,52 @@
+---
+layout: default
+title: Sven Fuchs
+---
+
+<div id="page">
+  <div id="content">
+    <h1>Sven Fuchs</h1>
+    <ul id="contact">
+      <li><a href="http://github.com/svenfuchs">http://github.com/svenfuchs</a></li>
+      <li><a href="http://twitter.com/svenfuchs">http://twitter.com/svenfuchs</a></li>
+      <li><a href="mailto:me@svenfuchs.com">me@svenfuchs.com</a></li>
+    </ul>
+
+    <h2>Recent Posts</h2>
+    <ul class="posts">
+      {% for post in site.posts limit:15 %}
+        <li class="hentry">
+          <a href="{{ post.url }}" class="entry-title" rel="bookmark">
+            {{ post.title }}
+          </a>
+          <abbr title="{{ post.date }}" class="updated">
+            {{ post.date | date: '%B %Y'}}
+          </abbr>
+          <span class="entry-content">
+            {{ post.content | strip_html | truncate: 500 }}
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+    <p><a href="/archive">Older posts &rarr;</a></p>
+  </div>
+  <div class="push"></div>
+</div>
+
+<div id="footer">
+  <address class="vcard">
+    <span class="fn">Sven Fuchs</span>,
+    <a href="mailto:me@svenfuchs.com">me@svenfuchs.com</a>,
+  	<span class="adr">
+  		<a href="http://maps.google.de/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q=gr%C3%BCnberger+stra%C3%9Fe+65,+10245+friedrichshain,+berlin,+germany&amp;sll=51.151786,10.415039&amp;sspn=17.788663,36.738281&amp;ie=UTF8&amp;hq=&amp;hnear=Gr%C3%BCnberger+Stra%C3%9Fe+65,+Friedrichshain+10245+Berlin&amp;t=h&amp;z=16"><span class="street-address">Gr&uuml;nberger Str. 65</span></a>,
+  		<span class="postal-code">10245</span>
+  		<span class="locality">Berlin</span>,
+  		<span class="country-name">Germany</span>,
+  	  <a class="email" href="mailto:me@svenfuchs.com">me@svenfuchs.com</a>
+  	  <a class="url" href="http://svenfuchs.com">http://svenfuchs.com</a>
+    	<span class="tel">+49 (170) 80 34 77 3</span>
+      <a class="hcard-download" href="http://feeds.technorati.com/contacts/referrer">vcard</a>
+    </span>
+  </address>
+  <a href="http://feeds.feedburner.com/svenfuchs" class="feed right">Atom Feed</a>
+</div>

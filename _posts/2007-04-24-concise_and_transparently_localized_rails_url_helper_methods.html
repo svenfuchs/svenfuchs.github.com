@@ -1,0 +1,182 @@
+---
+layout: post
+title: Concise & transparently localized Rails url_helper methods?
+---
+<p>Jeremy <a href="http://jeremyhubert.com/2007/4/7/getting-resource-helpers-to-play-nice-with-globalize-in-rails">posted some lines of code</a> to demonstrate a possible solution and get some thoughts going. He showed <a href="http://pastie.caboo.se/52246">a modified version</a> of the <code>NamedRouteCollection::define_url_helper</code> method. This method is responsible for creating all those funny url_helper methods that you get when you define a named route.</p>
+
+<p>Unfortunately I couldn't get this version working though. Instead of this:</p>
+
+<pre><code>
+article_path(@article) # /en/articles/1
+</code></pre>
+
+<p>I kept getting this:</p>
+
+<pre><code>
+article_path(@article) # /1/articles/localeen
+</code></pre>
+
+<p>Hmm. Looking a little closer at this line:</p>
+
+<pre><code>
+#{'args &lt;&lt; { :locale => @current_locale }' if segment_keys.include?(:locale)}
+</code></pre>
+
+<p>... this seems to erroneously push a hash into the <code>args</code> array.</p>
+
+<p>For reasons that I'll try to explain later on this can't work with <code>args</code> given as a hash anyways (i.e. with e.g. <code>article_path(:id => 1)</code>). On the other hand, when <code>args</code> is an array here (i.e. in the shorter and targeted syntax like in <code>article_path(1)</code>) the <code>args</code> variable will end up with a value like <code>[1, {:locale => 'en'}]</code> and it seems clear that this actually translates to the wrong URL above.</p>
+
+<h2>How about this?</h2>
+
+<p>So, standing on giant Jeremies' shoulders I've tried to refine this a bit and found this line to be working a bit better:</p>
+
+<pre><code>
+args.unshift @current_locale unless Hash === args.first
+</code></pre>
+
+<p>This unshifts the current locale to front of the array, but it does it only if the first argument is <em>not</em> a Hash, i.e., only if the targeted array syntax has been used.</p>
+
+<p>Also, I disliked overwriting the entire method a bit because it's relatively prone to breakage if the original code changes in future. Thus I've constructed the following weird looking wrapper that does two things:</p>
+
+<ul>
+	<li>Wrap the <code>define_url_helper</code> method and hook up a workhorse method if the route involves a <code>:locale</code> segment. This method <code>inject_locale_to_url_helper</code> will be called immediately <em>after</em> the url_helper method has been defined.</li>
+	<li><code>inject_locale_to_url_helper</code> will then wrap the just defined url_helper method and prepend the current locale to the parameters whenever the user actually calls the helper method.</li>
+</ul>
+
+<p>The code looks quite clumbsy because of the duplicate usage of <code>alias_method_chain</code>:</p>
+
+<pre><code>
+module ActionController
+  module Routing
+    class RouteSet
+      class NamedRouteCollection
+
+        # hook into the url_helper creation process and add our call after
+        # the helper has been created
+        def define_url_helper_with_wrap_locale(route, name, kind, options)
+          define_url_helper_without_wrap_locale(route, name, kind, options)
+          if route.significant_keys.include? :locale
+            inject_locale_to_url_helper url_helper_name(name, kind)
+          end
+        end
+        alias_method_chain :define_url_helper, :wrap_locale
+
+        # wrap the url_helper and prepends the locale to the parameters list
+        # given by the user when the helper is actually used
+        def inject_locale_to_url_helper(selector)
+          @module.send :module_eval, &lt;&lt;-end_eval
+            def #{selector}_with_locale(*args)
+              args.unshift @current_locale unless Hash === args.first
+              #{selector}_without_locale(*args)
+            end
+          end_eval
+          @module.send :alias_method_chain, selector, :locale
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>Ok. This could already make a possible addition to Globalize, I guess.</p>
+
+<p>It's relatively unobtrusive in that it only wraps around existing methods. It also only relies on the assumption that <code>route.significant_keys</code> will tell us if <code>:locale</code> is included in this route. That makes it relatively save from future changes to the Rails code.</p>
+
+<p>It allows to call url_helpers using the targeted array parameter syntax and omitting the locale from the parameter list:</p>
+
+<pre><code>
+article_path(@article)
+</code></pre>
+
+<p>... assuming that <code>@article.id == 1</code> and <code>@current_locale == 'en'</code> this will yield ...</p>
+
+<pre><code>
+/en/articles/1
+</code></pre>
+
+<p>If this covers our needs it should work fine and everything's all nice and dandy.</p>
+
+<h2>Problem!</h2>
+
+<p>But there's a shortcoming with this solution: you can't specify a different locale in any resonable concise manner. E.g. neither of these would work:</p>
+
+<pre><code>
+article_path('fr')
+article_path('fr', @article)
+article_path(:locale => 'fr')
+article_path(:locale => 'fr', :article => @article)
+</code></pre>
+
+<p>To only switch the current locale (as in "view this article in English, French, German, ...") you'd need to use a monster-like call like this:</p>
+
+<pre><code>
+article_path(:locale => 'fr', :controller => :articles, :action => :show, :article => @article)
+</code></pre>
+
+<p>No, the usual shortcut version wouldn't work. That's because <code>@current_locale</code> would be unshifted to the parameter list:</p>
+
+<pre><code>
+article_path('fr', :articles, :show, @article)
+</code></pre>
+
+<p>This would end up with a parameter list like <code>['en', 'fr', :articles, :show, @article]</code> ... and thus throw a routing error.</p>
+
+<h2>Really a problem?</h2>
+
+<p>One might argue that switching the locale is a relatively seldom needed functionality and this is still a huge improvement above needing to add the locale to each and every url_helper.</p>
+
+<p>Hm, yes. Still ... I'd rather like so see some solution to this before trying to integrate it to Globalize.</p>
+
+<h2>Rails' concept of parameter expiration in routes</h2>
+
+<p>Now let's try to understand how it comes that it doesn't work to just add <code>:locale => 'en'</code> to the hash syntax like in:</p>
+
+<pre><code>
+article_path(:locale => 'fr', :article => @article) # doesn't work :(
+</code></pre>
+
+<p>Why?</p>
+
+<p>The reason for this lies buried in a concept that Rails calls "parameter expiration". It seems hard enough to understand <em><strong>what</strong></em> is going on (Jamis Buck talks a bit about the concept <a href="http://weblog.jamisbuck.org/2006/10/16/under-the-hood-route-generation-in-rails">here</a>). But to me it's quite unclear <em><strong>why</strong></em> exactly Rails does things this way.</p>
+
+<p>Whatever the reason was for inventing this concept in the first place ... it seems clearly to be the culprit for us not being able to use such a simple and intuitive call like the one above.</p>
+
+<p>In Rails' routing system the order of the single path segments that map to a controller, an action and a bunch parameters is crucial: the parameter expiration concept assumes that a change in a segment on the left side of the path (e.g. our <code>:locale</code> parameter) designates the necessity to update or specify all the segments that are on the right of it.</p>
+
+<p>Sounds confusing? Yes. Look here:</p>
+
+<pre><code>
+# this is /en/articles/show/1 so we have:
+# :locale => 'en', :controller => :articles, :action => :show, :id => 1
+</code></pre>
+
+<p>Now these <em>will work</em> perfectly:</p>
+
+<pre><code>
+article_url :id => 2
+url_for :action => :edit, :id => 1
+url_for :controller => :pages, :action => :show, :id => 1
+article_url :locale => 'fr', :id => 1
+</code></pre>
+
+<p>The reason is that any of the "expired" parameters that have changed in comparsion to the current URL are given. "Expired" are parameters that have changed themselves OR are to the right of a changed parameter.</p>
+
+<p>For the same reason these <em>won't work</em>:</p>
+
+<pre><code>
+url_for :action => :edit # :id is missing
+url_for :controller => :pages, :id => 1 # :action is missing
+article_url :locale => 'fr' # everything besides :locale is missing
+</code></pre>
+
+<p>... because <code>:id</code>, <code>:action</code> and <code>:locale</code> respectively are to the right of a changed parameter (<code>:action</code>, <code>:controller</code> and <code>:locale</code> respectively). As you can see, because <code>:locale</code> is <em>always</em> on the leftmost side of our route it will always expire all of the other parameters of the route - so we need to specify all of them! But this is Rails. So this is only true most of the times ... that is, except is it not true. Ahem ;-)</p>
+
+<p>I guess the reasoning for this kind of confusing concept has most probably to do with the fact that it's a rather uncommon case that <em>parameters</em> are left to the <code>:controller</code> and <code>:action</code> specification (like our <code>:locale</code>).</p>
+
+<p>But on the other hand ... I'm wondering if the confusion invented by this is really outweighed by the benefits.</p>
+
+<h2>Feedback? Suggestions?</h2>
+
+<p>I hope this article - in all it's half-baked-ness - will get some further thoughts and discussion going.</p>
+
+<p>What do you think?</p>

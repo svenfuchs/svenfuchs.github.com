@@ -1,0 +1,11 @@
+title: "Sven Fuchs"
+email: "me@svenfuchs.com"
+url: "https://svenfuchs.com"
+exclude: [CNAME]
+markdown: kramdown
+syntax-highlighting:
+  enabled: true
+kramdown:
+  hard_wrap: false
+  input: GFM
+  smart_quotes: lsquo,rsquo,ldquo,rdquo

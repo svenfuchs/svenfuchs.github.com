@@ -1,0 +1,253 @@
+---
+layout: post
+title: Globalize's advanced features - Get on Rails with Globalize! Part 3 of 8
+---
+<h2>Abstracting ViewTranslations: the way of the slashes.</h2>
+
+<p>As soon as you're starting to do some interactive stuff - let's say you're going to call user Bob by his name: "Welcome back, Bob, please check your mailbox!" - you'll probably very soon get annoyed of ... code like this:</p>
+
+<pre>
+&lt;%= "Welcome back, ".t + name +
+  ", please check your mailbox!".t %>.
+</pre>
+
+<p>Ugly, hm? Moreover there probably soon will arise problems with different word orders in different languages, like when <code>"Welcome back, ".t + name</code> would probably need to be <code>name + ", welcome back".t</code> in another language for some grammatical reason. As soon as you have more than just a few strings and languages to manage this kind of stuff can get really nasty.</p>
+
+<p>Globalize offers a pretty nice solution here: ViewTranslations (i.e. strings that are translated through the method .t) may be used as a "format" string just as you know them from sprintf. The allowed specifiers are <code>%s</code> for strings and <code>%d</code> for numbers.</p>
+
+<p>So you could do:</p>
+
+<pre>
+&lt;%= "Welcome back, %s, please check your mail!".t(nil, name) %>
+</pre>
+
+<p>... instead of that monstrous concatenation above.</p>
+
+<p>But better yet, Globalize overloads the <code>/</code> operator for Strings and allows you to this:</p>
+
+<pre>
+&lt;%= "Welcome back, %s, please check your mail!" / name %>
+</pre>
+
+<p>Quite nice, isn't it?</p>
+
+<p>There's only one argument supported currently. That means you can <strong>not</strong> do: <code>"Welcome, %s! You have %d unread messages." / [name, count]</code>.</p>
+
+<p>That looks quite like a limitation, doesn't it? Well, if you really need this feature (and after you've read the following section and know what you're doing), you'll probably want to look at the <a href="http://www.globalize-rails.org/globalize/show/How+To">"multiple arguments to fetch" monkey-patch on the Globalize wiki</a> (scroll down to the bottom of the page). This will add the ability to hand more than one value over to your ViewTranslations.</p>
+
+<h2>Singular and (multiple) plural ViewTranslations</h2>
+
+<p>Why would we want multiple plural forms for a ViewTranslation? Well, as the sharp reader you are you surely noticed that flaw above where <code>"You have %d unread messages"</code> would result in bad English when Bob has exactly 1 message (not "messages") in his inbox. </p>
+
+<p>Depending on the value of <code>count</code> we'd need three different strings:</p>
+
+<p>
+"You have [0] unread messages."<br>
+"You have [1] unread message."<br>
+"You have [2..n] unread messages."
+</p>
+
+<p>For many languages these three cases are sufficient, though in French you'd use the same form for the first case (zero messages) like for the second (1 message). But there are languages that are even more complex:</p>
+
+<p><i>"In many languages, including a number of Indo-European languages, there is also a dual number (used for indicating two objects). Some other grammatical numbers present in various languages include nullar (for no objects), trial (for three objects) and paucal (for a few objects). In languages with dual, trial, or paucal numbers, plural refers to numbers higher than those (i.e. more than two, more than three, or many). [...] Languages having only a singular and plural form may still differ in their treatment of zero. For example, in English, German, Dutch, Italian, Spanish and European Portuguese, the plural form is used for zero or more than one, and the singular for one thing only. By contrast, in French and Brazilian Portuguese, the singular form is used for zero. Some languages, such as Latvian, have a special form (the nullar) for zero."</i><br />
+<a href="http://en.wikipedia.org/wiki/Plural">http://en.wikipedia.org/wiki/Plural</a></p>
+
+<p>To make this (virtually very) long story short, Globalize is here to help you with this stuff and allows you to specify zero, singular and (one or many) plural translations - just as required by the target language. You can specify these translations like this:</p>
+
+<pre>
+Locale.set_translation(key, [singular, plural_1, ... plural_n],
+  zero)
+</pre>
+
+<p>For example: In Slovenian you'll find the following declension for the word "mesto" which means "city":</p>
+
+<pre>
+singular: mesto
+dual: mesti
+paucal (3-4): mesta
+plural (5-10): mest
+</pre>
+
+<p>Now, let's see how Globalize copes with this.</p>
+
+<pre>
+>> Locale.set('sl-SI')
+>> Locale.set_translation('%d city', ['%d mesto', '%d mesti',
+  '%d mesta', '%d mest'], '%d mest')
+>> (0..5).each { |i| puts "%d city" / i }
+0 mest
+1 mesto
+2 mesti
+3 mesta
+4 mesta
+5 mest
+</pre>
+
+<p>And that's the correct result. Globalize recognizes the Slovenian dual and its two plural cases.</p>
+
+<p>Actually, when you look at the <code>globalize_language</code> table for the Slovenian entry you'll see that Slovenian plurals are even more fun :-). The <code>pluralization</code> field of that row holds the expression:</p>
+
+<pre>c % 10 == 1 &amp;&amp; c % 100 != 11 ? 1 : c % 10 >= 2 &amp;&amp; c % 10 &lt;= 4 &amp;&amp;
+  (c % 100 &lt; 10 || c % 100 >= 20) ? 2 : 3</pre>
+
+<p>... which will be evaluated to select the correct plural form.</p>
+
+<p>Another example for complex plural forms is Polish (which can be found in the <a href="http://www.gnu.org/software/gettext/manual/html_mono/gettext.html#SEC150">GNU Gettext Manual</a>):</p>
+
+<p><em>"In Polish we use e.g. plik (file) this way:	<br>
+1 plik<br>
+2,3,4 pliki<br>
+5-21 plik&ograve;w<br>
+22-24 pliki<br>
+25-31 plik&ograve;w<br>
+and so on."</em></p>
+
+<p>We can translate this to Globalize like this:</p>
+
+<pre>
+>> Locale.set 'pl-PL'
+>> Locale.set_translation('%d file', ['%d plik', '%d pliki',
+   '%d plik&oacute;w'], '%d plik&ograve;w')
+>> [0,1,2,3,5,21,22,25].each { |i| puts "%d file" / i }
+0 plik&ograve;w
+1 plik
+2 pliki
+3 pliki
+5 plik&oacute;w
+21 plik&oacute;w
+22 pliki
+25 plik&oacute;w
+</pre>
+
+<p>Again, Globalize already knows about the unusual distribution of the two different plurals: in this case this is the expression:</p>
+
+<pre>c == 1 ? 1 : c % 10 >= 2 &amp;&amp; c % 10 &lt;= 4 &amp;&amp; (c % 100 &lt;10 ||
+  c % 100 >= 20) ? 2 : 3</pre>
+
+<p>What happens here under the hood is that each Language comes with a pluralization expression like the one above (though, obviously, for most languages a less complex formula is sufficient).</p>
+
+<p>This expression yields to an index i for any given number n that's provided through the <code>"string" / n</code> syntax. The index i refers to the set of plural forms that you provide when you set a translation through <code>Locale.set_translation(key, [singular, plural_1, ... plural_n], zero)</code>. 0 will refer to the zero form, 1 to the singular form, 2 to plural_1 and so on.</p>
+
+<h2>Globalize's Currency class</h2>
+
+<p>Globalize comes with a dedicated Currency class that you can <em>"use for representing money values in your ActiveRecord models. It stores values as integers internally and in the database, to safeguard precision and rounding. More importantly for globalization freaks, it prints out the amount correctly in the current locale, via the handy format method. Try it!"</em> (from the <a href="http://globalize.rubyforge.org/classes/Globalize/Currency.html">Globalize api docs on Currency</a>).</p>
+
+<p>Let's say we need to define a simple Product class. We can then use Globalize's Currency class to delegate the handling of the price.</p>
+
+<pre>
+class Product &lt;ActiveRecord::Base
+  composed_of :price, :class_name => "Globalize::Currency",
+    :mapping => [ %w(price cents) ]
+end
+</pre>
+
+<p>Now we can create a product:</p>
+
+<pre>
+p = Product.new
+p.price = Currency.new(12345678)
+p.price.to_s
+# "12,345.78"
+</pre>
+
+<p>... and use the Currency delegate to display the price in a localized format. In Germany currency value will be formatted like this:</p>
+
+<pre>
+Locale.set("de-DE")
+p.price.to_s
+# "12.345,78 ?"
+p.price.format(:code => true)
+# "12.345,78 EUR"
+</pre>
+
+<p>While in Swiss you'd use:</p>
+
+<pre>
+Locale.set("de-CH")
+p.price.to_s
+# "SFr. 123'456.78"
+p.price.format :code => true
+# "123'456.78 CHF"
+</pre>
+
+<p>Again, this formatting information comes from the database tables that Globalize comes with - this time it's defined in the <code>globalize_countries</code> table.</p>
+
+<p>FYI: Like similar classes that essentially represent <a href="http://c2.com/cgi/wiki?ValueObjectsShouldBeImmutable">immutable</a> and exchangeable values Globalize::Currency implements the <a href="http://c2.com/cgi/wiki?ValueObject">ValueObject</a> pattern:</p>
+
+<p><em>"Examples of value objects are things like numbers, dates, monies and strings. Usually, they are small objects which are used quite widely. Their identity is based on their state rather than on their object identity. This way, you can have multiple copies of the same conceptual value object.
+So I can have multiple copies of an object that represents the date 16 Jan 1998. Any of these copies will be equal to each other. For a small object such as this, it is often easier to create new ones and move them around rather than rely on a single object to represent the date."</em></p>
+
+
+<h2>Piggybacking translations of associated models</h2>
+
+<p>When you have your models associated with other models you'll often want to save some performance by eagerly loading them in a single database call instead of one per object.</p>
+
+<p>Hence, <em>"there's a piggyback feature for associations. So, Product.find(:all, :include_translated => :manufacturer) is one DB call, but gives you product.manufacturer_name in your current language."</em> (from the <a href="http://www.globalize-rails.org/globalize/show/Features">Globalize wiki</a>)</p>
+
+<p>In the <a href="http://globalize.rubyforge.org/classes/Globalize/DbTranslate/TranslateClassMethods.html">api docs</a> they tell us: <em>"<code>:include_translated</code> works as follows: any model specified in the <code>:include_translated</code> option will be eagerly loaded and added to the current model as attributes, prefixed with the name of the associated model. This is often referred to as 'piggybacking'</em>."</p>
+
+<p>The api docs example uses models like the following ones. Let's assume that you've already set them up correctly:</p>
+
+<pre>
+class Product &lt;ActiveRecord::Base
+  belongs_to :category
+  translates :name
+end
+
+class Category &lt;ActiveRecord::Base
+  has_many :products
+  translates :name
+end
+</pre>
+
+<p>Now let's make sure that there's a single page belonging to a category:</p>
+
+<pre>
+Product.destroy_all
+Category.destroy_all
+
+Locale.set "en-US"
+p = Product.new :name => "The Godfather"
+p.category = Category.new :name => "Movies"
+p.save
+</pre>
+
+<p>Also, let's add German translations:</p>
+
+<pre>
+Locale.set "de-DE"
+p.name => "Der Pate"
+p.categories => "Filme"
+p.save
+</pre>
+
+<p>Now we can access the product and category in one go using Globalize's piggybacking and get the translated properties:</p>
+
+<pre>
+Locale.set "us-US"
+Product.find :first, include_translated => :category
+# &lt;Page:0x2466344 @original_language=English, @attributes={
+  "category_name"=>"Movies", "title"=>"The Godfather",
+  "id"=>"1", "category_id"=>"1"}>
+
+Locale.set "de-DE"
+Product.find :first, include_translated => :category
+# &lt;Page:0x2466344 @original_language=German, @attributes={
+  "category_name"=>"Filme", "title"=>"Der Pate",
+  "id"=>"1", "category_id"=>"1"}>
+</pre>
+
+<p>... which are the expected results. :-)</p>
+
+<h2>So much for this time ...</h2>
+
+<p>In Part 4 of this <a href="/articles/2006/11/10/get-on-rails-with-globalize-comprehensive-writeup">series</a> we'll talk about how to "<a href="/2007/5/18/globalize-rails-advanced-techniques-tips-tricks">Pimp up Globalize - extensions and patches</a>".</p>
+
+<p>On my list there are currently the following topics:</p>
+
+<ul>
+	<li>Web-based management of your translations</li>
+	<li>Liquid Concept's "Globalize extension"</li>
+	<li>Scaping an application for strings to translate</li>
+	<li>Automatic translation through Bablefish</li>
+</ul>

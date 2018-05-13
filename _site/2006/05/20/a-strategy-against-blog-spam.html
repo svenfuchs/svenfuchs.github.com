@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="geo.region" content="DE-BE" />
+    <meta name="geo.placename" content="Berlin" />
+    <meta name="geo.position" content="52.51168;13.458236" />
+    <meta name="ICBM" content="52.51168, 13.458236" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="http://feeds.feedburner.com/svenfuchs" />
+    <link rel="openid.server" href="http://www.myopenid.com/server" />
+    <link rel="openid.delegate" href="http://svenfuchs.myopenid.com/" />
+    <link href="http://svenfuchs.com" rel="home" />
+    <title>Doable strategies against blog spam?</title>
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <link rel="stylesheet" href="/stylesheets/highlight.css">
+    <script src="/javascripts/highlight.js"></script>
+  </head>
+  <body>
+    <div id="page">
+  <div id="content">
+    <p><a href="/">&larr; Home</a></p>
+
+    <div id="post">
+      <h1>Doable strategies against blog spam?</h1>
+      <p>In the Typo admin area there's some "blacklist" option in the admin
+interface, which claims to compare the users IP address to "local and remote
+blacklists". The interface explains this as "Good defense against spam
+bots."</p>
+
+<p>Also you're recommended to *not* "allow non-ajax comments" which means that
+comments will only accepted when send via Ajax (which most spammers don't seem
+to be capable of).</p>
+
+<p>Don't know about the blacklist option yet. I think I'll read up the code.
+But I wonder why there's any need of the non-ajax comments option at all when
+the IP comparsion really does it's job well.</p>
+
+<p>While I've been thinking about this someone dropped an annoucement for a
+Rails <a
+href="http://cuttingtheredtape.blogspot.com/2006/05/actsasclassifiable.html">act_as_classifiable
+plugin</a> to the RoR Mailinglist.</p>
+
+<p>Hmmm. I wonder if there's been any attemp to accomplish something like
+this:</p>
+
+<ul>
+<li>Manually confirmed Typo blogs build up a "trusted blogs net" featuring a
+distributed notification service about obvious spam requests. By obvious I
+mean things like requests to Wordpress or other missing files on a Typo blog
+or manually moderated comments.  When there's any such request on any Typo
+blog, it will be made visible to all other Typo installations by distributing
+it somehow (either through a central server or some kind of peer-to-peer
+approach).</li>
+<li>Each HTTP request will be analysed (i.e. "learned") as a whole (like <a
+href="http://www.homelandstupidity.us/software/bad-behavior/">Bad
+Behaviour</a> does it) through a Bayesian filter as "bad/spam" so that each
+blog acts as a user to the Bayesian knowledge of the Typo blog net as a
+whole.</li>
+<li>This knowledge will be published back to the blogs so that each blog can
+decide on additional measurements - like actually blocking the whole request
+even for GET with a 412 error ("you're not allowed to read my blog.") when a
+Request fails a local Baysian test.</li>
+</ul>
+
+<p>This way the following conditions would trigger whole HTTP Requests to be
+marked/learned as "bad".</p>
+
+<ul>
+<li>it comes from an IP address known as a spammer by a remote blacklist</li>
+<li>it has been moderated manually as spam</li>
+</ul>
+
+<p>HTTP Requests that come from IP addresses that are used by clients who
+occasionally log in will be learned as "good".</p>
+
+<p>This approach could also be used to greatly enhance a comment moderation
+queue I think. Depending on the results of the Bayesian analysis the notification
+mails could include a marker in the subject line indicating that the system
+requires human feedback for this comment. Clicking on a given URL in the mail
+would learn/unlearn the comment as good/bad. Comments that have been
+recognized as "good" could immidiately be published.</p>
+
+<p>Newly "learned" spam sources could be published to services like <a href="http://akismet.com/">Akismet</a>, <a href="http://www.surbl.org/">SURBL</a> or <a href="http://www.dnsbl.org/">DNSBL</a>.</p>
+
+<p>Also there could be an additional interface to allow for complaints when
+your comment has been treated as "bad" by the system.</p>
+
+
+<p>Another thought:</p>
+
+<p>I don't know enough about how the majority of spam bots work but I assume
+that they're using some "fire and forget" strategy - by just issuing the POST
+request to several known "candidate" URLs.</p>
+
+<p>If so, this would allow for a very basic additional measurement - simply
+add some kind of "please confirm your comment" page or (in case of Ajax being
+used) alert box. Someone who just "fires-and-forgets" would fail this
+handshake.</p>
+
+<p>If not so, this on the other hand would allow to send the spammer to a
+<a href="http://en.wikipedia.org/wiki/Honeypot_%28computing%29">honeypot</a>
+which could make him wait half an hour or so to complete the request and
+additionally logging as much of information as possible. (I've read about 1&1
+having been asked to provide their logs to a lawsuit against a spammer but
+can't remember the details.)</p>
+
+    </div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'svenfuchs';
+        var disqus_title = '<%= page.title %>';
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  </div>
+</div>
+
+    <a href="http://svenfuchs.com" rel="me" ></a>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-24665870-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>

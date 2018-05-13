@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="geo.region" content="DE-BE" />
+    <meta name="geo.placename" content="Berlin" />
+    <meta name="geo.position" content="52.51168;13.458236" />
+    <meta name="ICBM" content="52.51168, 13.458236" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="http://feeds.feedburner.com/svenfuchs" />
+    <link rel="openid.server" href="http://www.myopenid.com/server" />
+    <link rel="openid.delegate" href="http://svenfuchs.myopenid.com/" />
+    <link href="http://svenfuchs.com" rel="home" />
+    <title>Looking for the perfect Mephisto TagCloud plugin</title>
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <link rel="stylesheet" href="/stylesheets/highlight.css">
+    <script src="/javascripts/highlight.js"></script>
+  </head>
+  <body>
+    <div id="page">
+  <div id="content">
+    <p><a href="/">&larr; Home</a></p>
+
+    <div id="post">
+      <h1>Looking for the perfect Mephisto TagCloud plugin</h1>
+      <h2>Not so cute ...</h2>
+
+<p>If you've been looking for a tagcloud plugin for Mephisto lately you've probably been looking at the <a href="http://mephisto.stikipad.com/help/show/Liquid+Plugins" title="Liquid Plugins in Mephisto">Mephisto Liquid Plugins</a> wiki page and found these:</p>
+
+<ul>
+<li><a href="http://ralree.info/2007/2/25/mephisto-tag-cloud-plugin" title="Ruby stole my o`o | Mephisto Tag Cloud Plugin">Mephisto Tag Cloud</a> by Hank and</li>
+<li><a href="http://rubbedcode.com/blog/2007/06/28/mephisto-hacking-1/" title="rubbedcode.com &raquo; mephisto hacking #1">YetAnotherTagCloud</a> by Jeffrey Lim</li>
+</ul>
+
+<p>The former of these will hit your database <em>once per tag</em> that is listed in your tagcloud, like in:</p>
+
+<pre><code class="ruby">
+
+</code></pre>
+
+<p>... where in #site_tag the taggings for the particular tag are counted. I don't know about you, but to me that's not acceptable. But even worse, the latter of the plugins above will hit the database <em>twice</em> per tag!</p>
+
+<p>Also: (I'm really not up to diss somebody particulary, but) this is just bad HTML:</p>
+
+<pre><code class="ruby">
+&lt;span style='font-size: 0.80em'>&lt;a title='annoyances'
+href='/tags/annoyances'>annoyances&lt;/a>&lt;/span>
+</code></pre>
+
+<p>When I've been first looking for a plugin I haven't been able to find any reasonable solution ... so I came up with my own plugin that worked well enough for myself. You can see it at work in the sidebar of this blog and the code lives in my SVN repository for quite some time now: <a href="http://svn.artweb-design.de/stuff/mephisto/mephisto_tagging/">http://svn.artweb-design.de/stuff/mephisto/mephisto_tagging/</a>.</p>
+
+<h2>What's on the wishlist?</h2>
+
+<p>In my opinion there are some requirements a nice tagcloud plugin will fulfill. Nothing new, really. But obviously worth mentioning:</p>
+
+<ul>
+	<li>Use <em>one</em> query to fetch the tags/taggings and counts from the database, not n+1.</li>
+	<li>Don't hardcode any kind of style-information into the ruby code. Leave it to the user to choose styles by defining a css class attribute.</li>
+	<li>Use reasonable semantic HTML. Ideally leave it to the user to decide if he wants an UL tag for the cloud with LIs for each tag or just a P tag with several A tags.</li>
+	<li>For different sites different distributions of tag counts to sizes are appropriate. So these should be configurable by the user.</li>
+</ul>
+
+<p>Also: Some people want the tag counts to be displayed as plain text (e.g. in the link text), others don't want them at all or want them to be in the link title attribute. Some people want their tagcloud to use the hTag microformat. Others don't care. So ideally stuff like this would be either configurable or left to the user.</p>
+
+<p>My own plugin does not fullfill all of these requirements, but most of them. I therefor hesitated to publish the plugin (hence there's been no notice about it on this blog, yet) before I haven't got around to refactoring it accordingly: I believe the best solution would be to rebuild it as a custom Liquid tag (as opposed to a Liquid filter).</p>
+
+<p>Now, that task has been lingering around on my todo lists for quite a while. When I checked Google yesterday for some documentation or examples of how to implement the plugin as a Liquid tag I found an interesting alternative to the both pugins mentioned above!</p>
+
+<h2>The alternative</h2>
+
+<p>This plugin <a href="http://svn.boldr.net/mephisto/plugins/trunk/mephisto_tag_cloud" title=" /mephisto/plugins/trunk/mephisto_tag_cloud">http://svn.boldr.net/mephisto/plugins/trunk/mephisto_tag_cloud</a> has even been on the web ever since January 07. It aviods most of the mistakes mentioned above and even implements a custom Liquid tag! Wow, that's cool.</p>
+
+<p>I installed it in my local copy of my blog and played around with it. Unfortunately it's not perfect, too :) From my perspective there are the few shortcomings.</p>
+
+<ul>
+	<li>The boldr tagcloud plugin distributes the tag counts equally to ten CSS classes. One could argue that this should sufficiently work in most cases because you can define, e.g., the classes .tag1, .tag2, ... to have the same properties if you want (and thereby define some custom destribution scheme). But of course, that's not really elegant.</li>
+	<li>As far as I can see it's not possible to access the tag count from within the Liquid tag. I.e. it's not possible to display it, neither in the link text nor in the link title attribute.</li>
+	<li>The README suggests to use Mephistos build-in <code>link_to_tag</code> filter which doesn't allow you to add any custom attrributes to the link though. Thus a tagcloud that consists of a pure list of anchor tags (as opposed to an UL cloud with LI tags) couldn't be implemented without further efforts. Of course one could add an additional Liquid filter easily for this purpose though.</li>
+	<li>Also, there are two minor bugs in the implementation which caused the plugin to display <em>no tags at all</em> for me initially. (See below for a patch.)</li>
+</ul>
+
+<p>So, there's some room for improvement IMO.</p>
+
+<p>I've briefly looked into it and I believe that things could probably refactored very easily. I'll try to either get some improvements into the boldr plugin so that it get's usable for myself or I'll just merge it with my own plugin and re-publish it myself. I've left a <a href="http://forums.boldr.net/forums/1/topics/5" title="Mephisto Tagcloud plugin - Boldr's Forums">short note on the boldr forums</a> and asked to contact me on this. (I used the forum because I found no other obvious way to contact the developer. If you happen to know one, please tell me!)</p>
+
+<p>Your thoughts?</p>
+
+    </div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'svenfuchs';
+        var disqus_title = '<%= page.title %>';
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  </div>
+</div>
+
+    <a href="http://svenfuchs.com" rel="me" ></a>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-24665870-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>

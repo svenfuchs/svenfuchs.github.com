@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="geo.region" content="DE-BE" />
+    <meta name="geo.placename" content="Berlin" />
+    <meta name="geo.position" content="52.51168;13.458236" />
+    <meta name="ICBM" content="52.51168, 13.458236" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="http://feeds.feedburner.com/svenfuchs" />
+    <link rel="openid.server" href="http://www.myopenid.com/server" />
+    <link rel="openid.delegate" href="http://svenfuchs.myopenid.com/" />
+    <link href="http://svenfuchs.com" rel="home" />
+    <title>Howto get PHPUnit2 talk to a browser</title>
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <link rel="stylesheet" href="/stylesheets/highlight.css">
+    <script src="/javascripts/highlight.js"></script>
+  </head>
+  <body>
+    <div id="page">
+  <div id="content">
+    <p><a href="/">&larr; Home</a></p>
+
+    <div id="post">
+      <h1>Howto get PHPUnit2 talk to a browser</h1>
+      <p>Ok, I admit it took me a while to figure out how to run a PHPUnit2 testcase via http rather than cli on a Windows box.</p>
+
+<p>First thing I needed to understand is that PHPUnit2_Util_Printer::__construct() sets
+fopen('php://stdout', 'r'); as output stream by default. This won't output anything,
+so one has to advise the printer to use php://output.</p>
+
+<p>Next thing was that I started the TestRunner by run(). Wrong way ... this instantiated
+a new PHPUnit2_TextUI_TestRunner object and my output stream was send to nirvana.</p>
+
+<p>The following works though:</p>
+<pre>
+$suite = new PHPUnit2_Framework_TestSuite();
+$suite->addTestSuite(new ReflectionClass('MyTestCase'));
+$runner = new PHPUnit2_TextUI_TestRunner();
+$printer = new PHPUnit2_TextUI_ResultPrinter('php://output');
+$runner->setPrinter($printer);
+echo '&lt;pre>';
+$result = $runner->doRun($suite);
+</pre>
+<p>And don't tell me to rtfm. I've found no docs on this. Nothing. I don't think there are any. :(</p>
+
+    </div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'svenfuchs';
+        var disqus_title = '<%= page.title %>';
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  </div>
+</div>
+
+    <a href="http://svenfuchs.com" rel="me" ></a>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-24665870-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>

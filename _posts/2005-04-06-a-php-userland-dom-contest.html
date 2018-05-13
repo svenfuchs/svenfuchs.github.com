@@ -1,0 +1,238 @@
+---
+layout: post
+title: A Php userland Dom Contest
+---
+<h2>The competitors</h2>
+
+<p>After a quick search with Google we've come up with 5 implementations that promised to provide the behaviour we need and don't rely on phps native dom/xml support.</p>
+
+<p>Here they are (including our first impression of the code):</p>
+
+<ul>
+<li><b>ActiveLink</b> - a nice implementation with very clean code, having (at least for an xml dom) a somewhat unusual tree api that differentiates between "leafs" and "branches".</li>
+<li><b>DomIt</b> - a promising, feature-rich and well documented implementation</li>
+<li><b>MyXml</b> - a threefold library (containing myDom, myXPath and myXslt), at the first glimpse it looks mostly compliant with php's own dom api</li>
+<li><b>MiniXml</b> - mentioned somewhere in the php Dom manual, seems to be a php port of Cpans XML_Mini perl implementation (or probably a parallel branch).</li>
+<li><b>PhpDomXml</b> - a very small and basic implementation, 13kb are all we need?</li>
+</ul>
+
+<p>All of these are for php4 :(, as far we can see. So we turn off error_reporting for E_NOTICE and E_STRICT to run it under php5.</p>
+
+
+<h2>Test Code</h2>
+
+<p>We've used the following code to test the native php5 DomDocument version. That's a very simple html snippet, an iteration over creating, parsing and outputting it ten times and a simple output of the results.</p>
+
+<pre>
+&lt;?php
+error_reporting(E_ALL ^ E_NOTICE);
+$iterations = 10;
+$start = getMicrotime();
+$source =
+'&lt;html>
+        &lt;style>
+                body { font: 12px normal verdana, arial, serif }
+                h2.test { color: #c00000; }
+        &lt;/style>
+        &lt;title>Let's check some dom xml implementations&lt;/title>
+        &lt;body>
+                &lt;h2 class="test">Let's check some
+                        dom xml implementations&lt;/h2>
+                &lt;p>&lt;b>This is the native php5 DomDocument
+                        implementation.&lt;/b>&lt;/p>
+                &lt;p>What about the &lt;i>execution time&lt;/i>?&lt;/p>
+        &lt;/body>
+&lt;/html>';
+for ($i = 0; $i &lt; $iterations; $i++) {
+        $doc = new DomDocument();
+        $doc->loadXML($source);
+        $result = $doc->saveXml();
+}
+echo '&lt;pre>' . htmlentities($result) . '&lt;/pre>';
+echo $result;
+$time = (getMicrotime() - $start);
+echo "$iterations Iterations done.&lt;br/>";
+echo "We needed $time seconds.&lt;br/>";
+echo "The average execution time was: " . ($time/$iterations);
+function getMicrotime () {
+        $microtime = explode(" ", microtime());
+        return $microtime[0] + $microtime[1];
+}
+?>
+</pre>
+
+
+<h2>We like it our own way ...</h2>
+
+<p>Of course, for every php implementation we needed to include the libraries and use some different function calls because they all have their own api.</p>
+
+<p><b>ActiveLink</b> seems to want the following:</p>
+
+<pre>
+$doc = new XMLDocument();
+$doc->parseFromString($source);
+$result = $doc->getXMLString(true);
+</pre>
+
+But <b>DomIt</b> prefers:
+<pre>
+$doc = new DOMIT_Document();
+$doc->parseXML($source);
+$result = $doc->toNormalizedString();
+</pre>
+
+<p>Different from that, <b>MyXml</b> will be happy with:</p>
+
+<pre>
+$doc = new Document();
+$doc->parse($source);
+$doc->setOption('indent', true);
+$result = $doc->toString();
+</pre>
+
+<p>And <b>MiniXml</b> likes to get called with:</p>
+
+<pre>
+$doc = new MiniXMLDoc();
+$doc->fromString($source);
+$result = $doc->toString();
+</pre>
+
+<p>Not enough, for <b>PhpDomXml</b> we have to use:</p>
+
+<pre>
+$doc = new XML();
+$doc->parseXML($source);
+$result = $doc->toString();
+</pre>
+
+<p>Funny, hm? There's not one api really aligned to php's own domxml api.</p>
+
+<p>Ok, now for the interesting part ;)</p>
+
+
+<h2>The results - by speed ...</h2>
+
+<p>This ran on a WindowsXP, Apache2, php5.0.3 system on a somewhat outdated, but usable 1800+ Athlon.</p>
+
+<style>td, th { font-size: 0.7em; line-height: 1.6em; background-color: #effeef; } th, td { padding: 3 10 3 10px; } th { background-color: #efefef; font-style: italic; } </style>
+<table>
+        <tr>
+                <th style="background-color: white;"></th>
+                <th>avg exec time</th>
+                <th>output format</th>
+                <th>comment</th>
+        </tr>
+        <tr>
+                <td class="title">php5 Dom</td>
+                <td>0.0001s</td>
+                <td>great</td>
+                <td>fastest, of course</td>
+        </tr>
+        <tr>
+                <td class="title">PhpDomXml</td>
+                <td>0.0022s</td>
+                <td>awful</td>
+                <td>missing text!</td>
+        </tr>
+        <tr>
+                <td class="title">ActiveLink</td>
+                <td>0.0061s</td>
+                <td>not the best</td>
+                <td>strange api</td>
+        </tr>
+        <tr>
+                <td class="title">MyXml</td>
+                <td>0.0088s</td>
+                <td>looks ok?</td>
+                <td></td>
+        </tr>
+        <tr>
+                <td class="title">DomIt</td>
+                <td>0.0140s</td>
+                <td>ok</td>
+                <td></td>
+        </tr>
+        <tr>
+                <td class="title">MiniXml</td>
+                <td>0.5075s</td>
+                <td>extra spaces!</td>
+                <td></td>
+        </tr>
+</table>
+
+<style>
+        div.post img {
+                margin: 12 0 24 0px;
+        }
+</style>
+
+
+<h2>Native php DomDocument - fastest, of course</h2>
+
+<p>Here are some screenshots to show the output formatting. php5 DomDocument, unbeated in terms of performance as well as output formating (just included to have the relation), looks like this:</p>
+
+<p><img src="/images/blog/posts/phpdom_impl_test_nativedom.gif" alt="screenshot 1" /></p>
+
+
+<h2>PhpDomXml - fast and unusable</h2>
+
+<p>Next, in terms of speed, comes the very lean and feature-poor PhpDomXml. But besides the lacking output format it seems to be unusable - eating up some cdata text from the html:</p>
+
+<p><img src="/images/blog/posts/phpdom_impl_test_phpdomxml.gif" alt="screenshot 2" /></p>
+
+
+<h2>ActiveLink - fast and strange</h2>
+
+<p>ActiveLink is fast and has an output format that's probably acceptable. But - as mentioned - ActiveLink uses a strange tree/branches/leaf api. We can't call anything like getChildren() or first/nextChild because of that.</p>
+
+<p><img src="/images/blog/posts/phpdom_impl_test_activelink.gif" alt="screenshot 3" /></p>
+
+
+<h2>MyXml - ok to go?</h2>
+
+<p>MyXml adds some extra whitespace to the second p tag. That's bad for a template engine because of <a href="http://www.hicksdesign.co.uk/journal/546/" target="_blank">design problems with IEs whitespace</a> handling. Besides that, it looks very nice and still is comparably fast (enough?):</p>
+
+<p><img src="/images/blog/posts/phpdom_impl_test_myxml.gif" alt="screenshot 4" /></p>
+
+
+<h2>DomIt - somewhat slow, but good</h2>
+
+<p>With DomIt, there's an extra indentation in the styles section, but no extra whitespace inside the tags:</p>
+
+<p><img src="/images/blog/posts/phpdom_impl_test_domit.gif" alt="screenshot 5" /></p>
+
+
+<h2>MiniXml - unusably slow</h2>
+
+<p>Argh! What's that?</p>
+
+<p>MiniXml needs half a second to parse 11 tags, format and print them out again?</p>
+
+<p>We can't believe that ... probably there's some extra option turned on by default, so that our drive c:/ get's crawled looking for a tmp directory? Or probably an e-mail send to the developers? Added some rating to their freshmeat project? ;)</p>
+
+<p>We didn't have the time to investigate further what's going on here.</p>
+
+<p>But MiniXml (like MyXml, but even worse) does something very bad besides eating up our cpu. It adds an extra space to the left and right of each and every cdata content of our tags. A webdesigner who knows about <a href="http://www.hicksdesign.co.uk/journal/546/" target="_blank">IEs whitespace bug</a> will strongly insist that this would be a clear no-go sign for using it with html templating stuff ...</p>
+
+<p><img src="/images/blog/posts/phpdom_impl_test_minixml.gif" alt="screenshot 6" /></p>
+
+
+<h2>Summary</h2>
+
+<p>Without having had a closer look to PhpDomXml's features, it won't make it with its hunger for our cdata text.</p>
+
+<p>ActiveLink is fast but not really an option (is it?) because of its api - unless we'd create an extra wrapper to get around that.</p>
+
+<p>MyXml would be the one to go with, if there wouldn't be that extra whitespace. Probably there's a switch to turn that off? Or an e-mail to the developers could make it?</p>
+
+<p>DomIt looks great, clean, and feature-complete. But it's somewhat too slow to be used in a template engine. (Is it?)</p>
+
+<p>We can't believe that we've seen MiniXmls intended behaviour for now. But with the shortness of time, there hasn't been an opportunity to get it run faster.</p>
+
+
+<h2>php5's DomDocument</h2>
+
+<p>ActiveLink, the <i>probably</i> fastest (in our case) usable library will need 0.0061s to parse and output a template. That's 60 times slower than the native php5's Dom implementation, which takes 0.0001s for the same job - of course it's faster, it's written in C. Furthermore, php5's Dom is the only one of all of them that generates output exactly the way we'd expect it.</p>
+
+<p>But sad to say, we can't use it for our case. <a href="http://www.artweb-design.de/blog/index.php?p=9" target='_blank'>It can't be un/serialize()d</a></p>

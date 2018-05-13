@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="geo.region" content="DE-BE" />
+    <meta name="geo.placename" content="Berlin" />
+    <meta name="geo.position" content="52.51168;13.458236" />
+    <meta name="ICBM" content="52.51168, 13.458236" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="http://feeds.feedburner.com/svenfuchs" />
+    <link rel="openid.server" href="http://www.myopenid.com/server" />
+    <link rel="openid.delegate" href="http://svenfuchs.myopenid.com/" />
+    <link href="http://svenfuchs.com" rel="home" />
+    <title>How to use the Bundled assets plugin with Rails' built-in tag helpers</title>
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <link rel="stylesheet" href="/stylesheets/highlight.css">
+    <script src="/javascripts/highlight.js"></script>
+  </head>
+  <body>
+    <div id="page">
+  <div id="content">
+    <p><a href="/">&larr; Home</a></p>
+
+    <div id="post">
+      <h1>How to use the Bundled assets plugin with Rails' built-in tag helpers</h1>
+      <p>As Nick explains all you have to do to get this working is: use a slightly different route in your routes.rb than I've told you to do in my original article. Nick changed the route to:</p>
+
+<pre><code class="ruby">
+map.connect ":asset_dir/:names.:ext",
+            :controller => "assets_bundle",
+            :action => "fetch",
+            :asset_dir => /(stylesheets|javascripts)/,
+            :ext => /(css|js)/,
+            :names => /[^.]*/
+</code></pre>
+
+<p>Obviously this routes a request to an URL like <code>/stylesheets/main,content,forms.css</code> to the <code>AssetsBundleController#fetch</code> action ... while it preserves the stylesheets and javascripts directories - and that's where the built-in Rails helpers point by default.</p>
+
+<p>This way, you now can use these neat, little helpers like so:</p>
+
+<pre><code class="ruby">
+&lt;%= stylesheet_link_tag 'main,content,forms' %>
+&lt;%= javascript_include_tag 'common,forms' %>
+</code></pre>
+
+<p>... without bothering about any further details like HTML attributes that might be necessary here (and that I personally have to look up every time).</p>
+
+<p>So, that's pretty cool. Thanks Nick! :-)</p>
+
+<p>PS:</p>
+
+<p>The same thing, but using Liquid template tags, would be:</p>
+
+<pre><code class="ruby">
+main,content,forms
+common,forms
+</code></pre>
+
+<p>Nice, too. Eh?</p>
+
+    </div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'svenfuchs';
+        var disqus_title = '<%= page.title %>';
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  </div>
+</div>
+
+    <a href="http://svenfuchs.com" rel="me" ></a>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-24665870-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>

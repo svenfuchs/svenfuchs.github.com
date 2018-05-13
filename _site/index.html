@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="geo.region" content="DE-BE" />
+    <meta name="geo.placename" content="Berlin" />
+    <meta name="geo.position" content="52.51168;13.458236" />
+    <meta name="ICBM" content="52.51168, 13.458236" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="http://feeds.feedburner.com/svenfuchs" />
+    <link rel="openid.server" href="http://www.myopenid.com/server" />
+    <link rel="openid.delegate" href="http://svenfuchs.myopenid.com/" />
+    <link href="http://svenfuchs.com" rel="home" />
+    <title>Sven Fuchs</title>
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <link rel="stylesheet" href="/stylesheets/highlight.css">
+    <script src="/javascripts/highlight.js"></script>
+  </head>
+  <body>
+    <div id="page">
+  <div id="content">
+    <h1>Sven Fuchs</h1>
+    <ul id="contact">
+      <li><a href="http://github.com/svenfuchs">http://github.com/svenfuchs</a></li>
+      <li><a href="http://twitter.com/svenfuchs">http://twitter.com/svenfuchs</a></li>
+      <li><a href="mailto:me@svenfuchs.com">me@svenfuchs.com</a></li>
+    </ul>
+
+    <h2>Recent Posts</h2>
+    <ul class="posts">
+      
+        <li class="hentry">
+          <a href="/2011/02/11/organizing-translations-with-cascade-and-i18n-missing-translations.html" class="entry-title" rel="bookmark">
+            Organizing translations with I18n::Cascade and I18n::MissingTranslations
+          </a>
+          <abbr title="2011-02-11 00:00:00 +0100" class="updated">
+            February 2011
+          </abbr>
+          <span class="entry-content">
+            When it comes to I18n one of the questions I get asked most often is how to organize translation keys. So I thought I&#8217;d write down how we&#8217;re doing it at work, and thus adva-cms2.
+
+DRY does not apply to L10n
+
+Before I get into this let me (once again) explain why DRY doesn&#8217;t apply to L10n though because that&#8217;s the reason why we allow for those deeply nested keys and namespaces in I18n.
+
+Here&#8217;s a slide from my Anatomy of Ruby I18n talk at Euruko 2010:
+
+
+class Inter...
+          </span>
+        </li>
+      
+        <li class="hentry">
+          <a href="/2011/02/09/recording-and-replaying-the-database-connection.html" class="entry-title" rel="bookmark">
+            DatabaseRecorder - recording and replaying the database connection
+          </a>
+          <abbr title="2011-02-09 00:00:00 +0100" class="updated">
+            February 2011
+          </abbr>
+          <span class="entry-content">
+            I&#8217;ve had this idea to record calls to the database connection for replaying &#8220;real&#8221; results later on a while ago. I&#8217;ve now found a few hours of time on the train and tried it out.
+
+tl&#8217;dr: It doesn&#8217;t seem worth the effort. There&#8217;s no performance gain so far.
+
+Here&#8217;s what I found:
+
+Initial implementation
+
+I&#8217;ve started out setting up a simple library database_recorder which wraps the execute method on the ActiveRecord::Base.connection into a c...
+          </span>
+        </li>
+      
+        <li class="hentry">
+          <a href="/2011/02/05/introducing-travis.html" class="entry-title" rel="bookmark">
+            Travis - a distributed build server tool for the Ruby community
+          </a>
+          <abbr title="2011-02-05 00:00:00 +0100" class="updated">
+            February 2011
+          </abbr>
+          <span class="entry-content">
+            So, I&#8217;ve started playing with the idea of a distributed build server tool once again in last year&#8217;s December &#8230; and Travis is what I came up with.
+
+Status quo
+
+
+	Travis is currently running on http://travis.heroku.com and already notifies me about builds that pass or fail when someone pushes to those repositories I&#8217;ve registered for testing purposes.
+	The builds run on a virtual server that Julian Fischer has very kindly granted for this experiment.
+	The frontend is imp...
+          </span>
+        </li>
+      
+        <li class="hentry">
+          <a href="/2010/11/24/why-not-actually-stub-that-db.html" class="entry-title" rel="bookmark">
+            Why exactly don't we stub that database?
+          </a>
+          <abbr title="2010-11-24 00:00:00 +0100" class="updated">
+            November 2010
+          </abbr>
+          <span class="entry-content">
+            Ok, when it came to unit tests I&#8217;ve been in the heavy-mocking-and-stubbing camp a few years ago. But then I&#8217;ve then seen our team (including myself) crash into the same issue over and over again: the fact that with mocks/stubs one does not test the real thing. One tests mocks and stubs which can easily get out of sync with the &#8220;real thing&#8221;, i.e. ActiveRecord models in our case.
+
+So I&#8217;ve completely turned away from my previous position. Our tests became somewhat s...
+          </span>
+        </li>
+      
+        <li class="hentry">
+          <a href="/2010/06/16/travis-experimental-distributed-ci-server-on-heroku.html" class="entry-title" rel="bookmark">
+            Travis - an experimental, distributed CI server on Heroku
+          </a>
+          <abbr title="2010-06-16 00:00:00 +0200" class="updated">
+            June 2010
+          </abbr>
+          <span class="entry-content">
+            Please note that this information is completely outdated.
+If you've got here via Google searching for a distributed build server tool that runs on Heroku, then please refer to this article.
+
+We had the I18n gem tested on runcoderun, a great service for open source projects to run continous integration on the web, and this was working very well for us. Unfortunately runcoderun was taken down.
+
+So I figured it should be easy to setup a few apps on Heroku and have them run the I18n test suite on...
+          </span>
+        </li>
+      
+        <li class="hentry">
+          <a href="/2010/04/05/gem-release-plugin.html" class="entry-title" rel="bookmark">
+            Release your Gems with ease
+          </a>
+          <abbr title="2010-04-05 00:00:00 +0200" class="updated">
+            April 2010
+          </abbr>
+          <span class="entry-content">
+            After the recent, somewhat heated discussion about whether or not to check in gemspecs to a repository, manually crafting versus autogenerating them, using a dynamic piece of code to collect relevant files versus maintaining a static files list in the gemspec file ... I've felt motivated to polish my own gem plugin that I've been using to publish my gems and finally add some of the functionality that I've been missing myself.
+
+In short, I'm a happy resident in the camp of manually maintained ...
+          </span>
+        </li>
+      
+        <li class="hentry">
+          <a href="/2010/03/31/aligning-rubygems-and-bundler-through-rubylib-environment-variable.html" class="entry-title" rel="bookmark">
+            Aligning rubygems + bundler through rubylib environment variable
+          </a>
+          <abbr title="2010-03-31 00:00:00 +0200" class="updated">
+            March 2010
+          </abbr>
+          <span class="entry-content">
+            Put this into your ~/.zprofile (or ~/.profile or whatever makes sense for your shell):
+
+export RUBYLIB=$RUBYLIB:~/.ruby
+
+
+Source the file:
+
+$ source ~/.zprofile
+
+
+Put this to ~/.ruby/b.rb
+
+begin
+  # should probably check parent directories, too?
+  require File.expand_path('../.bundle/environment')
+rescue LoadError
+  require 'rubygems'
+  require 'bundler'
+  Bundler.setup
+end
+
+
+Done.
+
+You can now:
+
+
+$ ruby -rb test/all.rb        # run test/all.rb in the context of your bundle
+$ ruby -rubygems t...
+          </span>
+        </li>
+      
+        <li class="hentry">
+          <a href="/2009/07/19/experimental-extensions-in-i18n-pluralization-fallbacks-gettext-cache-and-chain.html" class="entry-title" rel="bookmark">
+            Experimental Ruby I18n extensions: Pluralization, Fallbacks, Gettext, Cache and Chained backend
+          </a>
+          <abbr title="2009-07-19 00:00:00 +0200" class="updated">
+            July 2009
+          </abbr>
+          <span class="entry-content">
+            Backend::Simple &lt; Backend::Base
+
+In Ruby what is the most obvious, elegant and maintainable pattern to extend an existing class' or object's functionality? No, the answer to that is definitely *not* in using alias_method_chain. It's simply including a module to that class. You probably knew that already ;)
+
+We've done this with the I18n Simple backend before but one needs to extend the Simple backend first in order to then inject additional modules to the inheritance chain so that these mo...
+          </span>
+        </li>
+      
+        <li class="hentry">
+          <a href="/2009/07/12/ruby-i18n-gem-hits-00-02-0.html" class="entry-title" rel="bookmark">
+            Ruby I18n Gem hits 0.2.0
+          </a>
+          <abbr title="2009-07-12 00:00:00 +0200" class="updated">
+            July 2009
+          </abbr>
+          <span class="entry-content">
+            Here's the release announcement on the rails-i18n mailinglist:
+
+
+I've bumped the gem version to 0.2.0 and tagged v0.2.0 today.
+
+Most importantly it includes:
+
+* Lambda support (aka Yaroslav-prevails edition)
+* Custom separators (aka Gettext-p0wned edition)
+* Ruby 1.9 interpolation syntax (aka Masao-Mutoh-rocks edition)
+
+For more details check out the changelog.
+
+Thanks to everybody involved!
+
+We still haven't managed to get the inclusion of Rails' vendorized gem right.
+Thus it's currently not...
+          </span>
+        </li>
+      
+        <li class="hentry">
+          <a href="/2009/07/05/using-ruby-01-09-ripper.html" class="entry-title" rel="bookmark">
+            Using Ruby 1.9 Ripper
+          </a>
+          <abbr title="2009-07-05 00:00:00 +0200" class="updated">
+            July 2009
+          </abbr>
+          <span class="entry-content">
+            While Ripper parses your code it continously fires events (or &#8220;calls callbacks&#8221;) when it finds something interesting. There are two types of events: scanner (lexer) and parser events.
+
+The scanner basically goes through the code from the left to the right character by character. When it finds known things (such as a keyword, whitespace or a semicolon) it fires a corresponding even that you can react to. The parser works on a higher level and watches for known Ruby constructs (such...
+          </span>
+        </li>
+      
+        <li class="hentry">
+          <a href="/2009/07/05/ripper2ruby-modify-and-recompile-your-ruby-code.html" class="entry-title" rel="bookmark">
+            Ripper2Ruby: modify and recompile your Ruby code
+          </a>
+          <abbr title="2009-07-05 00:00:00 +0200" class="updated">
+            July 2009
+          </abbr>
+          <span class="entry-content">
+            So, the combination Ripper/Ripper2Ruby lets you do similar things as you can do with ParseTree or RubyParser and Ruby2Ruby. The differences are:
+
+
+	Ripper requires Ruby 1.9 (I was told it possibly could be compiled to work with Ruby 1.8.x but I don&#8217;t know anything further. Please drop me a note if you know how to do this.)
+	Ripper2Ruby builds a full object-oriented representation of Ruby code. That means you can modify the representation much more easily compared to the rough sexp tree ...
+          </span>
+        </li>
+      
+        <li class="hentry">
+          <a href="/2008/09/19/rails-i18n-revs-up-globalize02-preview-released.html" class="entry-title" rel="bookmark">
+            Rails I18n revs up: Globalize2 preview released!
+          </a>
+          <abbr title="2008-09-19 00:00:00 +0200" class="updated">
+            September 2008
+          </abbr>
+          <span class="entry-content">
+            
+Please note: the following explanations assume that you're familiar with the new I18n API in Rails and might leave some unanswered questions otherwise :-). Also note that this is a preview release targeted at Rails I18n developers. We'll do at least one more release and provide more complete documentation about how Globalize2 can be used by end users then.
+
+
+Globalize2 preview
+
+The first preview release of Globalize2 includes the following features and tools. Most of them can be used indepen...
+          </span>
+        </li>
+      
+        <li class="hentry">
+          <a href="/2008/09/06/the-future-of-i18n-in-ruby-on-rails-railsconf-europe-2008.html" class="entry-title" rel="bookmark">
+            The Future of I18n in Ruby on Rails - RailsConf Europe 2008
+          </a>
+          <abbr title="2008-09-06 00:00:00 +0200" class="updated">
+            September 2008
+          </abbr>
+          <span class="entry-content">
+            
+
+
+
+Welcome everybody!
+I'm very happy to talk about "The future of Internationalization in Ruby on Rails" today.
+
+
+So, who&#x2019;s me?
+This never occurred to me before but in a recent RailsEnvy podcast I&#x2019;ve learned that my name could be pronounced like this ...
+
+
+If you want to google me ...
+
+
+... you probably have better luck using this.
+
+
+I'm currently living in Berlin and I love it :)
+I started programming in 1984
+I've been in business as a developer, mostly as a web developer for ...
+          </span>
+        </li>
+      
+        <li class="hentry">
+          <a href="/2008/08/28/ruby-on-rails-i18n-railsconf-europe-and-globalize2.html" class="entry-title" rel="bookmark">
+            Ruby on Rails I18n, RailsConf Europe and Globalize2
+          </a>
+          <abbr title="2008-08-28 00:00:00 +0200" class="updated">
+            August 2008
+          </abbr>
+          <span class="entry-content">
+            RailsConf Europe talk: "The future of I18n in Ruby on Rails"
+
+
+
+I'll be giving a talk about "The future of I18n in Ruby on Rails" on RailsConf Europe next week together with Marko Seppae.
+
+Am I excited about it? You bet! Will that be an interesting talk for everyone involved into Rails I18n? Of course, I'm sure :)
+
+Also, there are some plans to also work on I18n/Rails during the Code Community Drive but I'm not sure what the status of this is right now.
+
+I'm personally planning to take care o...
+          </span>
+        </li>
+      
+        <li class="hentry">
+          <a href="/2008/07/18/the-ruby-on-rails-i18n-core-api.html" class="entry-title" rel="bookmark">
+            The Ruby on Rails I18n core api
+          </a>
+          <abbr title="2008-07-18 00:00:00 +0200" class="updated">
+            July 2008
+          </abbr>
+          <span class="entry-content">
+            The pivotal point of the new I18n api in Rails is the I18n
+module which is provided as a gem and shipped with Rails in ActiveSupport's
+vendor directory. This module comes with the following features:
+
+
+The main translation method #translate which is used to lookup translations. 
+The #localize method which is used to localize Date, DateTime and Time objects.
+It stores the current locale in Thread.current.
+It stores a default locale which is used when no locale has been passed or set.
+It stores...
+          </span>
+        </li>
+      
+    </ul>
+    <p><a href="/archive">Older posts &rarr;</a></p>
+  </div>
+  <div class="push"></div>
+</div>
+
+<div id="footer">
+  <address class="vcard">
+    <span class="fn">Sven Fuchs</span>,
+    <a href="mailto:me@svenfuchs.com">me@svenfuchs.com</a>,
+  	<span class="adr">
+  		<a href="http://maps.google.de/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q=gr%C3%BCnberger+stra%C3%9Fe+65,+10245+friedrichshain,+berlin,+germany&amp;sll=51.151786,10.415039&amp;sspn=17.788663,36.738281&amp;ie=UTF8&amp;hq=&amp;hnear=Gr%C3%BCnberger+Stra%C3%9Fe+65,+Friedrichshain+10245+Berlin&amp;t=h&amp;z=16"><span class="street-address">Gr&uuml;nberger Str. 65</span></a>,
+  		<span class="postal-code">10245</span>
+  		<span class="locality">Berlin</span>,
+  		<span class="country-name">Germany</span>,
+  	  <a class="email" href="mailto:me@svenfuchs.com">me@svenfuchs.com</a>
+  	  <a class="url" href="http://svenfuchs.com">http://svenfuchs.com</a>
+    	<span class="tel">+49 (170) 80 34 77 3</span>
+      <a class="hcard-download" href="http://feeds.technorati.com/contacts/referrer">vcard</a>
+    </span>
+  </address>
+  <a href="http://feeds.feedburner.com/svenfuchs" class="feed right">Atom Feed</a>
+</div>
+
+    <a href="http://svenfuchs.com" rel="me" ></a>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-24665870-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>

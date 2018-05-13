@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="geo.region" content="DE-BE" />
+    <meta name="geo.placename" content="Berlin" />
+    <meta name="geo.position" content="52.51168;13.458236" />
+    <meta name="ICBM" content="52.51168, 13.458236" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="http://feeds.feedburner.com/svenfuchs" />
+    <link rel="openid.server" href="http://www.myopenid.com/server" />
+    <link rel="openid.delegate" href="http://svenfuchs.myopenid.com/" />
+    <link href="http://svenfuchs.com" rel="home" />
+    <title>Howto use: Mephisto article list pagination plugin</title>
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <link rel="stylesheet" href="/stylesheets/highlight.css">
+    <script src="/javascripts/highlight.js"></script>
+  </head>
+  <body>
+    <div id="page">
+  <div id="content">
+    <p><a href="/">&larr; Home</a></p>
+
+    <div id="post">
+      <h1>Howto use: Mephisto article list pagination plugin</h1>
+      <p class="update"><strong>Update:</strong> The following information is most probably outdated. Please refer to the <a href="/projects/mephisto-plugin-paged-article-lists" title="Mephisto Plugin: Paged Article Lists">Mephisto Plugin: Paged Article Lists</a> project page.</p>
+
+<p>The plugin adds three new <a href="http://home.leetsoft.com/liquid/wiki/HowTo#Createyourownfilters">liquid filters</a> for you to use. They all take the current section and pages array as a parameter. Also, you can specify different optional parameters ...</p>
+
+<h2>The all-in-one filter</h2>
+
+<p>There's a quick all-in-one filter that simply adds one or two links depending on the context (i.e. if there are older posts or not, newer posts or not):</p>
+
+<pre><code>
+
+</code></pre>
+
+<p>Use this filter to automatically output contextually "correct" links like the following:</p>
+
+<pre><code>
+&lt;a class="prev" href="/page/3">&amp;laquo; older posts&lt;/a>
+&lt;a class="next" href="/">newer posts &amp;raquo;&lt;/a>
+</code></pre>
+
+<p>... you can then use the HTML class attributes to let the links float to the left and right side of the page respectively - like you can see on my blog homepage.</p>
+
+<p>Also, you can define a separator as a third parameter:</p>
+
+<pre><code>
+
+</code></pre>
+
+<p>... which will be inserted between the both links, if both are present.</p>
+
+<pre><code>
+&lt;a class="prev" href="/page/3">&amp;laquo; older posts&lt;/a> &amp;middot;
+&lt;a class="next" href="/">newer posts &amp;raquo;&lt;/a>
+</code></pre>
+
+<h2>More power to the people</h2>
+
+<p>These automatic links might not always be what you want. Maybe you need another link text. Or you want to enclose the links in some other tags ...</p>
+
+<p>You might then want to use the following filters that each just generate one link according to the context:</p>
+
+<pre><code>
+
+
+</code></pre>
+
+<p>... which again will get you the same output as above. But this time you can better control the placement of your tags:</p>
+
+<pre><code>
+&lt;a class="prev" href="/page/3">&amp;laquo; older posts&lt;/a>
+&lt;a class="next" href="/">newer posts &amp;raquo;&lt;/a>
+</code></pre>
+
+<p>Also, you can now specify the link text as the third parameter:</p>
+
+<pre><code>
+
+
+</code></pre>
+
+<h2>How to install</h2>
+
+<p>You can install this by using Rails' script/plugin installer. Standing in your application's root directory do:</p>
+
+<pre><code>
+script/plugin install <a href="http://svn.artweb-design.de/stuff/mephisto/mephisto_paged_article_list">http://svn.artweb-design.de/stuff/mephisto/mephisto_paged_article_list</a>
+</code></pre>
+
+<p>That should suffice :-)</p>
+
+<p>Don't forget to restart your webserver after messing with your plugins!</p>
+
+
+    </div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'svenfuchs';
+        var disqus_title = '<%= page.title %>';
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  </div>
+</div>
+
+    <a href="http://svenfuchs.com" rel="me" ></a>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-24665870-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>

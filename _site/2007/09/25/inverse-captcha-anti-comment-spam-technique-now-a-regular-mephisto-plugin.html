@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="geo.region" content="DE-BE" />
+    <meta name="geo.placename" content="Berlin" />
+    <meta name="geo.position" content="52.51168;13.458236" />
+    <meta name="ICBM" content="52.51168, 13.458236" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="http://feeds.feedburner.com/svenfuchs" />
+    <link rel="openid.server" href="http://www.myopenid.com/server" />
+    <link rel="openid.delegate" href="http://svenfuchs.myopenid.com/" />
+    <link href="http://svenfuchs.com" rel="home" />
+    <title>Inverse Captcha Anti-Comment-Spam Technique: Now A Regular Mephisto Plugin</title>
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <link rel="stylesheet" href="/stylesheets/highlight.css">
+    <script src="/javascripts/highlight.js"></script>
+  </head>
+  <body>
+    <div id="page">
+  <div id="content">
+    <p><a href="/">&larr; Home</a></p>
+
+    <div id="post">
+      <h1>Inverse Captcha Anti-Comment-Spam Technique: Now A Regular Mephisto Plugin</h1>
+      <h2>The inital experiment</h2>
+
+<p>When I first came across Damien's description of the "Negative Captcha" technique I wanted to give it a test-drive. I decided to do the "<a href="http://c2.com/xp/DoTheSimplestThingThatCouldPossiblyWork.html" title="Do The Simplest Thing That Could Possibly Work">simplest thing that could possibly work</a>" and happened to implement a fully-functional, highly efficient anti-spam outer floodgate mechanism in two super-simple steps:</p>
+
+<ol>
+	<li>I hid the email form input element through CSS from the real users eyes. (Additional I added a warning message in case a user would have disabled CSS that would instruct him to not enter an email address.)</li>
+	<li>In MephistoController#dispatch_comments I checked whether a stupid bot had filled in an email address and if so, kicked him.</li>
+</ol>
+
+<p>That worked <strong>surprisingly</strong> well. </p>
+
+<p>I had expected that there would have been at least <em>some</em> Watir- or whatever-kind-of-cool-engine driven bots that would correctly interpret the CSS directive and thus not post back any email addresses. (I'm pretty confident that these bots would be picked up by Mephistos build-in Akismet support, so that's what I mean by the "outer" and "inner floodgate" metaphor.) Not at all. Nothing. Nada. This super-simple technique actually blocked <strong>all</strong> of the comment-spam from my blog!</p>
+
+<p>Obviously a major drawback of my implementation was that I discarded the opportunity to enter an email address. But knowing your users email addess sometimes turns out to be a pretty useful thing when you want to directly get in contact with a user. I clearly wanted to re-allow users to leave me their email address.</p>
+
+<p>Also, after I had tested the technique for a couple of months I decided to revamp this stuff as a plugin so that I wouldn't necessarily need to patch Mephistos codebase in order to get this in. </p>
+
+
+<h2>Make it a regular Mephisto plugin</h2>
+
+<p>When you think about extracting things into a plugin you think about how things can be abstracted away from the special case at hand to fit a more general purpose. Also, you naturally try to find some more descriptive or declarative way to illustrate things.</p>
+
+<p>So I sort of invented the concept of undercover-agent-like "sneaky" HTTP parameter that behaves like follows:</p>
+
+<ol>
+	<li>It hides its real purpose from bots by obfuscating its original name (of course real users will know its purpose because they don't look at the input field's names but at the HTML labels or descriptions)</li>
+	<li>It allows for a strawman stand-in fake parameter which bears the parameter's original name, so that bots are lured into filling out this fake parameter (which real users won't see at all because we're hiding it through CSS, just like in the original, simple approach)</li>
+	<li>It un-hides itself when the HTML form is posted back to the application. It does this in the :before_filter stage, so that the Controller does not need to know anything about what's going on here at all.</li>
+	<li>It notices when the strawman parameter has been filled in so that it safely can be assumed that a super-stupid-bot&trade; is trying to drop some garbage - so we're able to kick him.</li>
+</ol>
+
+<p>Well ... I don't know about you but I am probably lacking some creativity to think of an different usecase where this concept of "sneaky parameters" could probably applied. Can you? Tell me :-)</p>
+
+<h2>How to use this?</h2>
+
+<p>Basically, to use this, you'll have to:</p>
+
+<p><strong>Check out the plugin:</strong></p>
+
+<pre><code>script/plugin install http://svn.artweb-design.de/stuff/mephisto/mephisto_inverse_captcha/</code></pre>
+
+<p>... will work fine.</p>
+
+<p><strong>Tweek your comment form template:</strong></p>
+
+<p>We don't have access to your templates from a Mephisto plugin. So you have to do this yourself.</p>
+
+<p>Somewhere in themes/[site]/[theme]/templates/_comment.liquid make sure that you have a field like this:</p>
+
+<pre><code>
+&lt;label for="">E-Mail&lt;/label>
+
+[...]
+&lt;p id="comment-email">
+	If you can read this, you don't use a typical webbrowser that plays nice with CSS. &lt;br />
+	&lt;strong>Please do not fill in anything here!&lt;/strong>&lt;br />
+	
+&lt;/p>
+</code></pre>
+
+<p>And somewhere in your CSS files add a rule to hide the #comment-email part from the user:</p>
+
+<pre><code>
+#comment-email {
+	display: none;
+}
+</code></pre>
+
+<p>This will output HTML form elements like these:</p>
+
+<pre><code>
+&lt;label for="comment_soyjjncmhaju">E-Mail&lt;/label>
+&lt;input type="text" id="comment_soyjjncmhaju" name="comment[soyjjncmhaju]" value="" />
+[...]
+&lt;p id="comment-email">
+	If you can read this, you don't use a typical webbrowser that plays nice with CSS. &lt;br />
+	&lt;strong>Please do not fill in anything here!&lt;/strong>&lt;br />
+	&lt;input type="text" id="comment_author_email" name="comment[author_email]" value="" />
+&lt;/p>
+</code></pre>
+
+<p>Obviously, to real users the form will look just like about any other blog comment form (without any annoying Captcha or logic-puzzle stuff on it though!). They can drop us their email addresses and everything's fine.</p>
+
+<p>A bot on the other hand will see a form field that it does not understand and a regular email field. It thus will fill in the email field and immediately get caught in our before_filter.</p>
+
+<p> Job done :-)</p>
+
+<p>Further suggestions?</p>
+
+    </div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'svenfuchs';
+        var disqus_title = '<%= page.title %>';
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  </div>
+</div>
+
+    <a href="http://svenfuchs.com" rel="me" ></a>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-24665870-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>

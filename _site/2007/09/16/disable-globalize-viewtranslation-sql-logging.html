@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="geo.region" content="DE-BE" />
+    <meta name="geo.placename" content="Berlin" />
+    <meta name="geo.position" content="52.51168;13.458236" />
+    <meta name="ICBM" content="52.51168, 13.458236" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="http://feeds.feedburner.com/svenfuchs" />
+    <link rel="openid.server" href="http://www.myopenid.com/server" />
+    <link rel="openid.delegate" href="http://svenfuchs.myopenid.com/" />
+    <link href="http://svenfuchs.com" rel="home" />
+    <title>Disable Globalize::ViewTranslation SQL logging</title>
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <link rel="stylesheet" href="/stylesheets/highlight.css">
+    <script src="/javascripts/highlight.js"></script>
+  </head>
+  <body>
+    <div id="page">
+  <div id="content">
+    <p><a href="/">&larr; Home</a></p>
+
+    <div id="post">
+      <h1>Disable Globalize::ViewTranslation SQL logging</h1>
+      <pre><code>module Globalize # :nodoc:
+ class DbViewTranslator
+   alias_method :orig_fetch_view_translation, :fetch_view_translation
+   def fetch_view_translation(key, language, idx, namespace = nil)
+     ActiveRecord::Base.silence do
+       orig_fetch_view_translation(key, language, idx, namespace = nil)
+     end
+   end
+ end
+end</code></pre>
+
+<p>Obviously, this wraps around the Globalize's <code>fetch_view_translation</code> method and uses <code>ActiveRecord::Base#silence</code> to prevent ActiveRecord from logging the query.</p>
+
+<p>That’s handy. I've added this to the <a href="http://www.artweb-design.de/2007/5/18/globalize-rails-advanced-techniques-tips-tricks" title="Advanced techniques, tips and tricks - Get on Rails with Globalize! Part 5 of 8 - artweb design">Tips &amp; tricks installment</a> of the <a href="http://www.artweb-design.de/2006/11/10/get-on-rails-with-globalize-comprehensive-writeup" title="Get on Rails with Globalize: a comprehensive writeup in 8 parts - artweb design">Globalize series</a>.</p>
+
+<p>Thanks, Joost!</p>
+
+<p>PS: ... wow, let me guess, is there a Globalize installation using subdomains for locales peeking from behind the curtains of <a href="http://www.yelloyello.com/nl" title="YelloYello, speak up!">YellowYellow</a>?</p>
+
+    </div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'svenfuchs';
+        var disqus_title = '<%= page.title %>';
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  </div>
+</div>
+
+    <a href="http://svenfuchs.com" rel="me" ></a>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-24665870-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>

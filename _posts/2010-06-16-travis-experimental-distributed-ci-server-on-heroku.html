@@ -1,0 +1,84 @@
+---
+layout: post
+title: Travis - an experimental, distributed CI server on Heroku
+---
+
+<p><strong><em>Please note that this information is completely outdated.</em></strong></p>
+<p><strong><em>If you've got here via Google searching for a distributed build server tool that runs on Heroku, then please refer to <a href="/2011/2/5/travis-a-distributed-build-server-tool-for-the-ruby-community">this article</a>.</em></strong></p>
+
+<p>We had the I18n gem tested on runcoderun, a great service for open source projects to run continous integration on the web, and this was working very well for us. Unfortunately runcoderun was <a href="http://blog.runcoderun.com/post/463439385/saying-goodbye-to-runcoderun">taken down</a>.</p>
+
+<p>So I figured it should be easy to setup a few apps on Heroku and have them run the I18n test suite on different <a href="http://docs.heroku.com/stack">stacks</a> (i.e. Ruby configurations on Heroku). It turns out it is not, apparently. Or I'm just too stupid to do it. Anyway I though I'd write things down so maybe someone else can pick this experiment up and push it a few steps farther.</p>
+
+<p>The current state is that <a href="http://github.com/svenfuchs/travis">Travis</a> can automatically set up a single ci server and 3 ci runners on Heroku. The server app takes the ping from github and pings the 3 runners. Each of the runners forks and immediately returns from the parent (forking) process while the child process runs the build command and posts the result back to the server. The server stores the result and displays it on the builds index page.</p>
+
+<p>Everything's cool except that the runner does not work properly on neither aspen-mri-186 (i.e. Ruby 1.8.6) nor bamboo-mri-191 (i.e. Ruby 1.9.1). It seems to work fine on the bamboo-ree-187 stack though and I will leave it running for a while so we can see how it works out over a few commits to the I18n repository.</p>
+
+<h2>Setup</h2>
+
+<p>Even though I've published a few versions of Travis as a gem it's probably easier for you to just clone or fork the repository and mess with it directly.</p>
+
+<p>Take a look at the files in the <a href="http://github.com/svenfuchs/travis/tree/master/ci/">ci/</a> folder. You can configure which repository you want to test, which stacks you want (possible values are 186, 187, 191) and which command you want to be run.</p>
+
+<p>Once you've tweaked these values according to your library you can run</p>
+
+<pre>$ ./bin/travis install</pre>
+
+<p>This will take a while as it creates four applications on Heroku (if you choose to use all three Heroku stacks), sets up a temporary Git branch containing only the relevant files and pushes this branch to each of the Heroku apps. (You obviously need Heroku to be set up locally for this to work.)</p>
+
+<p>The runner uses <a href="http://github.com/integrity/bob">Bob</a> to check out your repository to the tmp/ directory and run the test command that you've set. (Hence the name Travis. I found it's the most suitable cool name from the Bob the Builder series that fits a CI server library.) The server uses Datamapper for storing the build results.</p>
+
+<p>You can destroy this setup by running</p>
+
+<pre>$ ./bin/travis destroy</pre>
+
+<p>The applications will be named like this:</p>
+
+<pre>http://ci-[your_repo_name].heroku.com
+http://ci-[your_repo_name]-runner-[stack].heroku.com</pre>
+
+<p>E.g. for the I18n gem this would be:</p>
+
+<pre>http://ci-i18n.heroku.com
+http://ci-i18n-runner-186.heroku.com
+http://ci-i18n-runner-187.heroku.com
+http://ci-i18n-runner-191.heroku.com</pre>
+
+<h2>Testing</h2>
+
+<p>You can then go to the admin page of your Github repository and setup a post-receive hook by simply adding the ci server url to the "Post-Receive URLs" section.</p>
+
+<p>Then you can test the whole thing by clicking on the "Test Hook" button. This will post a payload containing the latest commit information to your Travis ci server.</p>
+
+<p>Afterwards the server app should display the test run on at least the 1.8.7 stack, something like this: <a href="http://ci-i18n.heroku.com/">http://ci-i18n.heroku.com</a></p>
+
+<p>You can also take a look at the applications' log files by running</p>
+
+<pre>$ heroku logs --app ci-i18n (for the server)
+$ heroku logs --app ci-i18n-runner-187 (for the 1.8.7 runner)</pre>
+
+<h2>Problems on 1.8.6 and 1.9.1</h2>
+
+<p>I have no idea why this setup fails on aspen-mri-186 and bamboo-mri-191. Both work fine when I run the whole thing locally using Thin as a server and RVM for switching Ruby stacks.</p>
+
+<p>But for some reason on the bamboo-mri-191 stack the only log output I get on the runner is the output from Bob (about fetching the master branch from the repository etc.) while on aspen-mri-186 there seems to be a segfault happening in eventmachine.</p>
+
+<p>Most probably both failures have something to do with the fakt that the Travis runner process forks itself in order to immediately return from the POST request from the server then continue running the test suite in the child process. Maybe I'm doing it wrong? Or maybe it helps to use a Thread for this purpose?</p>
+
+<p>The reasoning behind this asynchronous setup is that a synchronous setup would not work when any of the test suite builds takes longer than 30 seconds because Heroku seems to reap processes running longer than that. I've also already had trouble with the I18n test suite which takes ~ 10 seconds because these add up to > 30 seconds on three runners.</p>
+
+<h2>Help needed</h2>
+
+<p>I probably won't have the time to investigate this much further soon ... and I feel I might not be the right person either because I have no idea what might be going on on Heroku with the process forking. </p>
+
+<p>Maybe someone with a stronger knowledge about low-level unixy things and the differences in various Ruby versions could help.</p>
+
+<p>Anyway I'm putting this here for you to pick up. If we could get this thing working on at least the 1.9.1 stack this could be a great contribution to the Ruby community because currently there's no easy or cheap way to set up continous integration for open source projects on various Ruby stacks.</p>
+
+<p>Feel free to contact me for any questions :)</p>
+
+
+
+
+
+

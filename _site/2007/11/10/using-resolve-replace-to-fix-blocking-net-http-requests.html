@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="geo.region" content="DE-BE" />
+    <meta name="geo.placename" content="Berlin" />
+    <meta name="geo.position" content="52.51168;13.458236" />
+    <meta name="ICBM" content="52.51168, 13.458236" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="http://feeds.feedburner.com/svenfuchs" />
+    <link rel="openid.server" href="http://www.myopenid.com/server" />
+    <link rel="openid.delegate" href="http://svenfuchs.myopenid.com/" />
+    <link href="http://svenfuchs.com" rel="home" />
+    <title>Using resolve-replace to fix blocking Net::HTTP requests</title>
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <link rel="stylesheet" href="/stylesheets/highlight.css">
+    <script src="/javascripts/highlight.js"></script>
+  </head>
+  <body>
+    <div id="page">
+  <div id="content">
+    <p><a href="/">&larr; Home</a></p>
+
+    <div id="post">
+      <h1>Using resolve-replace to fix blocking Net::HTTP requests</h1>
+      After some googling I found that requiring the Ruby Standard Library piece 'resolv-replace' would fix this issue. Just put this line somewhere in your app where it get's loaded at startup:
+
+<pre><code>require 'resolv-replace'</code></pre>
+
+I noticed only later on that my Mongrel is outdated, too, and updated it. (There were three consecutive releases around the end of Okt 07.)
+
+This also seems to fix the same issue. With different results, though. With Mongrel 1.1 things are back to a usable speed and requests aren't blocked any more. But it's still ~22 times faster to use resolv-replace, too:
+
+Requests in my locale Mephisto setup without resolv-replace:
+
+<pre><code>0.061855 milliseconds on average</code></pre>
+
+With resolve-replace:
+
+<pre><code>0.002755 milliseconds on average</code></pre>
+
+To "benchmark" this I used:
+
+<pre><code>start_time = Time.now
+Net::HTTP.get_response(URI.parse('http://localhost/something.html'))
+puts Time.now - start_time</code></pre>
+
+PS: Now that I started writing this blog post I googled for different keywords and it turns out that no other than <a href="http://shnoo.gr/articles/2005/12/13/resolv-replace" title="Shnoo.gr &raquo; resolv-replace">Joshua Harvey blogged about the very same issue</a> in Dec 2005. Funny, I could just have asked him about it. The world is small, sometimes. :)
+
+
+
+
+
+
+    </div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'svenfuchs';
+        var disqus_title = '<%= page.title %>';
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  </div>
+</div>
+
+    <a href="http://svenfuchs.com" rel="me" ></a>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-24665870-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>

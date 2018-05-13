@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="geo.region" content="DE-BE" />
+    <meta name="geo.placename" content="Berlin" />
+    <meta name="geo.position" content="52.51168;13.458236" />
+    <meta name="ICBM" content="52.51168, 13.458236" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="http://feeds.feedburner.com/svenfuchs" />
+    <link rel="openid.server" href="http://www.myopenid.com/server" />
+    <link rel="openid.delegate" href="http://svenfuchs.myopenid.com/" />
+    <link href="http://svenfuchs.com" rel="home" />
+    <title>Some code for a quick start ...</title>
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <link rel="stylesheet" href="/stylesheets/highlight.css">
+    <script src="/javascripts/highlight.js"></script>
+  </head>
+  <body>
+    <div id="page">
+  <div id="content">
+    <p><a href="/">&larr; Home</a></p>
+
+    <div id="post">
+      <h1>Some code for a quick start ...</h1>
+      <p>Basically, there is a CssSheet class, that extends <a href="http://pear.php.net/package/HTML_CSS/">Pear::HTML_CSS</a>, but adds CssElement objects for each CSS element to have a object-oriented design from the ground up (in HTML_CSS, the elements are stored as arrays). </p>
+
+<p>The CssElement class should possibly better be named "CssRule", because that's the <a href="http://www.w3.org/TR/REC-CSS1-961217">term defined by W3C</a>.</p>
+
+<p>CssElements hold different types of properties, all of them instances of the (base) class CssProperty or one of its extending classes (like CssUnitProperty, CssBoxProperty, CssBorderProperty, ...). There classes for different property types to distinguish functionality between such properties like <a href="http://www.w3.org/TR/REC-CSS2/box.html#border-shorthand-properties">border</a> in contrast to <a href="http://www.w3.org/TR/REC-CSS2/box.html#border-width-properties">border-width</a> or <a href="http://www.w3.org/TR/REC-CSS2/box.html#padding-properties">padding-left</a>. </p>
+
+<p>Together, CssSheet, CssElement and CssProperty (and subclasses) should build up the basic representation of the CSS data, we read from a file.</p>
+
+<p>A CSS Sheet can be read and output like this (that's Pear::HTML_CSS stuff so far).</p>
+
+<pre>
+require_once ('HTML/CSS.php');
+require_once ('CssParser/CssSheet.php');
+$filename = 'test.css';
+$css = new CssSheet (array ('filename' => "$dirname/$filename"));
+echo "&lt;pre&gt;" . $css->toString () . "&lt;/pre&gt;";
+</pre>
+
+<p>Now, there are two more classes. </p>
+
+<p>As a strategy handler CssBoxModelFix can be used to apply different <a href="http://www.phppatterns.com/index.php/article/articleview/13/1/1/">strategies</a> to the CSS Sheet. Currently, there is <a href="http://www.dithered.com/css_filters/css_only/child_selector.html">HtmlBodySelectorStrategy</a>. </p>
+
+<p>We can handle the CSS Sheet to the CssBoxModelFix instance. CssBoxModelFix "inspects" each elements dimension (width/height), wheather there's a box model problem or not. If so, it applies the selected strategies to the element. HtmlBodySelectorStrategy adds padding and border to the width/height property of the element and inserts a new rule (element) with the html>body [class/elementname] to the CssSheet, having the old width/height values.</p>
+
+<p>Thus, the lines:</p>
+
+<pre>
+require_once ('CssFixes/CssBoxModelFix.php');
+$fix = new CssBoxModelFix ();
+$fix->apply ($css, 'HtmlBodySelector');
+</pre>
+
+<p>... will apply our HtmlBodySelectorStrategy patch to the CssSheet object, that now can be saved and used.</p>
+
+<p>I.e., we could have the following HTML and CSS code:</p>
+
+<p>test.htm</p>
+
+<pre>
+&lt;html&gt;
+&lt;head&gt;
+	&lt;link rel="stylesheet" type="text/css" href="test.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+	&lt;div id="box1"&gt;Box1&lt;/div&gt;
+	&lt;div id="box2"&gt;Box2&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+<p>and test.css:</p>
+
+<pre>
+#box1 {
+	height: 100px;
+	width: 100;
+	border: 20px solid green;
+	background-color: yellow;
+}
+#box2 {
+	height: 100;
+	width: 100px;
+	padding: 20 20px;
+	background-color: yellow;
+}
+div {
+	margin: 10px;
+}
+</pre>
+
+<p>This would look in Firefox and IE 6.0 like the following:</p>
+
+<p><img src="../img/blog/posts/screenshot_boxmodel_1.gif"></p>
+
+<p>Now running the script on test.css would result in the following, hacked CSS code:</p>
+
+<p>test_hacked.css:</p>
+
+<pre>
+#box1 {
+	height: 140px;
+	width: 140px;
+	border: 20px solid green;
+	background-color: yellow;
+}
+#box2 {
+	height: 140px;
+	width: 140px;
+	padding: 20px 20px 20px 20px;
+	background-color: yellow;
+}
+div {
+	margin: 10px;
+}
+html>body #box1 {
+	width: 100;
+	height: 100;
+}
+html>body #box2 {
+	width: 100;
+	height: 100;
+}
+</pre>
+
+<p>... looking like this in Firefox / IE 6.0:</p>
+
+<p><img src="../img/blog/posts/screenshot_boxmodel_2.gif"></p>
+
+<p>Exactly the same. Mission complete! ... errrrm ... for now at least ;)</p>
+
+    </div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'svenfuchs';
+        var disqus_title = '<%= page.title %>';
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  </div>
+</div>
+
+    <a href="http://svenfuchs.com" rel="me" ></a>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-24665870-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>

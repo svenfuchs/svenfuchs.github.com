@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="geo.region" content="DE-BE" />
+    <meta name="geo.placename" content="Berlin" />
+    <meta name="geo.position" content="52.51168;13.458236" />
+    <meta name="ICBM" content="52.51168, 13.458236" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="http://feeds.feedburner.com/svenfuchs" />
+    <link rel="openid.server" href="http://www.myopenid.com/server" />
+    <link rel="openid.delegate" href="http://svenfuchs.myopenid.com/" />
+    <link href="http://svenfuchs.com" rel="home" />
+    <title>An ERB Safemode handler for ActionView</title>
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <link rel="stylesheet" href="/stylesheets/highlight.css">
+    <script src="/javascripts/highlight.js"></script>
+  </head>
+  <body>
+    <div id="page">
+  <div id="content">
+    <p><a href="/">&larr; Home</a></p>
+
+    <div id="post">
+      <h1>An ERB Safemode handler for ActionView</h1>
+      <p>You can try things out like this:</p>
+
+<ol>
+<li>create a new Rails application</li>
+<li>install the plugin: <a href="http://svn.artweb-design.de/stuff/ruby/safemode/">http://svn.artweb-design.de/stuff/ruby/safemode/</a></li>
+<li>add a controller, model and a view, like UserController, User and index.html.erb</li>
+</ol>
+
+<p>For example, these would work:</p>
+
+<pre><code class="ruby">
+# controllers/users_controller.rb
+class UserController &lt; ApplicationController
+  def index
+    @user = User.new('Sven')
+  end
+end
+
+# models/user.rb
+class User
+  attr_reader :name
+  def initialize(name)
+    @name = name
+  end
+end
+
+# views/user/index.rb
+&lt;p>&lt;%= @user.name %>&lt;/p>
+</code></pre>
+
+<p>At this point, this is just plain ERB rendered like in any other Rails application. You should see the user name output when you render /user.</p>
+
+<p>Now, with the ERB safemode handler we can restrict what users can access in their ERB templates in a whitelisted manner. You can turn it on by registering the handler to ActionView:</p>
+
+<pre><code class="ruby">
+# config/initializers/erb_safemode.rb
+ActionView::Base.register_default_template_handler :erb,
+  ActionView::TemplateHandlers::SafeErb
+</code></pre>
+
+<p>When you now try to render /user you'll see an empty page and an exception thrown on the console that says: undefined method 'name' for Safemode::Jail (User).</p>
+
+<p>From that you can see that the user object has been wrapped into a Safemode::Jail proxy which restricts the access to the methods on the object. To allow the user to access the name method you can add this to the User model:</p>
+
+<pre><code class="ruby">
+class User
+  class Jail &lt; Safemode::Jail
+    allow :name
+  end
+end
+</code></pre>
+
+<p>You should also be able to wrap that into a layout and use Rails helper methods:</p>
+
+<pre><code class="ruby">
+# layouts/user.html.erb
+&lt;%= stylesheet_link_tag 'default' %>
+&lt;%= yield %>
+</code></pre>
+
+<h2>What's missing</h2>
+
+<p>The one issue with this that I just could not get my head wrapped around yet is the borked error handling. </p>
+
+<p>If you've followed the steps above you've already seen that right now the template handler rescues exceptions itself and just prints them to the console (see the <a href="http://svn.artweb-design.de/stuff/ruby/safemode/lib/action_view/template_handlers/safe_erb.rb" title="">handler code here</a>).</p>
+
+<p>That, of course, is not too nice. If I remove that rescue block from there, though, and an exception gets raised (e.g. remove the Jail from the User model) then I'm getting no response from the server at all. Not a blank page, just no response.</p>
+
+<pre><code>
+curl -I http://localhost:3000/user
+</code></pre>
+
+<p>... just hangs and says "(7) couldn't connect to host" after a while. Safari tells me the same while the log only states that is has started "Rendering user/index", but ths usual execution time summary ("Completed in ...") is missing.</p>
+
+<p>Hu?</p>
+
+<p>My first idea was that Rails tried to use the safemode handler to render the error page and ran into another error in that stage. So I tried to register the handler for *.serb.html and renamed the views ... same result.</p>
+
+<p>If you happen to have an idea how to fix this that would be very appreciated! :)</p>
+
+
+
+
+
+    </div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'svenfuchs';
+        var disqus_title = '<%= page.title %>';
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  </div>
+</div>
+
+    <a href="http://svenfuchs.com" rel="me" ></a>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-24665870-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,61 @@
+---
+layout: post
+title: DatabaseRecorder - recording and replaying the database connection
+---
+
+<p>I&#8217;ve had this idea to <a href="/2010/11/24/why-exactly-don-t-we-stub-that-database">record calls to the database connection</a> for replaying &#8220;real&#8221; results later on a while ago. I&#8217;ve now found a few hours of time on the train and tried it out.</p>
+
+<p><strong>tl&#8217;dr</strong>: It doesn&#8217;t seem worth the effort. There&#8217;s no performance gain so far.</p>
+
+<p>Here&#8217;s what I found:</p>
+
+<h2>Initial implementation</h2>
+
+<p>I&#8217;ve started out setting up a simple library <a href="https://github.com/svenfuchs/database_recorder">database_recorder</a> which wraps the <code>execute</code> method on the <code>ActiveRecord::Base.connection</code> into a <code>capture</code> method. The <code>capture</code> method will either record or replay.</p>
+
+<ul>
+	<li>If it records it will simply push the result of the current call to <code>connection.execute</code> (i.e. the results from the database) into an array. An at_exit hook will then marshal this array and store it on the disk.</li>
+	<li>If it replays it will (assuming the array has been unmarshalled and loaded before) shift a result set from the array and directly return it &#8211; not calling the database this time (this approach probably won&#8217;t work well with an async database driver).</li>
+</ul>
+
+<p>There&#8217;s a simle convenience method that makes it easy to hook this up in a Cucumber <code>env.rb</code>:</p>
+
+<pre>
+# features/env.rb
+DatabaseRecorder.record_or_replay!(ENV['REPLAY'])
+</pre>
+
+<p>Now one can control the record vs replay mode by setting the <code>REPLAY</code> env variable like this:</p>
+
+<pre>
+$ cucumber              ; record the db connection
+$ REPLAY=true cucumber  ; replay it
+</pre>
+
+<p>After throwing up a first simple implementation I&#8217;ve tried this with the Cucumber feature suite of <a href="http://github.com/svenfuchs/adva-cms2">adva-cms2</a> which contains 92 scenarios with 869 steps and uses an SQlite3 database for the tests. I was surprised to see that quite some features actually passed already.</p>
+
+<h2>Tweaking it</h2>
+
+<p>A few more tweaks were necessary though:</p>
+
+<p>Recording and replaying <code>execute</code> isn&#8217;t enough, one also has to take care of such methods as <code>last_insert_row_id</code> which sits on the native database connection object which only is accessible as an instance variable. The implementation of the ActiveRecord SQlite3 adapter makes it so that there&#8217;s no single method and no single collection of methods that could be recorded/replayed like this. Instead I had to wrap the <code>execute</code> method on the <code>ActiveRecord::Base.connection</code> and <code>last_insert_row_id</code> and <code>changes</code> on the native SQlite3 database connection object it holds. A little bit ugly, but it works (and once again proves that stuff like <a href="http://en.wikipedia.org/wiki/Law_of_Demeter">LoD</a> is totally valid for Ruby/Rails code as well and one should care about it for widely used libraries).</p>
+
+<p>Once I&#8217;ve figured this out almost all scenarios passed. The remaining ones were related to the users signup process.</p>
+
+<p>It now occured to me that my initial assumption (of course) wasn&#8217;t accurate: an application won&#8217;t always pass exactly the same data down to the database even with tests always running in the same order and test data not being generated randomly but explicitely defined. There&#8217;s stuff like random tokens! Wow. </p>
+
+<p>Ok, so I added a line <code>Devise.stubs(:friendly_token).returns('12345')</code> &#8230; which made all tests pass. Basically the revelation here is that in order to make this record/replay approach work one needs to make absolutely sure that data is passed to the database in a completely deterministic manner. This may or may not an issue depending on the app, testing philosophy/assumptions and other things.</p>
+
+<p>Now all 92 scenarios were green!</p>
+
+<h2>Results</h2>
+
+<p>The <code>db_session</code> file that contains the recorded, marshalled database connection results is ~1.4 MB big &#8230; just saying.</p>
+
+<p>When I now looked at the run times of both test suite runs I was shocked to notice that both took almost exactly the same time. In fact the test run which was recording the database connection was slightly faster than the one which replayed it. So far I have no clue about the reasons for that. I would think the code that actually &#8220;replays&#8221; results is simple enough (just doing <code>Array.shift</code>) to outrule the actual database connection. I might overlook something else (garbage collection? &#8230; was running on <span class="caps">MRI</span> Ruby 1.8.7) but so far it seems that recording test runs are consistently (very) slightly faster than replaying ones.</p>
+
+<p>How disappointing, this would have been nice.</p>
+
+<p>Maybe someone else will pick this experiment up and find something I&#8217;ve missed!</p>
+
+<p>Otherwise, I guess, at least I&#8217;ve tried it and proved myself wrong ;)</p>

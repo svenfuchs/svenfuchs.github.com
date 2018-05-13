@@ -1,0 +1,239 @@
+---
+layout: post
+title: "Real fun: Get on Rails with Globalize (take #2)"
+---
+<h2>Preliminaries</h2>
+
+<p>You'll need to have a working Rails app up and running. That is, if you want
+to start from scratch first make sure that your conf/database.yml knows about
+your database, valid credentials etc. and everything else is nice.</p>
+
+<h2>Install and setup Globalize</h2>
+
+<p>Then make your way to your Rails app directory and install the plugin:</p>
+
+<pre>
+script/plugin install http://svn.globalize-rails.org/svn/
+globalize/globalize/branches/for-1.1
+</pre>
+
+<p>Now just do:</p>
+
+<pre>
+rake globalize:setup
+</pre>
+
+<p>... and you're already done with the setup!</p>
+
+<p>If you're curious, check your database! You'll find three new globalize_*
+tables with 239 countries, 186 languages and 3420 pre-translated strings... including
+several languages I'd bet you've never heard of like
+<a href="http://en.wikipedia.org/wiki/Avar_language">Avar</a>,
+<a href="http://en.wikipedia.org/wiki/Manx_language">Manx</a> or
+<a href="http://en.wikipedia.org/wiki/Wolof_language">Wolof</a>!</p>
+
+<p>Whoops! These folks don't really expect my application to be translated to their
+native language over there in the Northeast-Caucasian Mountains, do they??</p>
+
+<h2>Configure Globalize</h2>
+
+<p>Now, that's it. You're already globalized.</p>
+
+<p>There's nothing more to do than set the <strong>"base_language"</strong>
+for your Globalize instance but it's easy to miss this step I think. At least
+it happened to me. This should work:</p>
+
+<pre>
+Rails::Initializer.run do |config|
+  # ...
+end
+include Globalize # put that thing here
+Locale.set_base_language('en-US') # and here :)
+</pre>
+
+<p>If you're used to locales with underscores (like I was) and miss this
+you'll get an exception: 'en_US' won't work. (I'll yet have to lookup some
+RFCs or specs to find out what's the difference.)</p>
+
+<p>As far as I understand the meaning of the base_language that you set here,
+this is what Globalize treats as the "primary" language - which means that
+content stored your model tables is stored in the primary language whereas
+translations are stored in the globalize_translations table.</p>
+
+<p>Having written this I remembered having read about that in the mailinglist and
+found the following quote from Joshua Harvey:</p>
+
+<p><em>"Base language entries are stored in the parent table itself, as
+opposed to the globalize_translations table. So if you have a table
+called 'products', and your base language is English, the English
+product name would be stored in products.name, whereas the German
+translation would be stored in globalize_translations.</em></p>
+
+<p><em>It's important to never change the base language once you've starting
+populating the database."</em></p>
+
+<p>I think this states it more clearly.</p>
+
+<p>(I yet wonder what's the right choice or best practice for me here. From the
+standpoint of developing an ubiqous Domain Language an English base_language would
+be first choice of course. I therefor chose that option.</p>
+
+<p>On the other hand ... from the standpoint of an agile process of getting real
+with an application that for the most forseeable time will deliver localized
+content in German (and probably only some content in other languages) this
+would be a waste of ressources, wouldn't it? I'll have to find out more on this.)</p>
+
+<h2>Check it out!</h2>
+
+<p>Already impatient to check out some working stuff? I were, too ...</p>
+
+<p>There's a nice example in the <a
+href="http://www.globalize-rails.org/wiki/pages/example">Globalize wiki using
+Rails Unit tests and fixtures</a>.</p>
+
+<p>I probably should have tried that but I didn't. I've globalized an
+existing application that I had been working on before, so I decided to just
+open up a controller and write something to the screen.</p>
+
+<p>The shortest statement I've found was:</p>
+
+<pre>
+def index
+  Locale.set("es-ES")
+  render :text => Time.now.localize("%d %B %Y")
+end
+</pre>
+
+<p>This prints:</p>
+
+<pre>
+07 Junio 2006
+</pre>
+
+<p>Wew, hey! This means Globalize already works.</p>
+
+<p>Of course my next step was to try and change the locale to "de-DE". Which resulted in:</p>
+
+<pre>
+07 June 2006
+</pre>
+
+<p>Wtf!? Too bad. :( Would have been too nice if this worked out of the box, wouldn't it?</p>
+
+<p>But this forced me to read a bit more than I had yet. It took me a while to read
+through the Globalize wiki, inspect some code, query the database tables ... to finally
+find out that there simply is no default translation provided for "June" in German
+(which of course isn't that unusual at all).</p>
+
+<p>Instead, there's been a row in the translations table pointing to a "German"
+language row and containing a NULL value! How this?</p>
+
+<p>That's a feature :) This might not be obvious in the first place but <em>Globalize
+adds NULL values to the translations table when it sees a string that's not yet
+translated</em>. While you're developing your application Globalize will collect the
+strings that need to be translated. You can then write a Rails controller afterwards
+and add the translations.</p>
+
+<p>Ok, I changed that NULL value to the German translation "Juni" that I've missed
+before. That worked. I've got the expected result now:</p>
+
+<pre>
+07 Juni 2006
+</pre>
+
+<p>I wondered how the heck I am supposed to add this stuff to the database from Ruby?
+In the Globalize wiki I found something like this:</p>
+
+<pre>
+Locale.set_translation('Welcome', Language.pick('de-DE'),
+  'Willkommen')
+</pre>
+
+<p>That looks pretty nice. I added a similar line to my controller and inspected the new
+records that had been created in my globalize_translations table.</p>
+
+<p>I opened up a template and (having the Language.locale set to 'de-DE' in the
+controller index method for now) added the line:</p>
+
+<pre>
+&lt;%= 'Welcome'.t -%>
+</pre>
+
+<p>Expected result: "Willkommen". Actual result: the same. Great. :)</p>
+
+<p>I changed the locale to 'en-US' and got the expected result "Welcome". I
+noticed that this string is recieved from the original string in the template
+because there's no translation for "Welcome" in the database of course.</p>
+
+<p>Now, that's way cool. Think about that for a moment.</p>
+
+<p>Globalize lets you append .t to any string which then will transparently
+lookup and find available translations for it. In case there's no translation
+available it will simply return the original string (which I believe is the
+default behaviour most t10n/i18n tools show).</p>
+
+<h2>Just add hot water ...</h2>
+
+<p>Now, that's about date formats and strings in my templates so far. What about
+my models?</p>
+
+<p>Globalize comes with the capability to transparently translate any attribute of your
+ActiveRecords Models ... all you have to do is add a "translates" directive like
+this:</p>
+
+<pre>
+def article
+  translates :title
+end
+</pre>
+
+<p>As soon as there actually is a translation for the "title" attribute known to Globalize
+it will be present for the language you have set. You can make Globalize know about
+a translation by simply saving the model like so:</p>
+
+<pre>
+Locale.set('en-US')
+@article = Article.create!(:title => 'Welcome to Globalize!')
+
+Locale.set('de-DE')
+@article = Article.find(:first)
+@article.title = 'Willkommen zu Globalize!'
+@article.save
+</pre>
+
+<p>(I think instead of Article.find(:first) or something like this you could also do @article.reload.)</p>
+
+
+<p>Enthused by my first experiences I applied this stuff to my experimental
+<a href="http://folksr.de">voting application</a>. As far as I can tell it's
+really done in an instant.</p>
+
+<p>I collected the hardcoded strings from the templates and let Globalize add
+translations for it. I simply did this from an extra method in the controller
+for now using above mentioned Locale.set_translation method. With portability
+in mind this should better be done by migrations I think? I'll have to figure
+out though how exactly to do so. And for more food for thought:there's also a
+pretty interesting Howto about
+<a href="http://www.globalize-rails.org/wiki/pages/Adding+a+Translation+View">"Adding a Translation View"</a>
+in the wiki.</p>
+
+<p>Of course there's much, much more to Globalize. E.g. there's support for
+localized date and number formatting, "multiple plurals" (which some languages
+have) etc. and you can use the "slash trick" to insert data into your strings,
+like so:</p>
+
+<pre>
+"Hey, %s! You're globalized." / 'Sven'
+</pre>
+
+<p>... will result in "Hallo, Sven! Du bist Globalized." (at least it will if
+you have added this translation of course).</p>
+
+<h2>So ...</h2>
+
+<p>I'm really fascinated about how easy and quickly I've been able to get this
+stuff up and running. Of course - you're used to this kind of experience like
+this using Rails, it's just it's unique featurewise selling-point or something.
+But I've been honestly surprised.</p>
+
+<p>That's definitely fun :)</p>

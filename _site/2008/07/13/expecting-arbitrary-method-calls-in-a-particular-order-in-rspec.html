@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="geo.region" content="DE-BE" />
+    <meta name="geo.placename" content="Berlin" />
+    <meta name="geo.position" content="52.51168;13.458236" />
+    <meta name="ICBM" content="52.51168, 13.458236" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="http://feeds.feedburner.com/svenfuchs" />
+    <link rel="openid.server" href="http://www.myopenid.com/server" />
+    <link rel="openid.delegate" href="http://svenfuchs.myopenid.com/" />
+    <link href="http://svenfuchs.com" rel="home" />
+    <title>Expecting arbitrary method calls in a particular order in RSpec</title>
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <link rel="stylesheet" href="/stylesheets/highlight.css">
+    <script src="/javascripts/highlight.js"></script>
+  </head>
+  <body>
+    <div id="page">
+  <div id="content">
+    <p><a href="/">&larr; Home</a></p>
+
+    <div id="post">
+      <h1>Expecting arbitrary method calls in a particular order in RSpec</h1>
+      <p>For a spam protection feature in a <a href="http://github.com/svenfuchs/adva_cms" title="svenfuchs's adva_cms at master &mdash; GitHub">project I'm currently working on</a> I started out specifying the behaviour of a filter chain that I was planning to implement. Specifically, I wanted to specify that the filter chain would call the filters in the expected order.</p>
+
+<p>Looking at the <a href="http://rspec.info/documentation/mocks/message_expectations.html" title="RSpec-1.1.4: Message Expectations">RSpec documentation for expecting method calls on mock objects</a> I didn't found this usecase mentioned at first. It turns out to be pretty easy with RSpec mocks though.</p>
+
+<p><code>#should_receive</code> takes a block that (according to the documentation) is meant to be used to compute return values. This block is called within the specification's scope so it can be used to track the method call order.</p>
+
+<p>My initial spec looks like this (simplified for clarity):</p>
+
+<pre><code class="ruby">
+it "runs the filters in the correct order" do
+  log = []
+  @default.should_receive(:run){ log &lt;&lt; :default }
+  @akismet.should_receive(:run){ log &lt;&lt; :akismet }
+  @defensio.should_receive(:run){ log &lt;&lt; :defensio }
+  @chain.run
+  log.should == [:default, :akismet, :defensio]
+end
+</code></pre>
+
+<h4>Update</h4>
+
+<p>After some discussion on the RSpec users mailinglist <a href="http://www.patchspace.co.uk/">Ashley Moran</a> pointed out a more elegant solution to this which also uses the <code>should_receive</code> block:</p>
+
+<pre><code class="ruby">
+it "runs the filters in the correct order" do
+@default.should_receive(:run) do
+  @akismet.should_receive(:run) do
+    @defensio.should_receive(:run)
+  end
+end
+@chain.run
+end
+</code></pre>
+
+<p>Thanks :)</p>
+
+
+    </div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'svenfuchs';
+        var disqus_title = '<%= page.title %>';
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  </div>
+</div>
+
+    <a href="http://svenfuchs.com" rel="me" ></a>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-24665870-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>

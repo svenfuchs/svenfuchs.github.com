@@ -1,0 +1,34 @@
+---
+layout: default
+title: Sven Fuchs
+---
+
+<div id="page">
+  <div id="content">
+    <p><a href="/">&larr; Home</a></p>
+    <h1>Archive</h1>
+    <ul id="archive">
+      {% assign posts = site.posts | group_by_exp: "post", "post.date | date: '%Y'" %}
+      {% for year in posts %}
+      <li>
+        <h2>{{ year.name }}</h2>
+        <ul>
+          {% assign posts = year.items | group_by_exp: "post", "post.date | date: '%B'" %}
+          {% for month in posts %}
+            <li>
+              <h3>{{ month.name }}</h3>
+              <ul>
+                {% for post in month.items %}
+                  <li>
+                    <a href="{{post.url}}">{{post.title}}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+            </li>
+          {% endfor %}
+        </ul>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
